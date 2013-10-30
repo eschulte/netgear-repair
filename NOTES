@@ -1,6 +1,34 @@
 -*- org -*-
 #+Options: ^:{}
 
+* Reproduction
+1. Following the instructions from [[http://shadow-file.blogspot.com/2013/05/running-debian-mips-linux-in-qemu.html][running-debian-mips-linux-in-qemu]]
+   download the files in the =mips= and =mipsel= subdirectories of
+   http://people.debian.org/~aurel32/qemu/ and save them to
+   =debian-qemu/be= and =debian-qemu/le= respectively.
+
+2. Ensure a new version of QEMU is installed, and that you have a
+   network bridge setup following the instructions in [[https://wiki.archlinux.org/index.php/QEMU][QEMU]] and
+   [[https://wiki.archlinux.org/index.php/Bridge_with_netctl][Bridge_with_netctl]].
+
+3. For each vm (=be= and =le=) you'll want configure ssh access and
+   install binwalk.  From this point on the VM's shouldn't require
+   external internet access.
+   1. start the vm
+      : bin/run-vm be -b -D
+   2. as root in the qemu window, install sshd
+      : apt-get update
+      : apt-get install openssh-server
+   3. install binwalk
+      : wget https://binwalk.googlecode.com/files/binwalk-1.2.2-1.tar.gz
+      : tar xzf binwalk-1.2.2-1.tar.gz
+      : cd binwalk-1.2.2-1/src/
+      : sed -i 's/sudo //' debian_quick_install.sh
+      : ./debian_quick_install.sh # this will take a *LONG* time
+   4. shutdown the VM's and kill the qemu processes
+
+4.
+
 * Notes
 ** Original Article
 http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
