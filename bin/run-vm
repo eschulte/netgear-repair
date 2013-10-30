@@ -7,7 +7,7 @@
 #  -p,--port ------- port to use for ssh forwarding
 #  -D,--no-daemon -- run interactive and graphic (for initial setup)
 #  -d,--dry-run ---- print (don't run) the QEMU command
-#  -b,--bridge ----- bridge network
+#  -b,--bridge ----- bridge networking (instead of host forwarding)
 #
 # Notes:
 # - Adapted from zcutlip's script available at [1].
