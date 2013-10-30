@@ -1,0 +1,68 @@
+#!/bin/bash
+#
+# Usage: run-vm [be|le] [options...]
+# run Debian mips in a qemu VM with big or little endianness
+#
+# Options:
+#  -p,--port ------- port to use for ssh forwarding
+#  -D,--no-daemon -- run interactive and graphic (for initial setup)
+#  -d,--dry-run ---- print (don't run) the QEMU command
+#  -b,--bridge ----- bridge network
+#
+# Notes:
+# - Adapted from zcutlip's script available at [1].
+# - Bridging on Arch linux with qemu-bridge-helper [2] and netctl [3].
+# 
+# [1] http://shadow-file.blogspot.com/2013/05/
+# [2] https://wiki.archlinux.org/index.php/QEMU
+# [3] https://wiki.archlinux.org/index.php/Bridge_with_netctl
+#
+. bin/common
+
+ENDIAN=$1; shift;
+PORT=2222
+DAEMONIZE="-display none -daemonize"
+DRY="no"
+NET=hostfwd
+eval set -- \
+    $(getopt -o p:Ddb -l port:,dry-run,no-daemon,bridge -- "$@" || help;)
+while [ $# -gt 0 ];do
+    case $1 in
+        -p|--port) PORT="$2"; shift;;
+        -D|--no-daemon) DAEMONIZE="";;
+        -d|--dry-run) DRY="yes";;
+        -b|--bridge) NET=bridge;;
+        (--) shift; break;;
+        (-*) error "unrecognized option $1";;
+        (*)  break;;
+    esac
+    shift
+done
+case $NET in
+    bridge) NET="-net nic -net bridge,br=br0";;
+    hostfwd) NET="-net nic -net user,hostfwd=tcp:127.0.0.1:$PORT-:22";;
+esac
+
+image=""
+kernel=""
+if [ "x$ENDIAN" = "xle" ]; then
+    qemu=qemu-system-mipsel
+    image="$BASE/debian-qemu/le/debian_squeeze_mipsel_standard.qcow2"
+    kernel="$BASE/debian-qemu/le/vmlinux-2.6.32-5-4kc-malta"
+elif [ "x$ENDIAN" = "xbe" ];
+then
+    qemu=qemu-system-mips
+    image="$BASE/debian-qemu/be/debian_squeeze_mips_standard.qcow2"
+    kernel="$BASE/debian-qemu/be/vmlinux-2.6.32-5-4kc-malta"
+else
+    warning "Specify be or le endianness."
+    help;
+fi
+
+if [ "$DRY" == "yes" ];then
+    qemu="echo $qemu"
+fi
+
+msg "Starting Debian mips system in a QEMU session."
+$qemu $NET $DAEMONIZE -M malta -kernel $kernel -hda $image \
+    -append "root=/dev/sda1 console=tty0"

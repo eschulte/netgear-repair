@@ -1,0 +1,94 @@
+-*- org -*-
+#+Options: ^:{}
+
+* Notes
+** Original Article
+http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
+
+** Links for Netgear firmware
+- http://www.userdrivers.com/LAN-Network-Adapter/Netgear-WNDR3700v4-Router-Firmware-Upgrade-1-0-1-42-All-Regions-Except-China-Russia/download/
+- http://www.userdrivers.com/go.php?link=aHR0cDovL3d3dy5kb3dubG9hZHMubmV0Z2Vhci5jb20vZmlsZXMvR0RDL1dORFIzNzAwVjQvV05EUjM3MDBWNF9WMS4wLjEuNDIuemlw
+
+** Notes from Zach Cutlip
+Hi Eric,
+
+I think the best approach is to describe how I set up my tool chain
+and environment.  Hopefully that will be helpful for you.
+
+To start with, I do my work in an Ubuntu VM.  Specifically 12.04.  I
+don't think the exact release matters, but I know 12.04 works with my
+tools.
+
+I keep a set of cross compilers in my path for various
+architectures. In my opinion, building with a cross compiler is faster
+and easier than building with gcc inside QEMU.  I recommend building a
+set of cross-compiling toolchains using Buildroot.  Buildroot uses a
+Linux Kernel-style menuconfig build system.  I don't have anything
+written up on building cross compilers, but I could probably send you
+my buildroot configuration if you need it, and if I can find it.
+
+You can download the firmware for the router from Netgear's support website.
+Here's a link to the firmware:
+http://support.netgear.com/product/wndr3700v4
+
+In order to unpack the firmware, I recommend my colleague, Craig
+Heffner's tool, Binwalk:
+https://code.google.com/p/binwalk/
+
+Binwalk will analyze a binary file and describe the subcomponents it
+finds within, such as filesystems, compressed kernel,
+etc. Additionally, it can unpack the subcomponents it finds, assuming
+it knows how.
+Install binwalk in your Ubuntu environment using the
+"debian_quick_install.sh" installation script, which will apt-get
+install a number of dependencies.
+Rather than describe binwalk's usage, I'll refer you to the wiki:
+https://code.google.com/p/binwalk/wiki/Usage?tm=6
+
+Also, in your Ubuntu environment you'll need a Debian MIPS QEMU system
+that you can use to emulate the firmware's binaries.
+
+I found lots of information about running Debian in QEMU, but most of
+it was incomplete, and a lot of it was inconsistent, so I've written a
+blog post describing how I set up my QEMU systems:
+http://shadow-file.blogspot.com/2013/05/running-debian-mips-linux-in-qemu.html
+
+This is just personal, but I like to export my workspace to the QEMU
+machines via NFS.  In fact, I export my workspace from my Mac via NFS,
+and my Ubuntu VMs and Debian QEMU VMs all mount the same
+directory. That way I'm not having to copy firmware, scripts and
+debuggers around.
+
+Once logged into your QEMU VM, you can chroot into the router's
+firmware and run some of its binaries:
+
+firmware_rootfs # chroot . /bin/sh
+#
+
+The simple ones, such as busybox, will run with no problem.  The web
+server, upnp server, etc. are more complicated because they make a lot
+of assumptions about the router's specific hardware being present.
+
+One of the problems you run into has to do with queries to NVRAM for
+runtime configuration.  Obviously, your Debian MIPS Linux has no
+NVRAM, so these queries will fail.  For that, I have a project called
+"nvram-faker":
+https://github.com/zcutlip/nvram-faker
+
+You build the library for your target and preload it using the
+LD_PRELOAD environment variable.  It intercepts calls to nvram_get and
+provides answers based on the contents an nvram.ini file that you
+provide. It prints all the nvram queries to stdout, and colorizes the
+ones that it couldn't find in the .ini file.  Obviously it takes some
+guesswork to provide sane configuration parameters.
+
+Sometimes you can skip running the web server and just run the cgi
+binaries from a shell script.  Most cgi binaries take their input from
+the web server as a combination of standard input and environment
+variables.  They send their response to the web server over standard
+output.
+
+I hope this helps.  Let me know if I can help any other way.
+
+Zach
+
