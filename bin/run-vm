@@ -1,13 +1,17 @@
 #!/bin/bash
 #
-# Usage: run-vm [be|le] [options...]
-# run Debian mips in a qemu VM with big or little endianness
+# Usage: run-vm [options...]
+# run Debian mips in a qemu VM
 #
 # Options:
 #  -p,--port ------- port to use for ssh forwarding
 #  -D,--no-daemon -- run interactive and graphic (for initial setup)
 #  -d,--dry-run ---- print (don't run) the QEMU command
 #  -b,--bridge ----- bridge networking (instead of host forwarding)
+#  -i,--image ------ specify a non-default QEMU image to use
+#
+# Environment:
+#  ENDIANNESS must be either "be" or "le" for big or little endian
 #
 # Notes:
 # - Adapted from zcutlip's script available at [1].
@@ -19,19 +23,20 @@
 #
 . bin/common
 
-ENDIAN=$1; shift;
 PORT=2222
 DAEMONIZE="-display none -daemonize"
 DRY="no"
 NET=hostfwd
-eval set -- \
-    $(getopt -o p:Ddb -l port:,dry-run,no-daemon,bridge -- "$@" || help;)
+SHORT="p:Ddbi:"
+LONG="port:,dry-run,no-daemon,bridge,image:"
+eval set -- $(getopt -o $SHORT -l $LONG -- "$@" || help;)
 while [ $# -gt 0 ];do
     case $1 in
         -p|--port) PORT="$2"; shift;;
         -D|--no-daemon) DAEMONIZE="";;
         -d|--dry-run) DRY="yes";;
         -b|--bridge) NET=bridge;;
+        -i|--image) IMAGE="$2"; shift;;
         (--) shift; break;;
         (-*) error "unrecognized option $1";;
         (*)  break;;
@@ -43,26 +48,10 @@ case $NET in
     hostfwd) NET="-net nic -net user,hostfwd=tcp:127.0.0.1:$PORT-:22";;
 esac
 
-image=""
-kernel=""
-if [ "x$ENDIAN" = "xle" ]; then
-    qemu=qemu-system-mipsel
-    image="$BASE/debian-qemu/le/debian_squeeze_mipsel_standard.qcow2"
-    kernel="$BASE/debian-qemu/le/vmlinux-2.6.32-5-4kc-malta"
-elif [ "x$ENDIAN" = "xbe" ];
-then
-    qemu=qemu-system-mips
-    image="$BASE/debian-qemu/be/debian_squeeze_mips_standard.qcow2"
-    kernel="$BASE/debian-qemu/be/vmlinux-2.6.32-5-4kc-malta"
-else
-    warning "Specify be or le endianness."
-    help;
-fi
-
 if [ "$DRY" == "yes" ];then
-    qemu="echo $qemu"
+    QEMU="echo $QEMU"
 fi
 
 msg "Starting Debian mips system in a QEMU session."
-$qemu $NET $DAEMONIZE -M malta -kernel $kernel -hda $image \
+$QEMU $NET $DAEMONIZE -M malta -kernel $KERNEL -hda $IMAGE \
     -append "root=/dev/sda1 console=tty0"

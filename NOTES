@@ -17,7 +17,8 @@
    external internet access.
    1. start the vm
       #+begin_src sh
-        bin/run-vm be -b -D
+        export ENDIANESS=be
+        bin/run-vm -b -D
       #+end_src
    2. as root in the qemu window, install sshd
       #+begin_src sh
@@ -31,8 +32,7 @@
      wget https://binwalk.googlecode.com/files/binwalk-1.2.2-1.tar.gz
      tar xzf binwalk-1.2.2-1.tar.gz
      cd binwalk-1.2.2-1/src/
-     sed -i 's/sudo //' debian_quick_install.sh
-     ./debian_quick_install.sh # this will take a *LONG* time   
+     ./debian_quick_install.sh # on Debian, else manually satisfy dependencies
    #+end_src
 
 5. Now to grab the Netgear firmware and extract the filesystem
@@ -44,14 +44,34 @@
    #+end_src
    we can now see the broken cgi file in the extracted filesystem.
    #+begin_src sh
-   file _WNDR3700v4-V1.0.1.42.img.extracted/squashfs-root/usr/sbin/net-cgi
+     file _WNDR3700v4-V1.0.1.42.img.extracted/squashfs-root/usr/sbin/net-cgi
    #+end_src
 
 6. Copy the squashfs filesystem to the QEMU VM.
 
 ** Build a pool of overlays for candidate repair evaluation
+1. Generate multiple overlays.
+   #+begin_src sh
+     make-overlay overlays/{0..9}.qcow2
+   #+end_src
+
 ** Evolve a version of =net-cgi= without the exploit
 * Notes
+** Running the webserver in the firmware
+From the root of the firmware FS we see that [[http://wiki.openwrt.org/doc/howto/http.uhttpd][uhttpd]] is the webserver used.
+: # find ./ -name "*htt*"
+: ./www/help/_green_download_http_help.html
+: ./www/cgi-bin/uhttpd.sh
+: ./etc/config/uhttpd
+: ./etc/rc.d/S50uhttpd
+: ./etc/init.d/uhttpd
+: ./usr/lib/opkg/info/uhttpd-mod-tls.list
+: ./usr/lib/opkg/info/uhttpd.list
+: ./usr/lib/uhttpd_tls.so
+: ./usr/sbin/uhttpd
+
+Need to cross-compile [[https://github.com/zcutlip/nvram-faker][nvram-faker]] on a Debian system.
+
 ** Original Article
 http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
 
