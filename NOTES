@@ -70,7 +70,12 @@ From the root of the firmware FS we see that [[http://wiki.openwrt.org/doc/howto
 : ./usr/lib/uhttpd_tls.so
 : ./usr/sbin/uhttpd
 
-Need to cross-compile [[https://github.com/zcutlip/nvram-faker][nvram-faker]] on a Debian system.
+** cross compiling =nvram-faker=
+https://github.com/zcutlip/nvram-faker
+
+First had to setup [[http://moozing.wordpress.com/2011/04/05/cross-compile-in-debian/][cross-compile-in-debian]], once that was done
+symlinked all of the =mips-linux-gnu-*= executables to =mips-linux-*=
+and then the =buildmips.sh= script in nvram-faker worked.
 
 ** Original Article
 http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
