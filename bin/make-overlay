@@ -1,0 +1,12 @@
+#!/bin/bash
+#
+# Usage: make-vm overlay-file
+# create an overlay of a debian mips image
+#
+# Any options are passed directly to `qemu-img'.
+#
+. bin/common
+
+for name in "$@";do
+    qemu-img create -b $IMAGE -f qcow2 $name
+done
