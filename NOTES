@@ -1,7 +1,8 @@
--*- org -*-
+# -*- org -*-
 #+Options: ^:{}
 
 * Reproduction
+** Setting up the VMs
 1. Following the instructions from [[http://shadow-file.blogspot.com/2013/05/running-debian-mips-linux-in-qemu.html][running-debian-mips-linux-in-qemu]]
    download the files in the =mips= and =mipsel= subdirectories of
    http://people.debian.org/~aurel32/qemu/ and save them to
@@ -15,20 +16,41 @@
    install binwalk.  From this point on the VM's shouldn't require
    external internet access.
    1. start the vm
-      : bin/run-vm be -b -D
+      #+begin_src sh
+        bin/run-vm be -b -D
+      #+end_src
    2. as root in the qemu window, install sshd
-      : apt-get update
-      : apt-get install openssh-server
-   3. install binwalk
-      : wget https://binwalk.googlecode.com/files/binwalk-1.2.2-1.tar.gz
-      : tar xzf binwalk-1.2.2-1.tar.gz
-      : cd binwalk-1.2.2-1/src/
-      : sed -i 's/sudo //' debian_quick_install.sh
-      : ./debian_quick_install.sh # this will take a *LONG* time
-   4. shutdown the VM's and kill the qemu processes
+      #+begin_src sh
+        apt-get update
+        apt-get install openssh-server
+      #+end_src
+   3. shutdown the VM's and kill the qemu processes
 
-4.
+4. install binwalk (more easily done on a Debian system)
+   #+begin_src sh
+     wget https://binwalk.googlecode.com/files/binwalk-1.2.2-1.tar.gz
+     tar xzf binwalk-1.2.2-1.tar.gz
+     cd binwalk-1.2.2-1/src/
+     sed -i 's/sudo //' debian_quick_install.sh
+     ./debian_quick_install.sh # this will take a *LONG* time   
+   #+end_src
 
+5. Now to grab the Netgear firmware and extract the filesystem
+   #+begin_src sh
+     wget \
+       http://www.downloads.netgear.com/files/GDC/WNDR3700V4/WNDR3700V4_V1.0.1.42.zip
+     unzip WNDR3700V4_V1.0.1.42.zip
+     binwalk -e WNDR3700v4-V1.0.1.42.img
+   #+end_src
+   we can now see the broken cgi file in the extracted filesystem.
+   #+begin_src sh
+   file _WNDR3700v4-V1.0.1.42.img.extracted/squashfs-root/usr/sbin/net-cgi
+   #+end_src
+
+6. Copy the squashfs filesystem to the QEMU VM.
+
+** Build a pool of overlays for candidate repair evaluation
+** Evolve a version of =net-cgi= without the exploit
 * Notes
 ** Original Article
 http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
