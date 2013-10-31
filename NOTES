@@ -57,7 +57,7 @@
 
 ** Evolve a version of =net-cgi= without the exploit
 * Notes
-** Running the webserver in the firmware
+** Running the webserver (=uhttpd=) in the firmware
 From the root of the firmware FS we see that [[http://wiki.openwrt.org/doc/howto/http.uhttpd][uhttpd]] is the webserver used.
 : # find ./ -name "*htt*"
 : ./www/help/_green_download_http_help.html
@@ -69,6 +69,72 @@ From the root of the firmware FS we see that [[http://wiki.openwrt.org/doc/howto
 : ./usr/lib/opkg/info/uhttpd.list
 : ./usr/lib/uhttpd_tls.so
 : ./usr/sbin/uhttpd
+
+The webserver may be started with the following (from within =chroot=).
+: /www/cgi-bin/uhttpd.sh start
+
+** calling net-cgi from the command line
+*** find how net-cgi is called
+Replacing =net-cgi= with the following shows how it is called by the web-server.
+#+begin_src sh
+  #!/bin/sh
+  
+  cat <<EOF
+  Content-type: text/plain
+  
+  I was called with the following.
+  
+  arguments:
+  $@
+  
+  environment:
+  $(env)
+  
+  stdin:
+  $(cat -)
+  
+  Bye.
+  EOF
+#+end_src
+
+With the webserver started calling =wget http://localhost/= will write
+the following to =index.html=.
+: I was called with the following.
+: arguments:
+: 
+: 
+: environment:
+: GATEWAY_INTERFACE=CGI/1.1
+: REMOTE_HOST=127.0.0.1
+: REMOTE_ADDR=127.0.0.1
+: QUERY_STRING=
+: HTTP_USER_AGENT=Wget/1.12 (linux-gnu)
+: DOCUMENT_ROOT=/www
+: REMOTE_PORT=56786
+: HTTP_ACCEPT=*/*
+: SCRIPT_FILENAME=/www/start.htm
+: HTTP_HOST=localhost
+: REQUEST_URI=/
+: SERVER_SOFTWARE=uHTTPd
+: HTTP_CONNECTION=Keep-Alive
+: PATH=/sbin:/usr/sbin:/bin:/usr/bin
+: SERVER_PROTOCOL=HTTP/1.0
+: REQUEST_METHOD=GET
+: SERVER_ADDR=127.0.0.1
+: PWD=/www
+: SERVER_PORT=80
+: SCRIPT_NAME=/start.htm
+: TZ=
+: SERVER_NAME=127.0.0.1
+: 
+: stdin:
+: 
+: Bye.
+*** call net-cgi from the command line
+The following script may be copied into the firmware and used to call
+net-cgi from the command line file:bin/call-cgi
+
+Had to run =mkdir /proc/mounts= to appease =df= called by =net-cgi=.
 
 ** cross compiling =nvram-faker=
 https://github.com/zcutlip/nvram-faker
