@@ -50,6 +50,26 @@
    #+end_src
 
 6. Copy the squashfs filesystem to the QEMU VM.
+** Run the original =net-cgi= in the VM
+1. The web server on the netgear router (=uhttpd=) calls =net-cgi= for
+   basically every web page.  We'll want to call =net-cgi= from the
+   command line.  Every header passed in by =uhttpd= may be passed on
+   the command line as an environment variable.  The script in
+   file:bin/call-cgi will handle this for us.
+
+2. We need to run =net-cgi= from within the netgear firmware, since
+   this is unpacked into =~/squashfs-root= in our VM, the command to
+   invoke =net-cgi= will need to us =chroot=.  However at this point
+   =net-cgi= will segfault trying to read files in =/proc= (thanks to
+   =strace= for debugging help here).  We can map =/proc= from the VM
+   into =squashfs-root/proc= with the following.
+   : mount -o bind /proc  squashfs-root/proc
+
+3. Combining these we get the following working =net-cgi= invocation,
+   which will successfully run =net-cgi=.
+   : call-cgi chroot squashfs-root /usr/sbin/net-cgi
+
+4. Non-volatile ram.
 
 ** Build a pool of overlays for candidate repair evaluation
 1. Generate multiple overlays.
@@ -94,7 +114,9 @@ Narrative of net-cgi execution
    : rt_sigaction(SIGQUIT, {0x10000000, [], SA_NOCLDSTOP}, {0x10000000, [], SA_NOCLDSTOP}, 16) = 0
    : rt_sigaction(SIGINT, {0x10000000, [], SA_NOCLDSTOP}, {0x10000000, [], SA_NOCLDSTOP}, 16) = 0
 
-Possible solution is to run with bridge networking while connected to ethernet.
+We can run with bridge networking while connected to ethernet, and
+then mount the real =/proc= into our chroot file system.
+: mount -o bind /proc  squashfs-root/proc
 
 ** system wide set LD_PRELOAD
 Looks like you can copy the file to =/etc/ld.so.preload=.
