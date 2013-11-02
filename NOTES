@@ -59,6 +59,19 @@
 
 ** Evolve a version of =net-cgi= without the exploit
 * Notes
+** =net-cgi= tests
+Positive Tests
+- ensure serves up a variety of pages as normal
+
+Negative Tests
+- no authentication for =BRS_*= files
+- no authentication if =unauth.cgi= or =securityquestions.cgi= are in
+  the path, even in the query string, e.g., 
+  : http://router_address/protected_page.htm?foo=unauth.cgi
+- browsing to the following sets =hijack_process= to something other
+  than three in the nvram, disabling authentication checks
+  : http://router_address/BRS_02_genieHelp.html
+
 ** system wide set LD_PRELOAD
 ** Running the webserver (=uhttpd=) in the firmware
 From the root of the firmware FS we see that [[http://wiki.openwrt.org/doc/howto/http.uhttpd][uhttpd]] is the webserver used.
