@@ -2,7 +2,7 @@
 #+Options: ^:{}
 
 * Reproduction
-** Setting up the VMs
+** Setting up the VM
 1. Following the instructions from [[http://shadow-file.blogspot.com/2013/05/running-debian-mips-linux-in-qemu.html][running-debian-mips-linux-in-qemu]]
    download the files in the =mips= and =mipsel= subdirectories of
    http://people.debian.org/~aurel32/qemu/ and save them to
@@ -57,6 +57,7 @@
 
 ** Evolve a version of =net-cgi= without the exploit
 * Notes
+** system wide set LD_PRELOAD
 ** Running the webserver (=uhttpd=) in the firmware
 From the root of the firmware FS we see that [[http://wiki.openwrt.org/doc/howto/http.uhttpd][uhttpd]] is the webserver used.
 : # find ./ -name "*htt*"
@@ -139,9 +140,12 @@ Had to run =mkdir /proc/mounts= to appease =df= called by =net-cgi=.
 ** cross compiling =nvram-faker=
 https://github.com/zcutlip/nvram-faker
 
-First had to setup [[http://moozing.wordpress.com/2011/04/05/cross-compile-in-debian/][cross-compile-in-debian]], once that was done
-symlinked all of the =mips-linux-gnu-*= executables to =mips-linux-*=
-and then the =buildmips.sh= script in nvram-faker worked.
+Need to use the openwrt cross-compilation tool chain so that =uclibc=
+will be used. see http://wiki.openwrt.org/doc/howto/buildroot.exigence
+
+*** openwrt cross-compilation
+- http://downloads.openwrt.org/docs/buildroot-documentation.html
+- http://www.frontiernet.net/~beakmyn/CrossCompile.htm
 
 ** Original Article
 http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
