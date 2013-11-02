@@ -4,17 +4,19 @@
 * Reproduction
 ** Setting up the VM
 1. Following the instructions from [[http://shadow-file.blogspot.com/2013/05/running-debian-mips-linux-in-qemu.html][running-debian-mips-linux-in-qemu]]
-   download the files in the =mips= and =mipsel= subdirectories of
+   download the files in the =mips=subdirectory of
    http://people.debian.org/~aurel32/qemu/ and save them to
-   =debian-qemu/be= and =debian-qemu/le= respectively.
+   =debian-qemu/be=.
 
 2. Ensure a new version of QEMU is installed, and that you have a
    network bridge setup following the instructions in [[https://wiki.archlinux.org/index.php/QEMU][QEMU]] and
    [[https://wiki.archlinux.org/index.php/Bridge_with_netctl][Bridge_with_netctl]].
 
-3. For each vm (=be= and =le=) you'll want configure ssh access and
-   install binwalk.  From this point on the VM's shouldn't require
-   external internet access.
+3. You'll want configure ssh access and install binwalk.  From this
+   point on the VM shouldn't require external internet access.  Note:
+   Although the =run-vm= executable is configured to work with either
+   big endian or little endian mips images, we'll only use the big
+   endian version as that is the architecture of the netgear router.
    1. start the vm
       #+begin_src sh
         export ENDIANESS=be
