@@ -10,17 +10,19 @@ env GATEWAY_INTERFACE="CGI/1.1" \
     REMOTE_HOST="127.0.0.1" \
     REMOTE_ADDR="127.0.0.1" \
     QUERY_STRING="$QUERY" \
-    HTTP_USER_AGENT="Wget/1.12" \
+    HTTP_USER_AGENT="Mozilla/5.0 (X11; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0" \
     DOCUMENT_ROOT="/www" \
     REMOTE_PORT="56786" \
-    HTTP_ACCEPT="*/*" \
+    HTTP_ACCEPT="text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8" \
     SCRIPT_FILENAME="/www/start.htm" \
     HTTP_HOST="localhost" \
     REQUEST_URI="/$URI" \
     SERVER_SOFTWARE="uHTTPd" \
     HTTP_CONNECTION="Keep-Alive" \
     PATH="/sbin:/usr/sbin:/bin:/usr/bin" \
+    HTTP_ACCEPT_LANGUAGE="en-US,en;q=0.5" \
     SERVER_PROTOCOL="HTTP/1.0" \
+    HTTP_ACCEPT_ENCODING="gzip, deflate" \
     REQUEST_METHOD="GET" \
     SERVER_ADDR="127.0.0.1" \
     PWD="/www" \
