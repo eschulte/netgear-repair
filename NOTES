@@ -4,7 +4,7 @@
 * Reproduction
 ** Setting up the VM
 1. Following the instructions from [[http://shadow-file.blogspot.com/2013/05/running-debian-mips-linux-in-qemu.html][running-debian-mips-linux-in-qemu]]
-   download the files in the =mips=subdirectory of
+   download the files in the =mips= subdirectory of
    http://people.debian.org/~aurel32/qemu/ and save them to
    =debian-qemu/be=.
 
@@ -71,8 +71,34 @@ Negative Tests
 - browsing to the following sets =hijack_process= to something other
   than three in the nvram, disabling authentication checks
   : http://router_address/BRS_02_genieHelp.html
+** =net-cgi= segfaults
+*** look through =strace= output
+file:stuff/net-cgi.strace
+
+Narrative of net-cgi execution
+1. open a socket
+   : socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
+   : connect(3, {sa_family=AF_INET, sin_port=htons(2313), sin_addr=inet_addr("127.0.0.1")}, 16) = 0
+   : setsockopt(3, SOL_SOCKET, SO_NO_CHECK, [1], 4) = 0
+   : sendto(3, "\2GUI_Region", 11, 0, NULL, 0) = 11
+2. find the language
+3. read the appropriate =www/languages-XX.js= file
+4. open =/proc/partitions= and call =df= writing results to =/tmp/df_out=
+5. send a number of things to the socket opened in (1)
+6. attempt to open =/proc/net/arp=, fail and segfault
+   : open("/proc/net/arp", O_RDONLY|O_LARGEFILE) = -1 ENOENT (No such file or directory)
+   : rt_sigaction(SIGQUIT, {0x10000000, [], SA_NOCLDSTOP}, {0x10000000, [], 0}, 16) = 0
+   : rt_sigaction(SIGINT, {0x10000000, [], SA_NOCLDSTOP}, {0x10000000, [], 0}, 16) = 0
+   : rt_sigaction(SIGCHLD, {0x10000000, [], 0}, {0x10000000, [], 0}, 16) = 0
+   : fork()                                  = 1376
+   : rt_sigaction(SIGQUIT, {0x10000000, [], SA_NOCLDSTOP}, {0x10000000, [], SA_NOCLDSTOP}, 16) = 0
+   : rt_sigaction(SIGINT, {0x10000000, [], SA_NOCLDSTOP}, {0x10000000, [], SA_NOCLDSTOP}, 16) = 0
+
+Possible solution is to run with bridge networking while connected to ethernet.
 
 ** system wide set LD_PRELOAD
+Looks like you can copy the file to =/etc/ld.so.preload=.
+
 ** Running the webserver (=uhttpd=) in the firmware
 From the root of the firmware FS we see that [[http://wiki.openwrt.org/doc/howto/http.uhttpd][uhttpd]] is the webserver used.
 : # find ./ -name "*htt*"
