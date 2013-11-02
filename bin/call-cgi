@@ -1,5 +1,9 @@
 #!/bin/sh
 #
-# Usage: call-cgi cgi-file uri query-string
+# Usage: call-cgi command to run
 #
-env GATEWAY_INTERFACE="CGI/1.1" REMOTE_HOST="127.0.0.1" REMOTE_ADDR="127.0.0.1" QUERY_STRING="$3" HTTP_USER_AGENT="Wget/1.12" DOCUMENT_ROOT="/www" REMOTE_PORT="56786" HTTP_ACCEPT="*/*" SCRIPT_FILENAME="/www/start.htm" HTTP_HOST="localhost" REQUEST_URI="/$2" SERVER_SOFTWARE="uHTTPd" HTTP_CONNECTION="Keep-Alive" PATH="/sbin:/usr/sbin:/bin:/usr/bin" SERVER_PROTOCOL="HTTP/1.0" REQUEST_METHOD="GET" SERVER_ADDR="127.0.0.1" PWD="/www" SERVER_PORT="80" SCRIPT_NAME="/start.htm" TZ="" SERVER_NAME="127.0.0.1" $1
+# Environment Variables
+#   URI = URI of resource to request
+# QUERY = query string
+#
+env GATEWAY_INTERFACE="CGI/1.1" REMOTE_HOST="127.0.0.1" REMOTE_ADDR="127.0.0.1" QUERY_STRING="$QUERY" HTTP_USER_AGENT="Wget/1.12" DOCUMENT_ROOT="/www" REMOTE_PORT="56786" HTTP_ACCEPT="*/*" SCRIPT_FILENAME="/www/start.htm" HTTP_HOST="localhost" REQUEST_URI="/$URI" SERVER_SOFTWARE="uHTTPd" HTTP_CONNECTION="Keep-Alive" PATH="/sbin:/usr/sbin:/bin:/usr/bin" SERVER_PROTOCOL="HTTP/1.0" REQUEST_METHOD="GET" SERVER_ADDR="127.0.0.1" PWD="/www" SERVER_PORT="80" SCRIPT_NAME="/start.htm" TZ="" SERVER_NAME="127.0.0.1" $@
