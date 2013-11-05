@@ -50,7 +50,7 @@
    #+end_src
 
 6. Copy the squashfs filesystem to the QEMU VM.
-** Run the original =net-cgi= in the VM
+** Run the original =net-cgi= from the command line in the VM
 1. The web server on the netgear router (=uhttpd=) calls =net-cgi= for
    basically every web page.  We'll want to call =net-cgi= from the
    command line.  Every header passed in by =uhttpd= may be passed on
@@ -61,15 +61,29 @@
    this is unpacked into =~/squashfs-root= in our VM, the command to
    invoke =net-cgi= will need to us =chroot=.  However at this point
    =net-cgi= will segfault trying to read files in =/proc= (thanks to
-   =strace= for debugging help here).  We can map =/proc= from the VM
-   into =squashfs-root/proc= with the following.
-   : mount -o bind /proc  squashfs-root/proc
+   =strace= for debugging help here).  We can map =/proc=, =/lib/init=
+   and =/dev= from the VM into =squashfs-root= with the following.
+   #+begin_src sh
+     mount -o bind /proc  squashfs-root/proc
+     mkdir squashfs-root/lib/init
+     mount -o bind /lib/init/  squashfs-root/lib/init
+     mount -o bind /dev/  squashfs-root/dev
+   #+end_src
 
-3. Combining these we get the following working =net-cgi= invocation,
-   which will successfully run =net-cgi=.
-   : call-cgi chroot squashfs-root /usr/sbin/net-cgi
+3. We'll also need to start the =datalib= service which appears to
+   make configuration information available to =net-cgi=, and then set
+   the value of the =dns_hijack= configuration to "0" to avoid 404
+   errors.
+   #+begin_src sh
+     chroot squashfs-root/ /bin/datalib
+     chroot squashfs-root/ /bin/config set dns_hijack="0"
+   #+end_src
 
-4. Non-volatile ram.
+4. After all of this we can now call =net-cgi= from the command line
+   with the following.
+   #+begin_src sh
+     URI="index.htm" call-cgi chroot squashfs-root /usr/sbin/net-cgi
+   #+end_src
 
 ** Build a pool of overlays for candidate repair evaluation
 1. Generate multiple overlays.
@@ -79,6 +93,10 @@
 
 ** Evolve a version of =net-cgi= without the exploit
 * Notes
+** netgear GPL-mandated open-source release
+- http://kb.netgear.com/app/answers/detail/a_id/2649
+- http://www.downloads.netgear.com/files/GPL/WNDR3700V4_V1.0.1.42_gpl_src.zip
+
 ** =net-cgi= tests
 Positive Tests
 - ensure serves up a variety of pages as normal
@@ -138,6 +156,29 @@ The webserver may be started with the following (from within =chroot=).
 : /www/cgi-bin/uhttpd.sh start
 
 ** calling net-cgi from the command line
+*** the calling process
+1. turn on the data directory with
+   #+begin_src sh
+     chroot squashfs-root/ /bin/datalib
+   #+end_src
+
+   you should see something like
+
+   : Loading data from /dev/mtd5 ...
+   : Resetting to default values ...
+   : The data center is Running ...
+
+2. Turn off =dns_hijack=, else you'll get 404 errors for every page...
+   #+begin_src sh
+     chroot squashfs-root/ /bin/config set dns_hijack="0"
+   #+end_src
+
+3. Now we can finally get real web pages calling =net-cgi= from the
+   command line.
+   #+begin_src sh
+     URI="index.htm" call-cgi chroot squashfs-root /usr/sbin/net-cgi
+   #+end_src
+
 *** find how net-cgi is called
 Replacing =net-cgi= with the following shows how it is called by the web-server.
 #+begin_src sh
