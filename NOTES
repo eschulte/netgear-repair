@@ -16,7 +16,7 @@
    point on the VM shouldn't require external internet access.  Note:
    Although the =run-vm= executable is configured to work with either
    big endian or little endian mips images, we'll only use the big
-   endian version as that is the architecture of the netgear router.
+   endian version as that is the architecture of the NETGEAR router.
    1. start the vm
       #+begin_src sh
         export ENDIANESS=be
@@ -37,7 +37,7 @@
      ./debian_quick_install.sh # on Debian, else manually satisfy dependencies
    #+end_src
 
-5. Now to grab the Netgear firmware and extract the filesystem
+5. Now to grab the NETGEAR firmware and extract the filesystem
    #+begin_src sh
      wget \
        http://www.downloads.netgear.com/files/GDC/WNDR3700V4/WNDR3700V4_V1.0.1.42.zip
@@ -51,13 +51,13 @@
 
 6. Copy the squashfs filesystem to the QEMU VM.
 ** Run the original =net-cgi= from the command line in the VM
-1. The web server on the netgear router (=uhttpd=) calls =net-cgi= for
+1. The web server on the NETGEAR router (=uhttpd=) calls =net-cgi= for
    basically every web page.  We'll want to call =net-cgi= from the
    command line.  Every header passed in by =uhttpd= may be passed on
    the command line as an environment variable.  The script in
    file:bin/call-cgi will handle this for us.
 
-2. We need to run =net-cgi= from within the netgear firmware, since
+2. We need to run =net-cgi= from within the NETGEAR firmware, since
    this is unpacked into =~/squashfs-root= in our VM, the command to
    invoke =net-cgi= will need to us =chroot=.  However at this point
    =net-cgi= will segfault trying to read files in =/proc= (thanks to
@@ -93,7 +93,7 @@
 
 ** Evolve a version of =net-cgi= without the exploit
 * Notes
-** netgear GPL-mandated open-source release
+** NETGEAR GPL-mandated open-source release
 - http://kb.netgear.com/app/answers/detail/a_id/2649
 - http://www.downloads.netgear.com/files/GPL/WNDR3700V4_V1.0.1.42_gpl_src.zip
 
@@ -254,7 +254,7 @@ will be used. see http://wiki.openwrt.org/doc/howto/buildroot.exigence
 ** Original Article
 http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
 
-** Links for Netgear firmware
+** Links for NETGEAR firmware
 - http://www.userdrivers.com/LAN-Network-Adapter/Netgear-WNDR3700v4-Router-Firmware-Upgrade-1-0-1-42-All-Regions-Except-China-Russia/download/
 - http://www.userdrivers.com/go.php?link=aHR0cDovL3d3dy5kb3dubG9hZHMubmV0Z2Vhci5jb20vZmlsZXMvR0RDL1dORFIzNzAwVjQvV05EUjM3MDBWNF9WMS4wLjEuNDIuemlw
 
@@ -276,7 +276,7 @@ Linux Kernel-style menuconfig build system.  I don't have anything
 written up on building cross compilers, but I could probably send you
 my buildroot configuration if you need it, and if I can find it.
 
-You can download the firmware for the router from Netgear's support website.
+You can download the firmware for the router from NETGEAR's support website.
 Here's a link to the firmware:
 http://support.netgear.com/product/wndr3700v4
 
