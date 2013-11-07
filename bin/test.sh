@@ -5,7 +5,7 @@
 #
 
 ## Ensure everything is setup
-if [ ! -d /root/squashfs-root/proc/mounts ];then
+if [ ! -f /root/squashfs-root/proc/mounts ];then
     echo "VM not setup, running setup now">&2
     mount -o bind /proc  squashfs-root/proc
     mkdir -p squashfs-root/lib/init
@@ -41,28 +41,41 @@ chroot squashfs-root/ /bin/config set dns_hijack="0"
 # html
 # jpg
 # js
-declare -a FILES
-FILES+=(securityquestions.cgi)
-FILES+=(dtree.css)
-FILES+=(base.gif)
-FILES+=(Add_WPS_Client.htm)
-FILES+=(center_language.html)
-FILES+=(logo.jpg)
-FILES+=(advanced.js)
+declare -A FILES
+FILES[securityquestions.cgi]="<TD nowrap align=\"right\">Security Question #2\*:</TD>"
+FILES[dtree.css]="PADDING-RIGHT: 2px; PADDING-LEFT: 2px;"
+FILES[base.gif]="GIF89"
+FILES[Add_WPS_Client.htm]="client does not support the WPS function"
+FILES[center_language.html]="Downloading and updating the language table"
+FILES[logo.jpg]="Ducky"
+FILES[advanced.js]="change_menu_height();"
 
 # turn off authentication
 chroot squashfs-root/ /bin/config set hijack_process="0"
 
-for file in ${FILES[@]};do
-    subset=$(head -c 4 squashfs-root/www/$file)
-    served=$(serve $file)
+for file in ${!FILES[@]};do
+    served=$(serve "$file")
     return=$?
     if [ $return -eq 0 ] && \
         $(contains "$served" "200 OK") && \
-        $(contains "$served" "$subset");then
+        $(contains "$served" "$FILES[file]");then
         PASSED+=($file)
     fi
+    # echo "returned $return"
+    # echo "served $served"
+    # echo "subset $subset"
+    # if $(contains "$served" "200 OK");then
+    #     echo "has the 200"
+    # else
+    #     echo "does not have the 200"
+    # fi
+    # if $(contains "$served" "$subset");then
+    #     echo "has the subset"
+    # else
+    #     echo "does not have the subset"
+    # fi
 done
+exit 0
 
 ## Negative Tests
 
