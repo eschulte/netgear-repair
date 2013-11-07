@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: test.sh [executable]
+# Usage: test.sh
 # run all tests and return the number of tests passed
 #
 
@@ -11,6 +11,8 @@ if [ ! -d /root/squashfs-root/proc/mounts ];then
     mkdir -p squashfs-root/lib/init
     mount -o bind /lib/init/  squashfs-root/lib/init
     mount -o bind /dev/  squashfs-root/dev
+    chroot squashfs-root/ /bin/datalib
+    chroot squashfs-root/ /bin/config set dns_hijack="0"
 fi
 
 ## Functions
@@ -40,7 +42,7 @@ chroot squashfs-root/ /bin/config set dns_hijack="0"
 # jpg
 # js
 declare -a FILES
-FILES+=(apply.cgi)
+FILES+=(securityquestions.cgi)
 FILES+=(dtree.css)
 FILES+=(base.gif)
 FILES+=(Add_WPS_Client.htm)
