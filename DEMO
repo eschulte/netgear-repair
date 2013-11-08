@@ -1,0 +1,33 @@
+                       ____  _____ __  __  ___
+                      |  _ \| ____|  \/  |/ _ \
+                      | | | |  _| | |\/| | | | |
+                      | |_| | |___| |  | | |_| |
+                      |____/|_____|_|  |_|\___/
+
+Launch the VM
+    run-vm -i overlays/0.qcow2
+
+Setup the VM
+    less setup.sh
+
+Show that authentication is turned off
+    chroot squashfs-root/ /bin/config get hijack_process
+
+Show the main page
+    http://localhost:8888/index.htm
+
+Turn on authentication
+    chroot squashfs-root/ /bin/config set hijack_process="3"
+    chroot squashfs-root/ /bin/config get hijack_process
+
+Refresh the main page
+
+Show that BRS_* pages bypass authentication
+    http://localhost:8888/BRS_success.html
+
+Show that pages w/magic string bypass authentication
+    http://localhost:8888/thank_login.htm?foo=unauth.cgi
+
+Show that an unprotected page removes all authentication forever
+    http://localhost:8888/BRS_02_genieHelp.html
+    chroot squashfs-root/ /bin/config get hijack_process

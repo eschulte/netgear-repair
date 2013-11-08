@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# Usage: setup
+# setup the NETGEAR VM to serve pages
+#
+
+# 1. Bind system files in from image to VM
+mount -o bind /proc  squashfs-root/proc
+mkdir -p squashfs-root/lib/init
+mount -o bind /lib/init/  squashfs-root/lib/init
+mount -o bind /dev/  squashfs-root/dev
+
+# 2. Turn on configuration server, and turn off dns_hijack
+chroot squashfs-root/ /bin/datalib
+chroot squashfs-root/ /bin/config set dns_hijack="0"
+
+# 3. Start the uhttpd webserver
+chroot squashfs-root/ /www/cgi-bin/uhttpd.sh start
