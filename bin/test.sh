@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Usage: test.sh
+# Usage: test
 # run all tests and return the number of tests passed
 #
 
