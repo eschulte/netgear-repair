@@ -5,7 +5,8 @@
 #
 # Options:
 #  -p,--port ------- port to use for ssh forwarding
-#  -P,--Port ------- port to use for HTML forwarding
+#  -P,--HTML-port -- port to use for HTML forwarding
+#                    (default is no HTML port forwarding)
 #  -D,--no-daemon -- run interactive and graphic (for initial setup)
 #  -d,--dry-run ---- print (don't run) the QEMU command
 #  -b,--bridge ----- bridge networking (instead of host forwarding)
@@ -25,17 +26,17 @@
 . bin/common
 
 PORT=2222
-HTML_PORT=8888
+HTML_PORT=""
 DAEMONIZE="-display none -daemonize"
 DRY="no"
 NET=hostfwd
 SHORT="p:P:Ddbi:"
-LONG="port:,Port:,dry-run,no-daemon,bridge,image:"
+LONG="port:,html-port:,dry-run,no-daemon,bridge,image:"
 eval set -- $(getopt -o $SHORT -l $LONG -- "$@" || help;)
 while [ $# -gt 0 ];do
     case $1 in
         -p|--port) PORT="$2"; shift;;
-        -P|--Port) HTML_PORT="$2"; shift;;
+        -P|--html-port) HTML_PORT="$2"; shift;;
         -D|--no-daemon) DAEMONIZE="";;
         -d|--dry-run) DRY="yes";;
         -b|--bridge) NET=bridge;;
@@ -48,7 +49,11 @@ while [ $# -gt 0 ];do
 done
 case $NET in
     bridge) NET="-net nic -net bridge,br=br0";;
-    hostfwd) NET="-net nic -net user,hostfwd=tcp:127.0.0.1:$PORT-:22,hostfwd=tcp:127.0.0.1:$HTML_PORT-:80";;
+    hostfwd)
+        NET="-net nic -net user,hostfwd=tcp:127.0.0.1:$PORT-:22"
+        if [ ! -z $HTML_PORT ];then
+            NET+=",hostfwd=tcp:127.0.0.1:$HTML_PORT-:80"
+        fi;;
 esac
 
 if [ "$DRY" == "yes" ];then
