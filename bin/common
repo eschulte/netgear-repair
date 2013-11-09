@@ -9,10 +9,9 @@ case $ENDIANESS in
     le) QEMU=qemu-system-mipsel
         IMAGE="$BASE/debian-qemu/le/debian_squeeze_mipsel_standard.qcow2"
         KERNEL="$BASE/debian-qemu/le/vmlinux-2.6.32-5-4kc-malta";;
-    be) QEMU=qemu-system-mips
+    *) QEMU=qemu-system-mips
         IMAGE="$BASE/debian-qemu/be/debian_squeeze_mips_standard.qcow2"
         KERNEL="$BASE/debian-qemu/be/vmlinux-2.6.32-5-4kc-malta";;
-    *)  echo "Set env ENDIANESS to \"be\" or \"le\".">&2; exit 1;;
 esac
 
 ## Help functions

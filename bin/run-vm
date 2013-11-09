@@ -13,7 +13,7 @@
 #  -i,--image ------ specify a non-default QEMU image to use
 #
 # Environment:
-#  ENDIANNESS must be either "be" or "le" for big or little endian
+#  set ENDIANNESS to "le" for little endian, defaults to big
 #
 # Notes:
 # - Adapted from zcutlip's script available at [1].
