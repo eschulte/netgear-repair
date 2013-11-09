@@ -24,8 +24,10 @@ serve(){
     URI="$1" QUERY="$2" call-cgi chroot squashfs-root /usr/sbin/net-cgi; }
 
 declare -a PASSED
+declare -a FAILED
 exit_hook(){
-    for passed in ${PASSED[@]};do echo $passed; done; }
+    for failed in ${FAILED[@]};do echo "FAIL $failed"; done >&2
+    for passed in ${PASSED[@]};do echo "PASS $passed"; done; }
 trap exit_hook EXIT
 
 ## Setup
@@ -60,6 +62,8 @@ for file in ${!FILES[@]};do
         $(contains "$served" "200 OK") && \
         $(contains "$served" "$FILES[file]");then
         PASSED+=($file)
+    else
+        FAILED+=($file)
     fi
     # echo "returned $return"
     # echo "served $served"
@@ -75,7 +79,6 @@ for file in ${!FILES[@]};do
     #     echo "does not have the subset"
     # fi
 done
-exit 0
 
 ## Negative Tests
 
@@ -90,6 +93,8 @@ if [ $return -eq 0 ] && \
     $(contains "$served" "401 Unauthorized") && \
     $(contains "$served" "unauth.cgi");then
     PASSED+=("BRS-authentication")
+else
+    FAILED+=("BRS-authentication")
 fi
 
 # 2. no authentication if unauth.cgi or securityquestions.cgi are in
@@ -102,5 +107,7 @@ for cheat in unauth.cgi securityquestions.cgi;do
         $(contains "$served" "401 Unauthorized") && \
         $(contains "$served" "unauth.cgi");then
         PASSED+=("${cheat}-authentication")
+    else
+        FAILED+=("${cheat}-authentication")
     fi
 done
