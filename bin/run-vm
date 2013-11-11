@@ -25,7 +25,6 @@
 #
 . bin/common
 
-PORT=2222
 HTML_PORT=""
 DAEMONIZE="-display none -daemonize"
 DRY="no"

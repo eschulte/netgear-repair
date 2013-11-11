@@ -37,8 +37,8 @@ min(){ awk '{if((min == "") || ($1 < min)){ min = $1}} END {print min}'; }
 max(){ awk '{if((max == "") || ($1 > max)){ max = $1}} END {print max}'; }
 
 ## VM Functions
-in_vm(){
-    local PORT=$1; shift
+PORT=2222
+run_in_vm(){
     ssh -q -p $PORT -i ${BASE}/etc/root-key \
         -o 'StrictHostKeyChecking no' root@localhost $@; }
 
