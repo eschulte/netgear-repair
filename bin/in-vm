@@ -1,0 +1,22 @@
+#!/bin/bash
+#
+# Usage: in-vm [options...] command
+# run command in the virtual machine
+#
+# Options:
+#  -p,--port ------- port to use for ssh forwarding
+#
+. bin/common
+
+eval set -- $(getopt -o p: -l port: -- "$@" || help;)
+while [ $# -gt 0 ];do
+    case $1 in
+        -p|--port) PORT="$2"; shift;;
+        (--) shift; break;;
+        (-*) error "unrecognized option $1";;
+        (*)  break;;
+    esac
+    shift
+done
+
+run_in_vm $@
