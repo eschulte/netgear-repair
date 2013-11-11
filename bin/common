@@ -2,7 +2,7 @@
 #
 # Usage: do not use
 # utilities shared by all shell scripts
-# 
+#
 BASE=$(dirname $(dirname $0))
 
 case $ENDIANESS in
@@ -17,8 +17,7 @@ esac
 ## Help functions
 contains(){
     local it="$1"; local item="$2";
-    echo "$it"|grep "$item" >/dev/null 2>/dev/null
-}
+    echo "$it"|grep "$item" >/dev/null 2>/dev/null; }
 
 SCRIPT="$0"
 help(){
@@ -29,8 +28,7 @@ help(){
         |sed -e :a -e '/^\n*$/{$d;N;ba' -e '}' \
         |cut -c3-)
     echo "$HELP_TEXT"
-    exit 1
-}
+    exit 1; }
 if $(contains "$1" "^\-\?\-h\(elp\|$\)");then help; fi
 
 ## Math Functions
@@ -39,40 +37,10 @@ min(){ awk '{if((min == "") || ($1 < min)){ min = $1}} END {print min}'; }
 max(){ awk '{if((max == "") || ($1 > max)){ max = $1}} END {print max}'; }
 
 ## VM Functions
-vm_ssh(){
+in_vm(){
     local PORT=$1; shift
-    ssh -o 'StrictHostKeyChecking no' -p $PORT $@;
-}
-
-vm_scp(){
-    local PORT=$1; shift
-    scp -o 'StrictHostKeyChecking no' -P $PORT $@;
-}
-
-wait_for_start(){
-    local NAME=$1; shift
-    echo "waiting for the machine to finish booting..."
-    echo -n "CPU usage:"
-    TOTAL=0
-    while [ $TOTAL -lt 2 ] ;do
-        CPU=$(top -b -n 1|grep "\-hda $NAME"|awk '{print $6}'|sed 's/\..*$//')
-        if [ -z "$CPU" ] || [ $CPU -lt 5 ];then TOTAL=$(echo "$TOTAL+1"|bc);
-        else TOTAL=0; fi
-        echo -n " $CPU"
-        sleep 0.5
-    done
-    echo " $CPU"
-}
-
-wait_for_ssh(){
-    local PORT=$1; shift
-    echo "waiting for the machine to respond to ssh..."
-    for ((;;));do
-        echo -n "pinging ";
-        vm_ssh $PORT root@localhost echo hello 2>/dev/null|grep "hello" && break;
-        sleep 5;
-    done
-}
+    ssh -q -p $PORT -i ${BASE}/etc/root-key \
+        -o 'StrictHostKeyChecking no' root@localhost $@; }
 
 # --------------------------------------------------------------------
 # From here to break adopted from the makepkg utility in Arch Linux

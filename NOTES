@@ -88,11 +88,42 @@
 ** Build a pool of overlays for candidate repair evaluation
 1. Generate multiple overlays.
    #+begin_src sh
-     make-overlay overlays/{0..9}.qcow2
+     make-overlay overlays/{0..63}.qcow2
+   #+end_src
+
+2. Launch all overlays.
+   #+begin_src sh
+     for i in {0..63};do
+         run-vm -i overlays/$i.qcow2 -p 66$(printf "%0.2d" $i)
+     done
    #+end_src
 
 ** Evolve a version of =net-cgi= without the exploit
 * Notes
+** I save this but never know why -- root ssh keys
+To allow automated ssh access to the VMs.
+: ssh-keygen
+: Generating public/private rsa key pair.
+: Enter file in which to save the key (/nfs/adaptive/eschulte/.ssh/id_rsa): etc/root-key
+: Enter passphrase (empty for no passphrase): 
+: Enter same passphrase again: 
+: Your identification has been saved in etc/root-key.
+: Your public key has been saved in etc/root-key.pub.
+: The key fingerprint is:
+: 13:ca:72:66:3a:3a:69:88:85:fe:9c:be:5a:f4:08:f3 eschulte@prime
+: The key's randomart image is:
+: +--[ RSA 2048]----+
+: |                 |
+: |                 |
+: |        .        |
+: |     . . .       |
+: | + .. * S        |
+: |. * o*   .       |
+: |oo Eo.           |
+: |o.*...           |
+: | o=B.            |
+: +-----------------+
+
 ** NETGEAR GPL-mandated open-source release
 - http://kb.netgear.com/app/answers/detail/a_id/2649
 - http://www.downloads.netgear.com/files/GPL/WNDR3700V4_V1.0.1.42_gpl_src.zip
