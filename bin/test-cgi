@@ -22,7 +22,8 @@ contains(){
 
 serve(){
     URI="$1" QUERY="$2" \
-        /root/bin/call-cgi chroot squashfs-root /usr/sbin/net-cgi; }
+        /root/bin/limit /root/bin/call-cgi \
+        chroot squashfs-root /usr/sbin/net-cgi; }
 
 declare -a PASSED
 declare -a FAILED
