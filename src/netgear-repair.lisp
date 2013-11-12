@@ -10,7 +10,7 @@
 ;; The NETGEAR firmware is big endian MIPS.
 (setf elf:*endian* 'big)
 
-(defvar orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi")
+(defvar orig nil
   "A software object holding the original broken net-cgi file.")
 
 (defvar *port* 2222
@@ -34,7 +34,8 @@
                 (split-sequence #\Newline stdout)))))
 
 ;; Sanity check
-(setf (fitness orig) (test orig))
+(setf orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi")
+      (fitness orig) (test orig))
 (assert (= (fitness orig) 7) (orig)
         "Original program does not pass all regression tests! (~d/7)"
         (fitness orig))
