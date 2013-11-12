@@ -33,6 +33,8 @@
       (count-if [{string= "PASS"} #'car {split-sequence #\Space}]
                 (split-sequence #\Newline stdout)))))
 
+#+running
+(
 ;; Sanity check
 (setf orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi")
       (fitness orig) (test orig))
@@ -49,3 +51,4 @@
   (push (make-thread (lambda () (evolve #'test :target 10))
                      :name (format nil "worker-~d" n))
         threads))
+)
