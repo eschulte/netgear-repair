@@ -7,7 +7,9 @@
         :curry-compose-reader-macros
         :delta-debug
         :diff
+        :elf
         :metabang-bind
         :software-evolution
         :software-evolution-utility
-        :split-sequence))
+        :split-sequence)
+  (:shadowing-import-from :elf :type :magic-number :size))
