@@ -21,7 +21,8 @@ contains(){
     echo "$it"|grep "$item" >/dev/null 2>/dev/null; }
 
 serve(){
-    URI="$1" QUERY="$2" call-cgi chroot squashfs-root /usr/sbin/net-cgi; }
+    URI="$1" QUERY="$2" \
+        /root/bin/call-cgi chroot squashfs-root /usr/sbin/net-cgi; }
 
 declare -a PASSED
 declare -a FAILED

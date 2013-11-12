@@ -42,6 +42,10 @@ run_in_vm(){
     ssh -q -p $PORT -i ${BASE}/etc/root-key \
         -o 'StrictHostKeyChecking no' root@localhost $@; }
 
+copy_to_vm(){
+    local from=$1; local to=$2;
+    scp -q -P $PORT -i ${BASE}/etc/root-key $from root@localhost:$to; }
+
 # --------------------------------------------------------------------
 # From here to break adopted from the makepkg utility in Arch Linux
 # Copyright (c) 2006-2012 Pacman Development Team <pacman-dev@archlinux.org>

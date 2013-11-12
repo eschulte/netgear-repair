@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# Usage: test-vm [options...] executable
+# test executable on the VM
+#
+# Options:
+#  -p,--port ------- port to use for ssh forwarding
+#
+. bin/common
+
+eval set -- $(getopt -o p: -l port: -- "$@" || help;)
+while [ $# -gt 0 ];do
+    case $1 in
+        -p|--port) PORT="$2"; shift;;
+        (--) shift; break;;
+        (-*) error "unrecognized option $1";;
+        (*)  break;;
+    esac
+    shift
+done
+
+copy_to_vm $1 /usr/sbin/net-cgi
+run_in_vm /root/bin/test-cgi
