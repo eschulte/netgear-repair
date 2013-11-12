@@ -51,6 +51,7 @@
 
 ;; Sanity check
 (setf orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi"))
+(setf *port* 6600)
 (setf (fitness orig) (test orig))
 (assert (= (fitness orig) 7) (orig)
         "Original program does not pass all regression tests! (~d/7)"
@@ -62,9 +63,12 @@
       (loop :for i :below *max-population-size* :collect (copy orig)))
 
 ;; Launch all threads
-(dotimes (n number-of-threads threads)
-  (push (make-thread (lambda () (let ((*port* (+ 6600 n)))
-                             (evolve #'test :target 10)))
-                     :name (format nil "worker-~d" n))
-        threads))
+(loop :for n :from 1 :below number-of-threads :do
+   (push (make-thread (lambda () (let ((*port* (+ 6600 n)))
+                              (evolve #'test
+                                      :target 10
+                                      :period (expt 2 10)
+                                      :period-fn #'checkpoint)))
+                      :name (format nil "worker-~d" n))
+         threads))
 )
