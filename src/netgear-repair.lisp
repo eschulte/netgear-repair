@@ -58,16 +58,16 @@
         (fitness orig))
 
 ;; Build the population
-(setf *max-population-size* (expt 2 8))
+(setf *max-population-size* (expt 2 9))
 (setf *population*
       (loop :for i :below *max-population-size* :collect (copy orig)))
 
 ;; Launch all threads
-(loop :for n :from 1 :below number-of-threads :do
+(loop :for n :below number-of-threads :do
    (push (make-thread (lambda () (let ((*port* (+ 6600 n)))
                               (evolve #'test
                                       :target 10
-                                      :period (expt 2 10)
+                                      :period (expt 2 12)
                                       :period-fn #'checkpoint)))
                       :name (format nil "worker-~d" n))
          threads))
