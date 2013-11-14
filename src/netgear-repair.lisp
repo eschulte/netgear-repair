@@ -101,7 +101,7 @@
 ;; Build the population
 (setf *max-population-size* (expt 2 9))
 (setf *population*
-      (loop :for i :below *max-population-size* :collect (copy orig)))
+      (loop :for i :below (/ *max-population-size* 2) :collect (copy orig)))
 
 ;; Launch all threads
 (loop :for n :below number-of-threads :do
