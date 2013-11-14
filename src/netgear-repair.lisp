@@ -13,6 +13,8 @@
 (defvar orig nil
   "A software object holding the original broken net-cgi file.")
 
+(defvar fixes nil "List to hold fixes.")
+
 (defvar *port* 2222
   "Set to the port number of the VM.")
 
@@ -34,15 +36,25 @@
       (count-if [{string= "PASS"} #'car {split-sequence #\Space}]
                 (split-sequence #\Newline stdout)))))
 
+(defvar checkpoint-counter 0)
 (defun checkpoint ()
   "Function used to checkpoint progress of the evolutionary search."
-  ;; store the whole population
-  (store *population*
-         (format nil "checkpoints/~d-population.store" *fitness-evals*))
-  ;; store the best individual
-  (let ((best (extremum *population* #'> :key #'fitness)))
-    (store best (format nil "checkpoints/~d-best-~d.store"
-                        *fitness-evals* (fitness best)))))
+  ;; write out population stats
+  (with-open-file (out "checkpoints/stats.txt"
+                       :direction :output
+                       :if-exists :append
+                       :if-does-not-exist :create)
+    (format out "~&~{~a~^ ~}~%"
+            (cons *fitness-evals* (mapcar #'fitness *population*))))
+  (incf checkpoint-counter)
+  (when (zerop (mod checkpoint-counter 16))
+    ;; store the whole population
+    (store *population*
+           (format nil "checkpoints/~d-population.store" *fitness-evals*))
+    ;; store the best individual
+    (let ((best (extremum *population* #'> :key #'fitness)))
+      (store best (format nil "checkpoints/~d-best-~d.store"
+                          *fitness-evals* (fitness best))))))
 
 ;;; Annotation
 (defun read-sample-file (file)
@@ -96,10 +108,10 @@
         (fitness orig))
 
 ;; Annotate the ELF file with our oprofile samples
-(annotate orig (read-sample-file "stuff/net-cgi.sample"))
+;; (annotate orig (read-sample-file "stuff/net-cgi.sample"))
 
 ;; Build the population
-(setf *max-population-size* (expt 2 9))
+(setf *max-population-size* (expt 2 8))
 (setf *population*
       (loop :for i :below (/ *max-population-size* 2) :collect (copy orig)))
 
@@ -108,11 +120,19 @@
    (push (make-thread
           (lambda ()
             (let ((*port* (+ 6600 n)))
-              (evolve #'test
-               :target 10                        ; stop when passes all tests
-               :filter [#'not #'zerop #'fitness] ; ignore broken mutants
-               :period (expt 2 12)               ; record keeping
-               :period-fn #'checkpoint)))
+              (push
+               (evolve #'test
+                :target 10                        ; stop when passes all tests
+                :filter [#'not #'zerop #'fitness] ; ignore broken mutants
+                :period (expt 2 4)                ; record keeping
+                :period-fn #'checkpoint)
+               fixes)))
           :name (format nil "worker-~d" n))
          threads))
+
+(make-thread (lambda ()
+               (mapc #'join-thread threads)
+               (store fixes (format nil "checkpoints/~d-fixes.store"
+                                    *fitness-evals*)))
+             :name "cleanup")
 )
