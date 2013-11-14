@@ -72,11 +72,14 @@
                 (incf genome-offset (size sec))))
             loadable))))
 
+#+annotating
+(
 ;; This tells the mutation operators how to use annotations to bias
 ;; the selection of points in the genome as targets for mutation.
 (defmethod pick-bad ((elf elf-mips-sw))
   (proportional-pick (coerce (genome elf) 'list)
                      (lambda (line) (+ 0.5 (or (aget :trace line) 0)))))
+)
 
 #+running
 (
