@@ -19,5 +19,5 @@ while [ $# -gt 0 ];do
     shift
 done
 
-copy_to_vm $1 /usr/sbin/net-cgi
+copy_to_vm $1 squashfs-root/usr/sbin/net-cgi
 run_in_vm /root/bin/test-cgi
