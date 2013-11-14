@@ -105,11 +105,14 @@
 
 ;; Launch all threads
 (loop :for n :below number-of-threads :do
-   (push (make-thread (lambda () (let ((*port* (+ 6600 n)))
-                              (evolve #'test
-                                      :target 10
-                                      :period (expt 2 12)
-                                      :period-fn #'checkpoint)))
-                      :name (format nil "worker-~d" n))
+   (push (make-thread
+          (lambda ()
+            (let ((*port* (+ 6600 n)))
+              (evolve #'test
+               :target 10                        ; stop when passes all tests
+               :filter [#'not #'zerop #'fitness] ; ignore broken mutants
+               :period (expt 2 12)               ; record keeping
+               :period-fn #'checkpoint)))
+          :name (format nil "worker-~d" n))
          threads))
 )
