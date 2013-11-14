@@ -121,6 +121,41 @@
      opreport -a -d squashfs-root/usr/sbin/net-cgi -o net-cgi.sample
    #+end_src
 
+*** converting the oprofile vma's to elf offsets
+#+begin_quote EXECUTABLE AND LINKABLE FORMAT (ELF)
+an executable or shared object file's base address is calculated
+during execution from three values: the memory load address, the
+maximum page size, and the lowest virtual address of a program's
+loadable segment. as ``program loading'' in this chapter describes,
+the virtual addresses in the program headers might not represent the
+actual virtual addresses of the program's memory image. to compute the
+base address, one determines the memory address associated with the
+lowest p_vaddr value for a pt_load segment. one then obtains the base
+address by truncating the memory address to the nearest multiple of
+the maximum page size. depending on the kind of file being loaded into
+memory, the memory address might or might not match the p_vaddr
+values.
+#+end_quote
+
+Find the lowest =p_vaddr= value of a =pt_load= segment.
+#+begin_src lisp
+  (extremum (mapcar [#'vaddr #'ph]
+                    (remove-if-not [{eql :load}  #'elf:type]
+                                   (sections (base orig)))) #'<) ; => 4194304
+#+end_src
+
+Given that this value is an exponent of 2,
+#+begin_src lisp
+  (= 4194304 (expt 2 22)) ; => 2
+#+end_src
+we'll assume that it is a "multiple of the maximum page size", so lets
+just skip that bit about truncating.
+
+So, I guess we can just read all of oprofile vma's as being relative
+to the base of the first (in virtual memory) loadable section.  For
+every section, we'll just shift the oprofile addresses by the
+difference between the =vaddr= of that section and the base.
+
 ** I save this but never know why -- root ssh keys
 To allow automated ssh access to the VMs.
 : ssh-keygen
