@@ -85,6 +85,28 @@
      URI="index.htm" call-cgi chroot squashfs-root /usr/sbin/net-cgi
    #+end_src
 
+** Trace the execution of =net-cgi=
+1. Install oprofile in the VM.
+   #+begin_src sh
+     apt-get install oprofile
+   #+end_src
+
+2. Begin sampling the program counter with oprofile.
+   #+begin_src sh
+     opcontrol --start
+   #+end_src
+
+3. Run =net-cgi= for a while to collect trace data.
+   #+begin_src sh
+     for i in $(seq 100);do test-cgi; done
+   #+end_src
+
+4. Dump the collected oprofile samples into a file.
+   #+begin_src sh
+     opcontrol --stop
+     opreport -a -d squashfs-root/usr/sbin/net-cgi -o net-cgi.sample
+   #+end_src
+
 ** Build a pool of overlays for candidate repair evaluation
 1. Generate multiple overlays.
    #+begin_src sh
@@ -100,28 +122,7 @@
 
 ** Evolve a version of =net-cgi= without the exploit
 * Notes
-** tracing the =net-cgi= execution
-1. install oprofile
-   #+begin_src sh
-     apt-get install oprofile
-   #+end_src
-
-2. begin sampling the program counter with oprofile
-   #+begin_src sh
-     opcontrol --start
-   #+end_src
-
-3. run net-cgi some number of times
-   #+begin_src sh
-     for i in $(seq 100);do test-cgi; done
-   #+end_src
-
-4. collect the samples
-   #+begin_src sh
-     opreport -a -d squashfs-root/usr/sbin/net-cgi -o net-cgi.sample
-   #+end_src
-
-*** converting the oprofile vma's to elf offsets
+** converting the oprofile vma's to elf offsets
 #+begin_quote EXECUTABLE AND LINKABLE FORMAT (ELF)
 an executable or shared object file's base address is calculated
 during execution from three values: the memory load address, the

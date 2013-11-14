@@ -80,14 +80,18 @@
 (
 ;; Use the sh-runner to run shell scripts
 (setf *work-dir* "sh-runner/work")
+;; Set the port to the base of the values used on our machine
+(setf *port* 6600)
 
 ;; Sanity check
 (setf orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi"))
-(setf *port* 6600)
 (setf (fitness orig) (test orig))
 (assert (= (fitness orig) 7) (orig)
         "Original program does not pass all regression tests! (~d/7)"
         (fitness orig))
+
+;; Annotate the ELF file with our oprofile samples
+(annotate orig (read-sample-file "stuff/net-cgi.sample"))
 
 ;; Build the population
 (setf *max-population-size* (expt 2 9))
