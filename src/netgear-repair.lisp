@@ -44,6 +44,38 @@
     (store best (format nil "checkpoints/~d-best-~d.store"
                         *fitness-evals* (fitness best)))))
 
+;;; Annotation
+(defun read-sample-file (file)
+  "Read a sample file generated with opreport."
+  ;; do the initial munging in the shell
+  (let ((stdout (shell "cat ~a|grep \"^ *0\"|awk '{print $1,$2}'|sed 's/00/#x/'"
+                       file)))
+    (mapcar [{mapcar #'read-from-string} {split-sequence #\Space}]
+            (cdr (split-sequence #\Newline stdout :remove-empty-subseqs t)))))
+
+(defun annotate (elf samples)
+  "Annotate ELF with the samples in SAMPLE-FILE."
+  (with-slots (genome base) elf
+    ;; convert samples into offsets in the genome
+    (let* ((genome-offset 0)
+           (loadable (remove-if-not [{eql :load}  #'elf:type] (sections base)))
+           (base-address (extremum (mapcar [#'vaddr #'ph] loadable) #'<)))
+      ;; annotate the genome of the elf object with annotated files
+      (mapc (lambda (sec)
+              (let ((mem-adj (- (vaddr (ph sec)) base-address)))
+                (mapc (lambda-bind ((address trace))
+                        (let ((sec-index (- address mem-adj)))
+                          (when (and (< 0 sec-index) (< sec-index (size sec)))
+                            (push (cons :trace trace)
+                                  (aref genome (+ genome-offset sec-index))))))
+                      samples)
+                (incf genome-offset (size sec))))
+            loadable))))
+
+;; This tells the mutation operators how to use annotations to bias
+;; the selection of points in the genome as targets for mutation.
+(defmethod pick-bad ((elf elf-mips-sw)) (pick elf [{+ 1/2} {aget :trace}]))
+
 #+running
 (
 ;; Use the sh-runner to run shell scripts
