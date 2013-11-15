@@ -47,10 +47,11 @@
     (format out "~&~{~a~^ ~}~%"
             (cons *fitness-evals* (mapcar #'fitness *population*))))
   (incf checkpoint-counter)
-  (when (zerop (mod checkpoint-counter 16))
+  (when (zerop (mod checkpoint-counter 32))
     ;; store the whole population
-    (store *population*
-           (format nil "checkpoints/~d-population.store" *fitness-evals*))
+    (store (mapcar #'genome *population*)
+           (format nil "checkpoints/~d-population.store" *fitness-evals*)))
+  (when (zerop (mod checkpoint-counter 8))
     ;; store the best individual
     (let ((best (extremum *population* #'> :key #'fitness)))
       (store best (format nil "checkpoints/~d-best-~d.store"
