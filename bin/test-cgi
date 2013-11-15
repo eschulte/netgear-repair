@@ -35,7 +35,8 @@ declare -a FAILED
 exit_hook(){
     for failed in ${FAILED[@]};do echo "FAIL $failed"; done >&2
     for passed in ${PASSED[@]};do echo "PASS $passed"; done;
-    killall -s 9 net-cgi; }
+    killall -s 9 -q net-cgi;
+    exit 0; }
 trap exit_hook EXIT
 
 ## Setup
