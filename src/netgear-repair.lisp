@@ -15,10 +15,10 @@
 
 (defvar fixes nil "List to hold fixes.")
 
-(defvar *port* 2222
+(defvar *port* 6600
   "Set to the port number of the VM.")
 
-(defvar number-of-threads 64
+(defvar number-of-threads 32
   "The number of threads in which to run repair.")
 
 (defvar threads nil
@@ -98,8 +98,6 @@
 (
 ;; Use the sh-runner to run shell scripts
 (setf *work-dir* "sh-runner/work")
-;; Set the port to the base of the values used on our machine
-(setf *port* 6600)
 
 ;; Sanity check
 (setf orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi"))
@@ -112,7 +110,7 @@
 ;; (annotate orig (read-sample-file "stuff/net-cgi.sample"))
 
 ;; Build the population
-(setf *max-population-size* (expt 2 8))
+(setf *max-population-size* (expt 2 9))
 (setf *population*
       (loop :for i :below (/ *max-population-size* 2) :collect (copy orig)))
 

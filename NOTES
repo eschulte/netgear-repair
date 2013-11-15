@@ -107,7 +107,7 @@
      opreport -a -d squashfs-root/usr/sbin/net-cgi -o net-cgi.sample
    #+end_src
 
-** Build a pool of overlays for candidate repair evaluation
+** Start a pool of overlays for candidate repair evaluation
 1. Generate multiple overlays.
    #+begin_src sh
      make-overlay overlays/{0..63}.qcow2
