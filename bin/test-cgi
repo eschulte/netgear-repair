@@ -15,6 +15,11 @@ if [ ! -f /root/squashfs-root/proc/mounts ];then
     chroot squashfs-root/ /bin/config set dns_hijack="0"
 fi
 
+## Ensure the VM is not loaded with old zombie tasks
+ps auxwww|grep -v grep|grep test-cgi \
+    |awk '{print $2}'|grep -v $$|xargs kill -9 2>/dev/null
+timeout 60s killall -s 9 -w -q net-cgi
+
 ## Functions
 contains(){
     local it="$1"; local item="$2";
@@ -22,14 +27,15 @@ contains(){
 
 serve(){
     URI="$1" QUERY="$2" \
-        /root/bin/limit /root/bin/call-cgi \
+        timeout 10 /root/bin/call-cgi \
         chroot squashfs-root /usr/sbin/net-cgi; }
 
 declare -a PASSED
 declare -a FAILED
 exit_hook(){
     for failed in ${FAILED[@]};do echo "FAIL $failed"; done >&2
-    for passed in ${PASSED[@]};do echo "PASS $passed"; done; }
+    for passed in ${PASSED[@]};do echo "PASS $passed"; done;
+    killall -s 9 net-cgi; }
 trap exit_hook EXIT
 
 ## Setup
