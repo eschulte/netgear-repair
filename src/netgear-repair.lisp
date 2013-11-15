@@ -47,6 +47,7 @@
     (format out "~&~{~a~^ ~}~%"
             (cons *fitness-evals* (mapcar #'fitness *population*))))
   (incf checkpoint-counter)
+  #+save-pops
   (when (zerop (mod checkpoint-counter 32))
     ;; store the whole population
     (store (mapcar #'genome *population*)
