@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# Fully reset all VMs
+#
+killall -9 qemu-system-mips
+rm -f overlays/*
+make-overlay overlays/{0..63}.qcow2
+for i in {0..63};do run-vm -i overlays/$i.qcow2 -p 66$(printf "%0.2d" $i); done

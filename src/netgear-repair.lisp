@@ -18,7 +18,7 @@
 (defvar *port* 6600
   "Set to the port number of the VM.")
 
-(defvar number-of-threads 32
+(defvar number-of-threads 64
   "The number of threads in which to run repair.")
 
 (defvar threads nil
@@ -85,53 +85,49 @@
                 (incf genome-offset (size sec))))
             loadable))))
 
-#+annotating
-(
-;; This tells the mutation operators how to use annotations to bias
-;; the selection of points in the genome as targets for mutation.
-(defmethod pick-bad ((elf elf-mips-sw))
-  (proportional-pick (coerce (genome elf) 'list)
-                     (lambda (line) (+ 0.5 (or (aget :trace line) 0)))))
-)
+(defun use-annotation ()
+  "This tells the mutation operators how to use annotations to bias
+the selection of points in the genome as targets for mutation."
+  (defmethod pick-bad ((elf elf-mips-sw))
+    (proportional-pick (coerce (genome elf) 'list)
+                       (lambda (line) (+ 0.5 (or (aget :trace line) 0))))))
 
-#+running
-(
-;; Use the sh-runner to run shell scripts
-(setf *work-dir* "sh-runner/work")
+(defun run ()
+  ;; Use the sh-runner to run shell scripts
+  (setf *work-dir* "sh-runner/work")
 
-;; Sanity check
-(setf orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi"))
-(setf (fitness orig) (test orig))
-(assert (= (fitness orig) 7) (orig)
-        "Original program does not pass all regression tests! (~d/7)"
-        (fitness orig))
+  ;; Sanity check
+  (setf orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi"))
+  (unless (fitness orig) (setf (fitness orig) (test orig)))
+  (assert (= (fitness orig) 7) (orig)
+          "Original program does not pass all regression tests! (~d/7)"
+          (fitness orig))
 
-;; Annotate the ELF file with our oprofile samples
-;; (annotate orig (read-sample-file "stuff/net-cgi.sample"))
+  ;; Annotate the ELF file with our oprofile samples
+  ;; (annotate orig (read-sample-file "stuff/net-cgi.sample"))
 
-;; Build the population
-(setf *max-population-size* (expt 2 9))
-(setf *population*
-      (loop :for i :below (/ *max-population-size* 2) :collect (copy orig)))
+  ;; Build the population
+  (setf *max-population-size* (expt 2 9))
+  (setf *population*
+        (loop :for i :below (/ *max-population-size* 2) :collect (copy orig)))
 
-;; Launch all threads
-(loop :for n :below number-of-threads :do
-   (push (make-thread
-          (lambda ()
-            (let ((*port* (+ 6600 n)))
-              (push
-               (evolve #'test
-                :target 10                        ; stop when passes all tests
-                :filter [#'not #'zerop #'fitness] ; ignore broken mutants
-                :period (expt 2 4)                ; record keeping
-                :period-fn #'checkpoint)
-               fixes)))
-          :name (format nil "worker-~d" n))
-         threads))
+  ;; Launch all threads
+  (loop :for n :below number-of-threads :do
+     (push (make-thread
+            (lambda ()
+              (let ((*port* (+ 6600 n)))
+                (push
+                 (evolve #'test
+                  :target 10                        ; stop when passes all tests
+                  :filter [#'not #'zerop #'fitness] ; ignore broken mutants
+                  :period (expt 2 4)                ; record keeping
+                  :period-fn #'checkpoint)
+                 fixes)))
+            :name (format nil "worker-~d" n))
+           threads))
 
-(make-thread (lambda ()
-               (mapc #'join-thread threads)
-               (store fixes (format nil "checkpoints/~d-fixes.store"
-                                    *fitness-evals*)))
-             :name "cleanup")
-)
+  (make-thread (lambda ()
+                 (mapc #'join-thread threads)
+                 (store fixes (format nil "checkpoints/~d-fixes.store"
+                                      *fitness-evals*)))
+               :name "cleanup"))
