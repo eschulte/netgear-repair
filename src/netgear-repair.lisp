@@ -58,6 +58,7 @@
       (store best (format nil "checkpoints/~d-best-~d.store"
                           *fitness-evals* (fitness best))))))
 
+
 ;;; Annotation
 (defun read-sample-file (file)
   "Read a sample file generated with opreport."
@@ -93,8 +94,11 @@ the selection of points in the genome as targets for mutation."
     (proportional-pick (coerce (genome elf) 'list)
                        (lambda (line) (+ 0.5 (or (aget :trace line) 0))))))
 
+
+;;; Evolution
 (defun run ()
   ;; Use the sh-runner to run shell scripts
+  ;; https://github.com/eschulte/sh-runner
   (setf *work-dir* "sh-runner/work")
 
   ;; Sanity check
@@ -112,7 +116,7 @@ the selection of points in the genome as targets for mutation."
   (setf *population*
         (loop :for i :below (/ *max-population-size* 2) :collect (copy orig)))
 
-  ;; Launch all threads
+  ;; Launch evolution threads
   (loop :for n :below number-of-threads :do
      (push (make-thread
             (lambda ()
@@ -132,3 +136,31 @@ the selection of points in the genome as targets for mutation."
                  (store fixes (format nil "checkpoints/~d-fixes.store"
                                       *fitness-evals*)))
                :name "cleanup"))
+
+
+;;; Delta Debugging
+(defun delta-debug (orig new)
+  "Use Delta Debugging to minimize the genetic difference between ORIG
+and NEW while maintaining their phenotypic differences"
+  ;; sanity check
+  (let ((fit (test orig)))
+    (unless (= fit 7) (error "Original program has bad fitness!~%~S" fit)))
+  ;; calculate the original difference
+  (let* ((base (lines orig))
+         (diff (generate-seq-diff 'unified-diff base (lines new))))
+    (format t "minimizing ~d diff windows~%" (length (diff-windows diff)))
+    (flet ((from-windows (windows)
+             ;; build a new individual from a set of diff windows
+             (let ((new (copy orig)))
+               (setf (lines new)
+                     (car (reduce
+                           (lambda-bind ((seq offset) window)
+                             (multiple-value-call #'list
+                               (apply-seq-window seq window :offset offset)))
+                           windows :initial-value (list base 0))))
+               new)))
+      ;; minimize the difference
+      (setf (diff-windows diff)
+            (minimize (diff-windows diff) [{= 10} #'test #'from-windows]))
+      ;; return the minimized individual
+      (from-windows (diff-windows diff)))))
