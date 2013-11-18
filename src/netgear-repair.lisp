@@ -159,8 +159,8 @@ and NEW while maintaining their phenotypic differences"
                                (apply-seq-window seq window :offset offset)))
                            windows :initial-value (list base 0))))
                new)))
-      ;; minimize the difference
-      (setf (diff-windows diff)
-            (minimize (diff-windows diff) [{= 10} #'test #'from-windows]))
       ;; return the minimized individual
-      (from-windows (diff-windows diff)))))
+      (from-windows (minimize (diff-windows diff)
+                              (lambda (windows)
+                                (ignore-errors
+                                  (= 10 (test (from-windows windows))))))))))
