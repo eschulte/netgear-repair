@@ -76,19 +76,6 @@ for file in ${!FILES[@]};do
     else
         FAILED+=($file)
     fi
-    # echo "returned $return"
-    # echo "served $served"
-    # echo "subset $subset"
-    # if $(contains "$served" "200 OK");then
-    #     echo "has the 200"
-    # else
-    #     echo "does not have the 200"
-    # fi
-    # if $(contains "$served" "$subset");then
-    #     echo "has the subset"
-    # else
-    #     echo "does not have the subset"
-    # fi
 done
 
 ## Negative Tests
