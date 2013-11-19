@@ -1,0 +1,432 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Reproduction Instructions</title>
+<!-- 2013-11-19 Tue 11:23 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="etc/netgear-repair.css" />
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Reproduction Instructions</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">Setting up the VM</a></li>
+<li><a href="#sec-2">Run <code>net-cgi</code> from the command line in the VM</a></li>
+<li><a href="#sec-3">Start a pool of overlays for fitness evaluation</a></li>
+<li><a href="#sec-4">Evolve a version of <code>net-cgi</code> without the exploit</a></li>
+</ul>
+</div>
+</div>
+<p>
+The following steps walk through the process of evolving a repair to
+the NETGEAR <code>net-cgi</code> security exploits.  The instructions assume that
+the user has checked out this repository locally and is running all
+actions from the base of the repo with the <code>./bin</code> directory in their
+path.
+</p>
+
+<p>
+For a full description of the exploits, repair technique and
+properties of the evolved repair see <a href="index.html">Automated Repair of Exploits in
+NETGEAR Router Binary</a>.
+</p>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Setting up the VM</h2>
+<div class="outline-text-2" id="text-1">
+<ol class="org-ol">
+<li>Following the instructions from <a href="http://shadow-file.blogspot.com/2013/05/running-debian-mips-linux-in-qemu.html">running-debian-mips-linux-in-qemu</a>
+download the files in the <code>mips</code> subdirectory of
+<a href="http://people.debian.org/~aurel32/qemu/">http://people.debian.org/~aurel32/qemu/</a> and save them to
+<code>debian-qemu/be</code>.
+</li>
+
+<li>Ensure a new version of QEMU is installed, and that you have a
+network bridge setup following the instructions in <a href="https://wiki.archlinux.org/index.php/QEMU">QEMU</a> and
+<a href="https://wiki.archlinux.org/index.php/Bridge_with_netctl">Bridge_with_netctl</a>.
+</li>
+
+<li>You'll want configure ssh access and install binwalk.  From this
+point on the VM shouldn't require external internet access.  Note:
+Although the <code>run-vm</code> executable is configured to work with either
+big endian or little endian mips images, we'll only use the big
+endian version as that is the architecture of the NETGEAR router.
+<ol class="org-ol">
+<li>start the vm
+<div class="org-src-container">
+
+<pre class="src src-sh"><span style="color: #ad7fa8;">export</span> <span style="color: #fcaf3e;">ENDIANESS</span>=be
+bin/run-vm -b -D
+</pre>
+</div>
+</li>
+<li>as root in the qemu window, install sshd
+<div class="org-src-container">
+
+<pre class="src src-sh">apt-get update
+apt-get install openssh-server
+</pre>
+</div>
+</li>
+<li>shutdown the VM's and kill the qemu processes
+</li>
+</ol>
+</li>
+
+<li>install binwalk (more easily done on a Debian system)
+<div class="org-src-container">
+
+<pre class="src src-sh">wget https://binwalk.googlecode.com/files/binwalk-1.2.2-1.tar.gz
+tar xzf binwalk-1.2.2-1.tar.gz
+<span style="color: #ad7fa8;">cd</span> binwalk-1.2.2-1/src/
+./debian_quick_install.sh <span style="color: #73d216;"># </span><span style="color: #73d216;">on Debian, else manually install</span>
+</pre>
+</div>
+</li>
+
+<li>Now to grab the NETGEAR firmware and extract the filesystem
+<div class="org-src-container">
+
+<pre class="src src-sh">wget <span style="color: #e9b96e;">\</span>
+  http://www.downloads.netgear.com/files/GDC/WNDR3700V4/WNDR3700V4_V1.0.1.42.zip
+unzip WNDR3700V4_V1.0.1.42.zip
+binwalk -e WNDR3700v4-V1.0.1.42.img
+</pre>
+</div>
+<p>
+we can now see the broken cgi file in the extracted filesystem.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-sh">file _WNDR3700v4-V1.0.1.42.img.extracted/squashfs-root/usr/sbin/net-cgi
+</pre>
+</div>
+</li>
+
+<li>Copy the squashfs filesystem to the QEMU VM.
+</li>
+</ol>
+</div>
+</div>
+
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Run <code>net-cgi</code> from the command line in the VM</h2>
+<div class="outline-text-2" id="text-2">
+<ol class="org-ol">
+<li>The web server on the NETGEAR router (<code>uhttpd</code>) calls <code>net-cgi</code> for
+basically every web page.  We'll want to call <code>net-cgi</code> from the
+command line.  Every header passed in by <code>uhttpd</code> may be passed on
+the command line as an environment variable.  The script in
+<a href="bin/call-cgi">bin/call-cgi</a> will handle this for us.
+</li>
+
+<li>We need to run <code>net-cgi</code> from within the NETGEAR firmware, since
+this is unpacked into <code>~/squashfs-root</code> in our VM, the command to
+invoke <code>net-cgi</code> will need to us <code>chroot</code>.  However at this point
+<code>net-cgi</code> will segfault trying to read files in <code>/proc</code> (thanks to
+<code>strace</code> for debugging help here).  We can map <code>/proc</code>, <code>/lib/init</code>
+and <code>/dev</code> from the VM into <code>squashfs-root</code> with the following.
+<div class="org-src-container">
+
+<pre class="src src-sh">mount -o bind /proc  squashfs-root/proc
+mkdir -p squashfs-root/lib/init
+mount -o bind /lib/init/  squashfs-root/lib/init
+mount -o bind /dev/  squashfs-root/dev
+</pre>
+</div>
+</li>
+
+<li>We'll also need to start the <code>datalib</code> service which appears to
+make configuration information available to <code>net-cgi</code>, and then set
+the value of the <code>dns_hijack</code> configuration to "0" to avoid 404
+errors.
+<div class="org-src-container">
+
+<pre class="src src-sh">chroot squashfs-root/ /bin/datalib
+chroot squashfs-root/ /bin/config set <span style="color: #fcaf3e;">dns_hijack</span>=<span style="color: #e9b96e;">"0"</span>
+</pre>
+</div>
+</li>
+
+<li>After all of this we can now call <code>net-cgi</code> from the command line
+with the following.
+<div class="org-src-container">
+
+<pre class="src src-sh"><span style="color: #fcaf3e;">URI</span>=<span style="color: #e9b96e;">"index.htm"</span> call-cgi chroot squashfs-root /usr/sbin/net-cgi
+</pre>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Start a pool of overlays for fitness evaluation</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+Note that these steps were performed on a 64-core machine using 64
+virtual machines for parallel fitness evaluation.  Adjust the number
+of overlays and the degree of parallelism to match your hardware.
+</p>
+
+<ol class="org-ol">
+<li>First we need to ensure that all required scripts are included in
+the original VM.  Copy <a href="bin/call-cgi">bin/call-cgi</a> and <a href="bin/test-cgi">bin/test-cgi</a> into
+the <code>/root/bin</code> directory of the virtual machine.  Shut down the
+virtual machine.
+</li>
+
+<li>Generate multiple overlays.
+<div class="org-src-container">
+
+<pre class="src src-sh">make-overlay overlays/{0..63}.qcow2
+</pre>
+</div>
+</li>
+
+<li>Launch all overlays.
+<div class="org-src-container">
+
+<pre class="src src-sh"><span style="color: #b4fa70;">for</span> i<span style="color: #b4fa70;"> in</span> {0..63};<span style="color: #b4fa70;">do</span>
+    run-vm -i overlays/$<span style="color: #fcaf3e;">i</span>.qcow2 -p 66$(printf <span style="color: #e9b96e;">"%0.2d"</span> $<span style="color: #fcaf3e;">i</span>)
+<span style="color: #b4fa70;">done</span>
+</pre>
+</div>
+</li>
+</ol>
+</div>
+</div>
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Evolve a version of <code>net-cgi</code> without the exploit</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+The SOFTWARE-EVOLUTION library used to perform this repair is
+implemented in Common Lisp.  All of the following dependencies will
+need to be installed.
+</p>
+
+<ol class="org-ol">
+<li><a href="http://www.sbcl.org/">Steel Bank Common Lisp (SBCL)</a> or <i><a href="http://ccl.clozure.com/">http://ccl.clozure.com/</a></i>.
+</li>
+
+<li>The <a href="http://www.quicklisp.org/beta/">Quicklisp</a> Common Lisp package manager which will be used to
+install all of the required lisp packages.  Follow the instructions
+on the Quicklisp site to install it.
+</li>
+
+<li>Under the directory to which quicklisp has been installed (by
+default <code>~/quicklisp</code>), there will be a <code>local-projects</code> directory.
+Clone the following git repositories into this directory.
+
+<div class="org-src-container">
+
+<pre class="src src-sh">git clone git://github.com/eschulte/software-evolution.git
+git clone git://github.com/eschulte/delta-debug.git
+git clone git://github.com/eschulte/diff.git
+</pre>
+</div>
+
+<p>
+You will also need to symlink this repository into your
+<code>local-projects</code> directory.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-sh">ln -s $(<span style="color: #ad7fa8;">pwd</span>) ~/quicklisp/local-projects/
+</pre>
+</div>
+
+<p>
+Finally, ensure Quicklisp has been added to your init file, and
+then use Quicklisp to register these newly cloned local projects.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-lisp"><span style="color: #7f7f7f;">(</span>ql:add-to-init-file<span style="color: #7f7f7f;">)</span>
+<span style="color: #7f7f7f;">(</span>ql:register-local-projects<span style="color: #7f7f7f;">)</span>
+</pre>
+</div>
+</li>
+
+<li>Once Quicklisp and these dependencies have all been installed, run
+the following to install the NETGEAR-REPAIR package and all of its
+dependencies.
+
+<div class="org-src-container">
+
+<pre class="src src-lisp"><span style="color: #7f7f7f;">(</span>ql:quickload <span style="color: #ad7fa8;">:netgear-repair</span><span style="color: #7f7f7f;">)</span>
+</pre>
+</div>
+</li>
+
+<li>Optionally checkout the following tool for the protected execution
+of shell commands through the file system.  This serves to isolate
+the evolutionary process from the many errors thrown during
+long-running evolutionary runs, the accumulation of which can
+occasionally stall the lisp process or upset the operating system.
+From the base of this directory run the following to clone
+sh-runner.
+
+<div class="org-src-container">
+
+<pre class="src src-sh">git clone git://github.com/eschulte/sh-runner.git
+</pre>
+</div>
+</li>
+</ol>
+
+<p>
+At this point all dependencies have been installed.  The code used to
+perform the repair is located in <a href="src/netgear-repair.lisp">src/netgear-repair.lisp</a>.  Browse
+this file to see how repair is performed, or simply execute the
+following in the lisp REPL.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-lisp"><span style="color: #7f7f7f;">(</span>setf *port* 6600<span style="color: #7f7f7f;">)</span>          <span style="color: #73d216;">; </span><span style="color: #73d216;">starting port for your VMs</span>
+<span style="color: #7f7f7f;">(</span>setf number-of-threads 64<span style="color: #7f7f7f;">)</span> <span style="color: #73d216;">; </span><span style="color: #73d216;">number of threads in which to run repair</span>
+<span style="color: #7f7f7f;">(</span>run<span style="color: #7f7f7f;">)</span>                       <span style="color: #73d216;">; </span><span style="color: #73d216;">kick off the repair process</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Created: 2013-11-19 Tue 11:23</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.3c)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
