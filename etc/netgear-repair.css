@@ -1,0 +1,37 @@
+@media all and (min-width: 1000px){
+    body {
+        max-width: 900px;
+        margin: auto; } }
+
+@media all and (max-width: 1000px){
+    body { margin: 1em; } }
+
+#content {
+  color: #2e2e2e; }
+
+#outline-container-background {
+  padding-top: 100px; }
+
+.outline-text-3 {
+  margin-left: 2em; }
+
+h3 {
+  margin-left: 1em;
+  color: black;
+  border-bottom-style: solid;
+  border-bottom-color: lightgray; }
+
+a {
+  text-decoration: none;
+  color: #4a708b; }
+
+a:hover {
+  text-decoration: underline; }
+
+blockquote {
+  border-left: 1px solid gray;
+  padding-left: 4px; }
+
+pre {
+    background: #2e3436;
+    color: #eeeeec; }

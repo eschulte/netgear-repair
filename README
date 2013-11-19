@@ -1,1 +1,30 @@
-         Automatically Repair an Insecure Netgear CGI Binary
+        Automated Repair of Exploits in NETGEAR Router Binary
+
+Version 4 of NETGEAR's WNDR3700 wireless router contains exploits
+allowing unauthenticated users to change administrative options and
+completely disable authentication across reboots (see [1]).
+
+We fix these exploits using a method of automated program repair [2]
+which operates directly on binary ELF files and requires no access to
+source code.  This fix was found before NETGEAR addressed these
+exploits---to my knowledge NETGEAR has not yet patched these exploits
+in the latest release of the firmware 1.0.1.42 as of 2013-11-19.
+
+This repository contains the instructions, code, and tooling used to
+develop this repair.  These tools may be used to automatically change
+the behavior other binary ELF executables, making it possible to fix
+customize and alter binaries executables without any aid from the
+software's developer.
+
+A detailed description of the exploit and the repair technique and the
+repairs found is available at [3] and step by step instructions to
+reproduce this repair are given in INSTRUCTIONS.
+
+Thanks to Zachary Cutlip for help reproducing these exploits in a VM.
+
+Footnotes:
+[1]  http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
+
+[2]  http://cs.unm.edu/~eschulte/data/schulte2013embedded.pdf
+
+[3]  http://eschulte.github.io/netgear-repair

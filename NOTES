@@ -1,7 +1,74 @@
 # -*- org -*-
 #+Options: ^:{}
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="etc/netgear-repair.css" />
 
-* Reproduction
+* Automated Repair of Exploits in NETGEAR Router Binary
+  :PROPERTIES:
+  :EXPORT_FILE_NAME: index
+  :EXPORT_OPTIONS: num:nil
+  :END:
+** Summary
+Version 4 of NETGEAR's WNDR3700 wireless router contains exploits
+allowing unauthenticated users to change administrative options and
+completely disable authentication across reboots (see [fn:1]).
+
+We fix these exploits using a method of automated program
+repair [fn:2] which operates directly on binary ELF files and requires
+no access to source code.  This fix was found before NETGEAR addressed
+these exploits---to my knowledge NETGEAR has not yet patched these
+exploits in the latest release of the firmware 1.0.1.42 as of
+2013-11-19.
+
+This repository contains the instructions, code, and tooling used to
+develop this repair.  These tools may be used to automatically change
+the behavior other binary ELF executables, making it possible to fix
+customize and alter binaries executables without any aid from the
+software's developer.
+
+A detailed description of the exploit and the repair technique and the
+repairs found is available at [fn:3] and step by step instructions to
+reproduce this repair are given in [[file:INSTRUCTIONS.html][INSTRUCTIONS]].
+
+Thanks to Zachary Cutlip for help reproducing these exploits in a VM.
+
+** TODO Description of Exploits
+** TODO Run Router in a Virtual Machine
+** TODO Evolutionary Repair Technique
+- The repair required working over MIPS RISC assembler allowing for
+  simplified mutation operators.
+
+** TODO Application of Repair Technique
+** TODO Analysis of Evolved Repair
+- The ELF file in question had no section table, so instead of
+  mutating the =.text= section all loadable program sections were
+  mutated
+
+- The repairs required two distinct fixes to two different exploits in a
+  single long evolutionary run (an instance of "iterative repair").
+
+- The initial evolved repair broke untested behavior (e.g., it worked
+  when the cgi file was called directly on the command line but not
+  through the embedded [[http://wiki.openwrt.org/doc/uci/uhttpd][µHTTPd]] webserver).  The minimized version of
+  the repair fixed these issues and works as expected.
+
+- The initial evolved repair differed from the original at 789
+  distinct locations (measured with a unified diff), the minimized
+  differed from the original at 2 such locations.
+
+* Reproduction Instructions
+  :PROPERTIES:
+  :EXPORT_FILE_NAME: INSTRUCTIONS
+  :END:
+The following steps walk through the process of evolving a repair to
+the NETGEAR =net-cgi= security exploits.  The instructions assume that
+the user has checked out this repository locally and is running all
+actions from the base of the repo with the =./bin= directory in their
+path.
+
+For a full description of the exploits, repair technique and
+properties of the evolved repair see [[file:index.html][Automated Repair of Exploits in
+NETGEAR Router Binary]].
+
 ** Setting up the VM
 1. Following the instructions from [[http://shadow-file.blogspot.com/2013/05/running-debian-mips-linux-in-qemu.html][running-debian-mips-linux-in-qemu]]
    download the files in the =mips= subdirectory of
@@ -34,7 +101,7 @@
      wget https://binwalk.googlecode.com/files/binwalk-1.2.2-1.tar.gz
      tar xzf binwalk-1.2.2-1.tar.gz
      cd binwalk-1.2.2-1/src/
-     ./debian_quick_install.sh # on Debian, else manually satisfy dependencies
+     ./debian_quick_install.sh # on Debian, else manually install
    #+end_src
 
 5. Now to grab the NETGEAR firmware and extract the filesystem
@@ -50,7 +117,7 @@
    #+end_src
 
 6. Copy the squashfs filesystem to the QEMU VM.
-** Run the original =net-cgi= from the command line in the VM
+** Run =net-cgi= from the command line in the VM
 1. The web server on the NETGEAR router (=uhttpd=) calls =net-cgi= for
    basically every web page.  We'll want to call =net-cgi= from the
    command line.  Every header passed in by =uhttpd= may be passed on
@@ -85,7 +152,11 @@
      URI="index.htm" call-cgi chroot squashfs-root /usr/sbin/net-cgi
    #+end_src
 
-** Trace the execution of =net-cgi=
+** Trace the execution of =net-cgi=                                :noexport:
+This step is optional and was not used in the actual repair process
+(although it is possible it could speed up the evolutionary search by
+guiding the mutation operators).
+
 1. Install oprofile in the VM.
    #+begin_src sh
      apt-get install oprofile
@@ -107,13 +178,22 @@
      opreport -a -d squashfs-root/usr/sbin/net-cgi -o net-cgi.sample
    #+end_src
 
-** Start a pool of overlays for candidate repair evaluation
-1. Generate multiple overlays.
+** Start a pool of overlays for fitness evaluation
+Note that these steps were performed on a 64-core machine using 64
+virtual machines for parallel fitness evaluation.  Adjust the number
+of overlays and the degree of parallelism to match your hardware.
+
+1. First we need to ensure that all required scripts are included in
+   the original VM.  Copy file:bin/call-cgi and file:bin/test-cgi into
+   the =/root/bin= directory of the virtual machine.  Shut down the
+   virtual machine.
+
+2. Generate multiple overlays.
    #+begin_src sh
      make-overlay overlays/{0..63}.qcow2
    #+end_src
 
-2. Launch all overlays.
+3. Launch all overlays.
    #+begin_src sh
      for i in {0..63};do
          run-vm -i overlays/$i.qcow2 -p 66$(printf "%0.2d" $i)
@@ -121,6 +201,72 @@
    #+end_src
 
 ** Evolve a version of =net-cgi= without the exploit
+The SOFTWARE-EVOLUTION library used to perform this repair is
+implemented in Common Lisp.  All of the following dependencies will
+need to be installed.
+
+1. [[http://www.sbcl.org/][Steel Bank Common Lisp (SBCL)]] or [[Clozure Common Lisp (CCL)][http://ccl.clozure.com/]].
+
+2. The [[http://www.quicklisp.org/beta/][Quicklisp]] Common Lisp package manager which will be used to
+   install all of the required lisp packages.  Follow the instructions
+   on the Quicklisp site to install it.
+
+3. Under the directory to which quicklisp has been installed (by
+   default =~/quicklisp=), there will be a =local-projects= directory.
+   Clone the following git repositories into this directory.
+
+   #+begin_src sh
+     git clone git://github.com/eschulte/software-evolution.git
+     git clone git://github.com/eschulte/delta-debug.git
+     git clone git://github.com/eschulte/diff.git
+   #+end_src
+
+   You will also need to symlink this repository into your
+   =local-projects= directory.
+
+   #+begin_src sh
+     ln -s $(pwd) ~/quicklisp/local-projects/
+   #+end_src
+
+   Finally, ensure Quicklisp has been added to your init file, and
+   then use Quicklisp to register these newly cloned local projects.
+
+   #+begin_src lisp
+     (ql:add-to-init-file)
+     (ql:register-local-projects)
+   #+end_src
+
+4. Once Quicklisp and these dependencies have all been installed, run
+   the following to install the NETGEAR-REPAIR package and all of its
+   dependencies.
+
+   #+begin_src lisp
+     (ql:quickload :netgear-repair)
+   #+end_src
+
+5. Optionally checkout the following tool for the protected execution
+   of shell commands through the file system.  This serves to isolate
+   the evolutionary process from the many errors thrown during
+   long-running evolutionary runs, the accumulation of which can
+   occasionally stall the lisp process or upset the operating system.
+   From the base of this directory run the following to clone
+   sh-runner.
+
+   #+begin_src sh
+     git clone git://github.com/eschulte/sh-runner.git
+   #+end_src
+
+At this point all dependencies have been installed.  The code used to
+perform the repair is located in file:src/netgear-repair.lisp.  Browse
+this file to see how repair is performed, or simply execute the
+following in the lisp REPL.
+
+#+begin_src lisp
+  (setf *port* 6600)          ; starting port for your VMs
+  (setf number-of-threads 64) ; number of threads in which to run repair
+  (run)                       ; kick off the repair process
+#+end_src
+
 * Notes
 ** converting the oprofile vma's to elf offsets
 #+begin_quote EXECUTABLE AND LINKABLE FORMAT (ELF)
@@ -439,4 +585,14 @@ output.
 I hope this helps.  Let me know if I can help any other way.
 
 Zach
+* Footnotes
+
+[fn:1] http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
+
+[fn:2] http://cs.unm.edu/~eschulte/data/schulte2013embedded.pdf
+
+[fn:3] http://eschulte.github.io/netgear-repair
+
+[fn:4] https://github.com/eschulte/netgear-repair
+
 

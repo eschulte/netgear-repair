@@ -1,0 +1,218 @@
+                      ___________________________
+
+                       REPRODUCTION INSTRUCTIONS
+                      ___________________________
+
+
+Table of Contents
+_________________
+
+1 Setting up the VM
+2 Run `net-cgi' from the command line in the VM
+3 Start a pool of overlays for fitness evaluation
+4 Evolve a version of `net-cgi' without the exploit
+
+
+The following steps walk through the process of evolving a repair to the
+NETGEAR `net-cgi' security exploits.  The instructions assume that the
+user has checked out this repository locally and is running all actions
+from the base of the repo with the `./bin' directory in their path.
+
+
+1 Setting up the VM
+===================
+
+  1. Following the instructions from [running-debian-mips-linux-in-qemu]
+     download the files in the `mips' subdirectory of
+     [http://people.debian.org/~aurel32/qemu/] and save them to
+     `debian-qemu/be'.
+
+  2. Ensure a new version of QEMU is installed, and that you have a
+     network bridge setup following the instructions in [QEMU] and
+     [Bridge_with_netctl].
+
+  3. You'll want configure ssh access and install binwalk.  From this
+     point on the VM shouldn't require external internet access.  Note:
+     Although the `run-vm' executable is configured to work with either
+     big endian or little endian mips images, we'll only use the big
+     endian version as that is the architecture of the NETGEAR router.
+     1. start the vm
+        ,----
+        | export ENDIANESS=be
+        | bin/run-vm -b -D
+        `----
+     2. as root in the qemu window, install sshd
+        ,----
+        | apt-get update
+        | apt-get install openssh-server
+        `----
+     3. shutdown the VM's and kill the qemu processes
+
+  4. install binwalk (more easily done on a Debian system)
+     ,----
+     | wget https://binwalk.googlecode.com/files/binwalk-1.2.2-1.tar.gz
+     | tar xzf binwalk-1.2.2-1.tar.gz
+     | cd binwalk-1.2.2-1/src/
+     | ./debian_quick_install.sh # on Debian, else manually install
+     `----
+
+  5. Now to grab the NETGEAR firmware and extract the filesystem
+     ,----
+     | wget \
+     |   http://www.downloads.netgear.com/files/GDC/WNDR3700V4/WNDR3700V4_V1.0.1.42.zip
+     | unzip WNDR3700V4_V1.0.1.42.zip
+     | binwalk -e WNDR3700v4-V1.0.1.42.img
+     `----
+     we can now see the broken cgi file in the extracted filesystem.
+     ,----
+     | file _WNDR3700v4-V1.0.1.42.img.extracted/squashfs-root/usr/sbin/net-cgi
+     `----
+
+  6. Copy the squashfs filesystem to the QEMU VM.
+
+
+  [running-debian-mips-linux-in-qemu]
+  http://shadow-file.blogspot.com/2013/05/running-debian-mips-linux-in-qemu.html
+
+  [QEMU] https://wiki.archlinux.org/index.php/QEMU
+
+  [Bridge_with_netctl]
+  https://wiki.archlinux.org/index.php/Bridge_with_netctl
+
+
+2 Run `net-cgi' from the command line in the VM
+===============================================
+
+  1. The web server on the NETGEAR router (`uhttpd') calls `net-cgi' for
+     basically every web page.  We'll want to call `net-cgi' from the
+     command line.  Every header passed in by `uhttpd' may be passed on
+     the command line as an environment variable.  The script in
+     [file:bin/call-cgi] will handle this for us.
+
+  2. We need to run `net-cgi' from within the NETGEAR firmware, since
+     this is unpacked into `~/squashfs-root' in our VM, the command to
+     invoke `net-cgi' will need to us `chroot'.  However at this point
+     `net-cgi' will segfault trying to read files in `/proc' (thanks to
+     `strace' for debugging help here).  We can map `/proc', `/lib/init'
+     and `/dev' from the VM into `squashfs-root' with the following.
+     ,----
+     | mount -o bind /proc  squashfs-root/proc
+     | mkdir -p squashfs-root/lib/init
+     | mount -o bind /lib/init/  squashfs-root/lib/init
+     | mount -o bind /dev/  squashfs-root/dev
+     `----
+
+  3. We'll also need to start the `datalib' service which appears to
+     make configuration information available to `net-cgi', and then set
+     the value of the `dns_hijack' configuration to "0" to avoid 404
+     errors.
+     ,----
+     | chroot squashfs-root/ /bin/datalib
+     | chroot squashfs-root/ /bin/config set dns_hijack="0"
+     `----
+
+  4. After all of this we can now call `net-cgi' from the command line
+     with the following.
+     ,----
+     | URI="index.htm" call-cgi chroot squashfs-root /usr/sbin/net-cgi
+     `----
+
+
+3 Start a pool of overlays for fitness evaluation
+=================================================
+
+  Note that these steps were performed on a 64-core machine using 64
+  virtual machines for parallel fitness evaluation.  Adjust the number
+  of overlays and the degree of parallelism to match your hardware.
+
+  1. First we need to ensure that all required scripts are included in
+     the original VM.  Copy [file:bin/call-cgi] and [file:bin/test-cgi]
+     into the `/root/bin' directory of the virtual machine.  Shut down
+     the virtual machine.
+
+  2. Generate multiple overlays.
+     ,----
+     | make-overlay overlays/{0..63}.qcow2
+     `----
+
+  3. Launch all overlays.
+     ,----
+     | for i in {0..63};do
+     |     run-vm -i overlays/$i.qcow2 -p 66$(printf "%0.2d" $i)
+     | done
+     `----
+
+
+4 Evolve a version of `net-cgi' without the exploit
+===================================================
+
+  The SOFTWARE-EVOLUTION library used to perform this repair is
+  implemented in Common Lisp.  All of the following dependencies will
+  need to be installed.
+
+  1. [Steel Bank Common Lisp (SBCL)] or [http://ccl.clozure.com/].
+
+  2. The [Quicklisp] Common Lisp package manager which will be used to
+     install all of the required lisp packages.  Follow the instructions
+     on the Quicklisp site to install it.
+
+  3. Under the directory to which quicklisp has been installed (by
+     default `~/quicklisp'), there will be a `local-projects' directory.
+     Clone the following git repositories into this directory.
+
+     ,----
+     | git clone git://github.com/eschulte/software-evolution.git
+     | git clone git://github.com/eschulte/delta-debug.git
+     | git clone git://github.com/eschulte/diff.git
+     `----
+
+     You will also need to symlink this repository into your
+     `local-projects' directory.
+
+     ,----
+     | ln -s $(pwd) ~/quicklisp/local-projects/
+     `----
+
+     Finally, ensure Quicklisp has been added to your init file, and
+     then use Quicklisp to register these newly cloned local projects.
+
+     ,----
+     | (ql:add-to-init-file)
+     | (ql:register-local-projects)
+     `----
+
+  4. Once Quicklisp and these dependencies have all been installed, run
+     the following to install the NETGEAR-REPAIR package and all of its
+     dependencies.
+
+     ,----
+     | (ql:quickload :netgear-repair)
+     `----
+
+  5. Optionally checkout the following tool for the protected execution
+     of shell commands through the file system.  This serves to isolate
+     the evolutionary process from the many errors thrown during
+     long-running evolutionary runs, the accumulation of which can
+     occasionally stall the lisp process or upset the operating system.
+     From the base of this directory run the following to clone
+     sh-runner.
+
+     ,----
+     | git clone git://github.com/eschulte/sh-runner.git
+     `----
+
+  At this point all dependencies have been installed.  The code used to
+  perform the repair is located in [file:src/netgear-repair.lisp].
+  Browse this file to see how repair is performed, or simply execute the
+  following in the lisp REPL.
+
+  ,----
+  | (setf *port* 6600)          ; starting port for your VMs
+  | (setf number-of-threads 64) ; number of threads in which to run repair
+  | (run)                       ; kick off the repair process
+  `----
+
+
+  [Steel Bank Common Lisp (SBCL)] http://www.sbcl.org/
+
+  [Quicklisp] http://www.quicklisp.org/beta/
