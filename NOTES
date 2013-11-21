@@ -268,6 +268,21 @@ following in the lisp REPL.
 #+end_src
 
 * Notes
+** differences in the minimized repair
+#+begin_src lisp
+  (loop :for a :in (coerce (data (nth 3 (sections (elf original)))) 'list)
+                        :for b :in (coerce (data (nth 3 (sections (elf minimized)))) 'list)
+                        :as i :from 0 :do
+                     (when (not (equalp a b))
+                       (format t "at ~d, ~a -> ~a~%" i a b)))
+  ;; => at 292412, 175 -> 143
+  ;; => at 332588, 104 -> 0
+#+end_src
+
+So a deletion at offset 332588 in the program data (in the first
+loadable program section), and substitution at offset 292412 in the
+program data.
+
 ** converting the oprofile vma's to elf offsets
 #+begin_quote EXECUTABLE AND LINKABLE FORMAT (ELF)
 an executable or shared object file's base address is calculated
