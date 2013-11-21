@@ -1,0 +1,51 @@
+#+Title: Automated Repair of Exploits in NETGEAR Router Binary
+#+Author: Eric Schulte \and Stephanie Forrest
+#+LaTeX_CLASS: sigcomm-alternative
+#+Options: toc:nil ^:{}
+
+#+LaTeX: \begin{abstract}
+Version 4 of NETGEAR's WNDR3700 wireless router contains exploits
+allowing unauthenticated users to change administrative options and
+completely disable authentication across reboots cite:zcutlip.
+
+In this work we repair these exploits using a method of automated
+program repair cite:schulte2013embedded which operates directly on
+binary ELF files and requires no access to source code.  This fix was
+found before NETGEAR addressed these exploits---to the author's
+knowledge NETGEAR has not patched these exploits at the time of
+submission.
+
+We describe the method of repair which requires is applicable to any
+"gray box" application in which stripped binary executables may be
+inspected but no source code is available.  This generalized a
+previous repair method from x86 CISC architectures to the RISC MIPS
+architecture.  This repair constitutes the first instance in which
+multiple exploits are fixed in a single evolutionary run.
+
+A companion source code repository contains the instructions,
+programs, and tooling used to extract and execute a binary router
+image in a virtual machine, and to then use the virtualized router
+environment to repair the exploits.  These tools may be generalized to
+other binary executables, making it possible to patch future exploits
+in closed-source commercial application *before* the issues are
+addressed by the software vendor.
+#+LaTeX: \end{abstract}
+
+* Introduction
+* Technique
+** Router Firmware Extraction
+** Evolutionary Repair Technique
+** Application of Technique
+* Analysis of Repair
+* Proactive Repair
+* Related Work
+* Future Applications and Conclusion
+- proactive hardening
+- distributed diversity
+  - self certifying patches
+
+#+BEGIN_LATEX
+\bibliographystyle{plain}
+\bibliography{netgear-repair}
+#+END_LATEX
+
