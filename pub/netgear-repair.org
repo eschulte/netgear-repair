@@ -1,6 +1,6 @@
 #+Title: Automated Repair of Exploits in NETGEAR Router Binary
-#+Author: Eric Schulte\\ \ttt{eschulte@cs.unm.edu}
-#+LaTeX_CLASS: sigcomm-alternative
+#+Author:
+#+LaTeX_Class: sigcomm-alternative
 #+Options: toc:nil ^:{}
 
 #+LaTeX: \begin{abstract}
@@ -22,13 +22,18 @@ previous repair method from x86 CISC architectures to the RISC MIPS
 architecture.  This repair constitutes the first instance in which
 multiple exploits are fixed in a single evolutionary run.
 
-A companion source code repository contains the instructions,
-programs, and tooling used to extract and execute a binary router
-image in a virtual machine, and to then use the virtualized router
-environment to repair the exploits.  These tools may be generalized to
-other binary executables, making it possible to patch future exploits
-in closed-source commercial application *before* the issues are
-addressed by the software vendor.
+In the pursuit of /Reproducible Research/ cite:buckheit1995wavelab, a
+companion version control repository [fn:1] contains the instructions,
+programs, and tooling used to extract and execute and repair the
+binary NETGEAR router image.  Additionally, the analysis performed in
+this document and all supporting figures may be automatically
+regenerated from new experimental data using the Org-mode Reproducible
+Research framework cite:schulte2012reproducible-research.
+
+The tooling and technique demonstrated herein may be generalized to
+other embedded binary executables, making it possible to patch future
+exploits in closed-source commercial application without waiting for
+the software vendor to acknowledge or address the exploit.
 #+LaTeX: \end{abstract}
 
 * Introduction
@@ -65,7 +70,6 @@ The contributions of this short paper are
 - an application of automated repair to a real-world un-patched
   security exploit
 - an example of iterative repair
-
 * Technique
 ** Router Firmware Extraction and Virtualization
 ** Mutation of stripped MIPS ELF Files
@@ -77,7 +81,10 @@ The contributions of this short paper are
 
 ** Parallel Automated Program Repair Technique
 ** Application of Technique
-* Analysis of Repair
+* Application
+** Description of Exploits
+
+** Analysis of Repair
 - The repairs required two distinct fixes to two different exploits in a
   single long evolutionary run (an instance of "iterative repair").
 
@@ -95,13 +102,25 @@ Apply Zak's technique of proactive repair and see if anything shakes
 out.
 
 * Related Work
-* Future Applications and Conclusion
+* Future Applications
 - proactive hardening
+  - shutting off (read:breaking) insecure functionality such as
+    password reset
+  - combination with a fuzz tester in a closed exploit/repair loop
 - distributed diversity
   - self certifying patches
 
-#+BEGIN_LATEX
-\bibliographystyle{plain}
-\bibliography{netgear-repair}
-#+END_LATEX
+* Conclusion
+This technique demonstrates the current ability of end users to fix
+software exploits in embedded devices without any special information
+or help from the software vendor.
+
+Estimate the amount of money cost by delay in release of vendor
+patches?
+
+#+BIBLIOGRAPHY: netgear-repair plain
+
+* Footnotes
+
+[fn:1] https://github.com/eschulte/netgear-repair
 
