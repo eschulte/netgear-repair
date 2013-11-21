@@ -1,5 +1,5 @@
 #+Title: Automated Repair of Exploits in NETGEAR Router Binary
-#+Author: Eric Schulte \and Stephanie Forrest
+#+Author: Eric Schulte\\ \ttt{eschulte@cs.unm.edu}
 #+LaTeX_CLASS: sigcomm-alternative
 #+Options: toc:nil ^:{}
 
@@ -32,12 +32,68 @@ addressed by the software vendor.
 #+LaTeX: \end{abstract}
 
 * Introduction
+The problem
+- new exploits arise every day
+- increasing number of internet-visible devices with the internet of
+  things means this will only increase
+- they're fixed quickly in open-source projects but most embedded
+  software is closed source
+- companies may take huge lengths of time to release fixes (must be
+  something citable)
+
+Our Solution
+- Using evolutionary program repair users can fix embedded software
+  directly.
+- The proof of the exploit becomes the test used to drive the fix.
+
+In the remainder of this paper we
+1. demonstrate the feasibility of running embedded software in a VM sandbox
+2. demonstrate a timely fix to real exploits in real firmware
+3. adapt existing techniques of automated program repair of x86 and
+   ARM ELF files to run on stripped MIPS executables with no section
+   tables
+4. analyze the resulting fixes for impact and maintainability
+5. and discuss the utility of this technique to disrupt mono-culture
+   and proactively fix bugs
+
+The contributions of this short paper are
+- use of system emulation to build a virtualized execution environment
+  allowing the evaluation of embedded device drivers
+- an application of automated repair to stripped MIPS ELF files
+  recovered from router firmware (parallel repair leverages benefits
+  of virtualized execution environment)
+- an application of automated repair to a real-world un-patched
+  security exploit
+- an example of iterative repair
+
 * Technique
-** Router Firmware Extraction
-** Evolutionary Repair Technique
+** Router Firmware Extraction and Virtualization
+** Mutation of stripped MIPS ELF Files
+- Brief overview of ELF format files.
+
+- The ELF file in question had no section table, so instead of
+  mutating the =.text= section all loadable program sections were
+  mutated
+
+** Parallel Automated Program Repair Technique
 ** Application of Technique
 * Analysis of Repair
-* Proactive Repair
+- The repairs required two distinct fixes to two different exploits in a
+  single long evolutionary run (an instance of "iterative repair").
+
+- The initial evolved repair broke untested behavior (e.g., it worked
+  when the cgi file was called directly on the command line but not
+  through the embedded [[http://wiki.openwrt.org/doc/uci/uhttpd][µHTTPd]] webserver).  The minimized version of
+  the repair fixed these issues and works as expected.
+
+- The initial evolved repair differed from the original at 789
+  distinct locations (measured with a unified diff), the minimized
+  differed from the original at 2 such locations.
+
+* TODO Proactive Repair?
+Apply Zak's technique of proactive repair and see if anything shakes
+out.
+
 * Related Work
 * Future Applications and Conclusion
 - proactive hardening
