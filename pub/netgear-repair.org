@@ -29,14 +29,51 @@ address the exploit.
 #+LaTeX: \end{abstract}
 
 * Introduction
-The problem
-- new exploits arise every day
-- increasing number of internet-visible devices with the internet of
-  things means this will only increase
-- they're fixed quickly in open-source projects but most embedded
-  software is closed source
-- companies may take huge lengths of time to release fixes (must be
-  something citable)
+Security exploits pose a significant monetary with cyber attacks
+estimated to have cost between $13 and $226 Billion in 2004
+cite:cashell2004economic.
+
+Upon discovering new exploits researchers are faced with a decision
+between immediately publicly announcing the exploit before the vendor
+is allowed time to develop a patch in a policy known as "full
+disclosure" or privately informing the vendor of the exploit.  The
+former increases the number of attacks while the vendor fixes the
+patch cite:arora2006does, while the later risks the vendor ignoring
+the exploit (e.g., Oracle reportedly waited months after researchers
+privately reported a bug in Java while thousands of users were
+attacked before releasing a fix cite:greenberg2012oracle).
+
+In 2002, special advisor for cyberspace security to then President
+Bush, Richard Clarke said "It is irresponsible and...extremely
+damaging to release information before the patch is out."  However
+there are instances when waiting to report may cause more damage and
+the question of when to report an exploit has been studied is not
+easily decidable in all cases cite:arora2008optimal.  It has been
+shown that reporting a flaw with a patch in hand reduces the total
+number of attacks cite:arora2006does.
+
+Software vendors commonly delay releasing patches to security
+exploits.  Microsoft waits until the second Tuesday of every month
+(known as "Patch Tuesday") to release security patches
+cite:lemos2003microsoft, leading malicious users to release new
+exploits on the second Wednesday of every month (known as "Exploit
+Wednesday") to maximize the time before a patch is released.
+
+In a study of high and medium risk vulnerabilities in Microsoft and
+Apple products between 2002 and 2008, ~10% of vulnerabilities were
+found not to be patched within 150 days of disclosure, and on any
+given date \sim10 vulnerabilities and >20 vulnerabilities were public and
+un-patched for Microsoft and Apple respectively cite:frei20080.
+
+We demonstrate a technique which may be used to automatically generate
+repairs to reproducible exploits cite:schulte2013embedded.  We
+demonstrate this technique by patching exploits in the NETGEAR
+WNDR3700 wireless router.  The technique requires no special
+information or access to source code making it possible for
+researchers to repair even stripped binary executables without any
+cooperation with the software vendor.
+
+
 
 Our Solution
 - Using evolutionary program repair users can fix embedded software
@@ -209,8 +246,9 @@ patches?
 * Footnotes
 
 [fn:1] https://github.com/eschulte/netgear-repair
-* COMMENT Notes [0/1]
+* COMMENT Notes [0/2]
 ** TODO define image and firmware
+** TODO collect average bug lifetime from a bug database
 * COMMENT Support
 #+begin_src emacs-lisp :results silent
   (setq org-babel-latex-htlatex "htlatex")
