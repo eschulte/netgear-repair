@@ -1,7 +1,8 @@
 #+Title: Automated Repair of Exploits in NETGEAR Router Binary
-#+Author:
-#+LaTeX_Class: sigcomm-alternative
+#+Author: Eric Schulte
 #+Options: toc:nil ^:{}
+#+HTML_Head: <link rel="stylesheet" type="text/css" href="../etc/netgear-repair.css" />
+#+LaTeX_Class: sigcomm-alternative
 #+LaTeX: \usetikzlibrary{arrows,decorations,decorations.pathreplacing,shapes}
 
 #+LaTeX: \begin{abstract}
@@ -22,19 +23,6 @@ inspected but no source code is available.  This generalized a
 previous repair method from x86 CISC architectures to the RISC MIPS
 architecture.  This repair constitutes the first instance in which
 multiple exploits are fixed in a single evolutionary run.
-
-In the pursuit of /Reproducible Research/ cite:buckheit1995wavelab, a
-companion version control repository [fn:1] contains the instructions,
-programs, and tooling used to extract and execute and repair the
-binary NETGEAR router image.  Additionally, the analysis performed in
-this document and all supporting figures may be automatically
-regenerated from new experimental data using the Org-mode Reproducible
-Research framework cite:schulte2012reproducible-research.
-
-The tooling and technique demonstrated herein may be generalized to
-other embedded binary executables, making it possible to patch future
-exploits in closed-source commercial application without waiting for
-the software vendor to acknowledge or address the exploit.
 #+LaTeX: \end{abstract}
 
 * Introduction
@@ -71,7 +59,22 @@ The contributions of this short paper are
 - an application of automated repair to a real-world un-patched
   security exploit
 - an example of iterative repair
-* Technique
+
+In the pursuit of /Reproducible Research/ cite:buckheit1995wavelab, a
+companion version control repository [fn:1] contains the instructions,
+programs, and tooling used to extract and execute and repair the
+binary NETGEAR router image.  Additionally, the analysis performed in
+this document and all supporting figures may be automatically
+regenerated from new experimental data using the Org-mode Reproducible
+Research framework cite:schulte2012reproducible-research.
+
+The tooling and technique demonstrated herein may be generalized to
+other embedded binary executables, making it possible to patch future
+exploits in closed-source commercial application without waiting for
+the software vendor to acknowledge or address the exploit.
+
+* Description of Exploits
+* Repair Technique
 ** Router Firmware Extraction and Virtualization
 ** Mutation of stripped MIPS ELF Files
 - Brief overview of ELF format files.
@@ -149,8 +152,9 @@ Was it 1 or 2 point crossover?
 
 ** Parallel Automated Program Repair Technique
 ** Application of Technique
-* Application
-** Description of Exploits
+* Repair Results
+** Repair Run
+parameters used, runtime, etc...
 
 ** Analysis of Repair
 - The repairs required two distinct fixes to two different exploits in a
@@ -165,12 +169,15 @@ Was it 1 or 2 point crossover?
   distinct locations (measured with a unified diff), the minimized
   differed from the original at 2 such locations.
 
-* TODO Proactive Repair?
+* COMMENT Proactive Repair?
 Apply Zak's technique of proactive repair and see if anything shakes
 out.
 
 * Related Work
-* Future Applications
+* Next Steps
+- operation directly on a binary image
+  - would require better virtualization
+  - would require better fault localization
 - proactive hardening
   - shutting off (read:breaking) insecure functionality such as
     password reset
