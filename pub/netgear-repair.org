@@ -2,6 +2,7 @@
 #+Author:
 #+LaTeX_Class: sigcomm-alternative
 #+Options: toc:nil ^:{}
+#+LaTeX: \usetikzlibrary{arrows,decorations,decorations.pathreplacing,shapes}
 
 #+LaTeX: \begin{abstract}
 Version 4 of NETGEAR's WNDR3700 wireless router contains exploits
@@ -79,6 +80,73 @@ The contributions of this short paper are
   mutating the =.text= section all loadable program sections were
   mutated
 
+#+name: ELF-layout
+#+header: :file (by-backend (html "elf-layout.svg") (t 'nil))
+#+header: :results (by-backend (pdf "latex") (t "raw"))
+#+begin_src latex
+  \begin{tikzpicture}
+    \node[draw,rectangle] (elf) at (0,0) {ELF};
+  \end{tikzpicture}
+#+end_src
+
+Was it 1 or 2 point crossover?
+
+#+name: mutation-ops
+#+header: :file (by-backend (html "mut-ops.svg") (t 'nil))
+#+header: :results (by-backend (pdf "latex") (t "raw"))
+#+begin_src latex
+  \tikzstyle{asmrow} = [rectangle, draw, minimum width=2em, minimum height=1em]
+  \begin{tikzpicture}
+    % Mutation
+    \foreach \x in {-3.5,-2.5,-0.5,0.5,2.5,3.5}{
+      \foreach \y in {-0.8,-0.4,0,0.4,0.8}{
+        \node[asmrow,fill=green!40] at (\x,\y) {};
+      }
+    }
+    % Replace
+    \node at (-3,1.25) {Replace};
+    \node[asmrow,fill=yellow!20] (c-from) at (-3.5,0.4) {};
+    \node[asmrow,fill=blue!60] at (-3.5,-0.4) {};
+    % replace-after
+    \node[asmrow,fill=yellow!20] at (-2.5,0.4) {};
+    \node[asmrow,fill=yellow!20] (c-to) at (-2.5,-0.4) {};
+    \node[asmrow,fill=green!40]  at (-2.5,-0.8) {};
+    % Delete
+    \node at (0,1.25) {Delete};
+    \node[asmrow,fill=red!40] (d-from) at (-0.5,0) {};
+    % delete-after
+    \node[asmrow,fill=white] (d-to) at (0.5,0) {\scriptsize{0x0}};
+    % Swap
+    \node at (3,1.25) {Swap};
+    \node[asmrow,fill=yellow!20] (s1-from) at (2.5,0.4) {};
+    \node[asmrow,fill=blue!60] (s2-from) at (2.5,-0.4) {};
+    % swap-after
+    \node[asmrow,fill=blue!60] (s2-to) at (3.5,0.4) {};
+    \node[asmrow,fill=yellow!20] (s1-to) at (3.5,-0.4) {};
+    % arrows
+    \draw[->,thick] (c-from.east) to (c-to.west);
+    \draw[->,thick] (d-from.east) to (d-to.west);
+    \draw[->,thick] (s1-from.east) to (s1-to.west);
+    \draw[->,thick] (s2-from.east) to (s2-to.west);
+    % Crossover
+    \foreach \x in {-1.5,1.5}{
+      \foreach \y in {-3.8,-3.4,-3,-2.6,-2.2}{
+        \node[asmrow,fill=green!40] at (\x,\y) {};
+      }
+    }
+    \foreach \x in {-0.5}{
+      \foreach \y in {-3.8,-3.4,-3,-2.6,-2.2}{
+        \node[asmrow,fill=blue!60] at (\x,\y) {};
+      }
+    }
+    \node at (0,-1.7) {Two Point Crossover};
+    \draw[->,thick] (-2,-2.4) to (2,-2.4);
+    \draw[->,thick] (-2,-3.2) to (2,-3.2);
+    \node[asmrow,fill=blue!60] at (1.5,-2.6) {};
+    \node[asmrow,fill=blue!60] at (1.5,-3) {};
+  \end{tikzpicture}
+#+end_src
+
 ** Parallel Automated Program Repair Technique
 ** Application of Technique
 * Application
@@ -123,4 +191,9 @@ patches?
 * Footnotes
 
 [fn:1] https://github.com/eschulte/netgear-repair
-
+* COMMENT Support
+#+begin_src emacs-lisp :results silent
+  (setq org-babel-latex-htlatex "htlatex")
+  (defmacro by-backend (&rest body)
+    `(case (if (boundp 'backend) (org-export-backend-name backend) nil) ,@body))
+#+end_src
