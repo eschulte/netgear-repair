@@ -17,12 +17,15 @@ found before NETGEAR addressed these exploits---to the author's
 knowledge NETGEAR has not patched these exploits at the time of
 submission.
 
-We describe the method of repair which requires is applicable to any
-"gray box" application in which stripped binary executables may be
-inspected but no source code is available.  This generalized a
-previous repair method from x86 CISC architectures to the RISC MIPS
-architecture.  This repair constitutes the first instance in which
-multiple exploits are fixed in a single evolutionary run.
+We walk through the repair process including; extraction of the faulty
+executable from a firmware image distributed by NETGEAR, reproduction
+the exploits in a virtual machine, and application of the repair
+technique.  The tooling and technique demonstrated herein (made
+available under open source licensing [fn:1]) may be generalized to
+other embedded binary executables and any reproducible exploit, making
+it possible to patch future exploits in closed-source commercial
+application without waiting for the software vendor to acknowledge or
+address the exploit.
 #+LaTeX: \end{abstract}
 
 * Introduction
@@ -84,19 +87,24 @@ the software vendor to acknowledge or address the exploit.
   mutated
 
 #+name: ELF-layout
-#+header: :file (by-backend (html "elf-layout.svg") (t 'nil))
+#+header: :file (by-backend (latex 'nil) (t "elf-layout.svg"))
 #+header: :results (by-backend (pdf "latex") (t "raw"))
+#+header: :cache (by-backend (latex "no") (t "yes"))
 #+begin_src latex
   \begin{tikzpicture}
     \node[draw,rectangle] (elf) at (0,0) {ELF};
   \end{tikzpicture}
 #+end_src
 
+#+RESULTS[bb66ecd978d3ee64cd671d03133e643c6fc7e8db]: ELF-layout
+[[file:elf-layout.svg]]
+
 Was it 1 or 2 point crossover?
 
 #+name: mutation-ops
-#+header: :file (by-backend (html "mut-ops.svg") (t 'nil))
+#+header: :file (by-backend (latex 'nil) (t "mut-ops.svg"))
 #+header: :results (by-backend (pdf "latex") (t "raw"))
+#+header: :cache (by-backend (latex "no") (t "yes"))
 #+begin_src latex
   \tikzstyle{asmrow} = [rectangle, draw, minimum width=2em, minimum height=1em]
   \begin{tikzpicture}
@@ -150,6 +158,9 @@ Was it 1 or 2 point crossover?
   \end{tikzpicture}
 #+end_src
 
+#+RESULTS[17b362c56616d0afadd5ff0131a9baaacdfdb23b]: mutation-ops
+[[file:mut-ops.svg]]
+
 ** Parallel Automated Program Repair Technique
 ** Application of Technique
 * Repair Results
@@ -198,6 +209,8 @@ patches?
 * Footnotes
 
 [fn:1] https://github.com/eschulte/netgear-repair
+* COMMENT Notes [0/1]
+** TODO define image and firmware
 * COMMENT Support
 #+begin_src emacs-lisp :results silent
   (setq org-babel-latex-htlatex "htlatex")
