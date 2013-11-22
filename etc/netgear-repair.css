@@ -1,6 +1,6 @@
 @media all and (min-width: 1000px){
     body {
-        max-width: 900px;
+        max-width: 80%;
         margin: auto; } }
 
 @media all and (max-width: 1000px){
@@ -35,3 +35,6 @@ blockquote {
 pre {
     background: #2e3436;
     color: #eeeeec; }
+
+p {
+    text-align: justify; }
