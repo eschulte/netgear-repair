@@ -9,26 +9,31 @@
 Upon discovering a software exploit security researchers must decide
 either to publish the exploit informing users but risking increasing
 use by attackers, or to privately inform the software vendor leaving
-users in the dark and risking delay by the vendor.  We propose a third
-option in which researchers use newly discovered exploits to drive an
-automated repair technique capable of patching exploits with no access
-to source code or special information from the software vendor.
+users in the dark and risking delay by the vendor.  We propose an
+alternative in which researchers use the newly discovered exploits to
+drive an automated repair technique capable of patching exploits with
+no access to source code or special information from the software
+vendor.
 
 We demonstrate this approach by patching recently discovered exploits
 in version 4 of NETGEAR's WNDR3700 wireless router /before/ NETGEAR
 publicly addressed the exploits---to the author's knowledge NETGEAR
 has not patched these exploits at the time of submission.
 
-We demonstrate the repair process including; extraction of the faulty
+We describe the repair process including; extraction of the faulty
 executable from a firmware image distributed by NETGEAR, reproduction
-the exploits in a virtual machine, and application of the repair
-technique.  We analyze the feasibility of this technique and discuss
-the implications for the security community.
+of the exploits in a virtual machine, composition of a regression test
+suite, and application of the repair technique.  Of these the
+composition of a regression test suite places the largest burden on
+security researchers.  We address this concern by analyzing the
+feasibility and utility of this technique using various quality
+regression test suites and discuss the implications for the security
+community.
 
-The tooling and technique demonstrated herein are available under open
-source licensing [fn:1] and may be generalized to other embedded
-binary executables and reproducible exploits increasing the options
-available to security researchers upon discovering new exploits.
+# The tooling and technique demonstrated herein are available under open
+# source licensing [fn:1] and may be generalized to other embedded
+# binary executables and reproducible exploits increasing the options
+# available to security researchers upon discovering new exploits.
 #+LaTeX: \end{abstract}
 
 * Introduction
