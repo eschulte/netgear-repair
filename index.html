@@ -1,259 +1,45 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-<head>
-<title>Automated Repair of Exploits in NETGEAR Router Binary</title>
-<!-- 2013-11-19 Tue 11:22 -->
-<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
-<meta  name="generator" content="Org-mode" />
-<style type="text/css">
- <!--/*--><![CDATA[/*><!--*/
-  .title  { text-align: center; }
-  .todo   { font-family: monospace; color: red; }
-  .done   { color: green; }
-  .tag    { background-color: #eee; font-family: monospace;
-            padding: 2px; font-size: 80%; font-weight: normal; }
-  .timestamp { color: #bebebe; }
-  .timestamp-kwd { color: #5f9ea0; }
-  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
-  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
-  .center { margin-left: auto; margin-right: auto; text-align: center; }
-  .underline { text-decoration: underline; }
-  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
-  p.verse { margin-left: 3%; }
-  pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
-    padding: 8pt;
-    font-family: monospace;
-    overflow: auto;
-    margin: 1.2em;
-  }
-  pre.src {
-    position: relative;
-    overflow: visible;
-    padding-top: 1.2em;
-  }
-  pre.src:before {
-    display: none;
-    position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
-    padding: 3px;
-    border: 1px solid black;
-  }
-  pre.src:hover:before { display: inline;}
-  pre.src-sh:before    { content: 'sh'; }
-  pre.src-bash:before  { content: 'sh'; }
-  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
-  pre.src-R:before     { content: 'R'; }
-  pre.src-perl:before  { content: 'Perl'; }
-  pre.src-java:before  { content: 'Java'; }
-  pre.src-sql:before   { content: 'SQL'; }
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head><title>Automated Repair of Exploits in NETGEAR Router Binary</title></head>
+  <body>
+    <h1>Automated Repair of Exploits in NETGEAR Router Binary</h1>
 
-  table { border-collapse:collapse; }
-  td, th { vertical-align:top;  }
-  th.right  { text-align: center;  }
-  th.left   { text-align: center;   }
-  th.center { text-align: center; }
-  td.right  { text-align: right;  }
-  td.left   { text-align: left;   }
-  td.center { text-align: center; }
-  dt { font-weight: bold; }
-  .footpara:nth-child(2) { display: inline; }
-  .footpara { display: block; }
-  .footdef  { margin-bottom: 1em; }
-  .figure { padding: 1em; }
-  .figure p { text-align: center; }
-  .inlinetask {
-    padding: 10px;
-    border: 2px solid gray;
-    margin: 10px;
-    background: #ffffcc;
-  }
-  #org-div-home-and-up
-   { text-align: right; font-size: 70%; white-space: nowrap; }
-  textarea { overflow-x: auto; }
-  .linenr { font-size: smaller }
-  .code-highlighted { background-color: #ffff00; }
-  .org-info-js_info-navigation { border-style: none; }
-  #org-info-js_console-label
-    { font-size: 10px; font-weight: bold; white-space: nowrap; }
-  .org-info-js_search-highlight
-    { background-color: #ffff00; color: #000000; font-weight: bold; }
-  /*]]>*/-->
-</style>
-<link rel="stylesheet" type="text/css" href="etc/netgear-repair.css" />
-<script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
+    <p>NETGEAR's WNDR3700 [1] is a very popular wireless router.  Version 4
+      of the WNDR3700 contains exploits allowing unauthenticated users to
+      change administrative options and completely disable authentication
+      across reboots (see [2] for a full description of the exploits).</p>
 
-Copyright (C) 2012-2013 Free Software Foundation, Inc.
+    <p>We fixed these exploits using a method of automated program repair
+      which operates directly on binary ELF files and requires no access to
+      source code [3].  This fix was found before NETGEAR addressed these
+      exploits---to my knowledge NETGEAR has not yet patched these exploits
+      in the latest release of the firmware 1.0.1.42 as of 2013-11-19.</p>
 
-The JavaScript code in this tag is free software: you can
-redistribute it and/or modify it under the terms of the GNU
-General Public License (GNU GPL) as published by the Free Software
-Foundation, either version 3 of the License, or (at your option)
-any later version.  The code is distributed WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+    <p>The exploits exist in the WNDR3700's web interface.  A single ELF
+      executable CGI file serves this interface and applies configuration
+      changes made using the interface to the router.  Using copies of the
+      NETGEAR firmware running in virtual machines to evaluate the fitness
+      of candidate repairs, our technique discovered changes to this ELF
+      file which patch the exploits described in [2].</p>
 
-As additional permission under GNU GPL version 3 section 7, you
-may distribute non-source (e.g., minimized or compacted) forms of
-that code without the copy of the GNU GPL normally required by
-section 4, provided you include this license notice and a URL
-through which recipients can access the Corresponding Source.
+    <p>This repository contains the instructions, code, and tooling used to
+      develop this repair.  These tools may be used to automatically change
+      the behavior other binary ELF executables, making it possible to fix
+      customize and alter binaries executables without any aid from the
+      software's developer.</p>
 
+    <p>A detailed description of the exploit and the repair technique and the
+      repairs found is available at [4] and step by step instructions to
+      reproduce this repair are given in INSTRUCTIONS.</p>
 
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
-<!--/*--><![CDATA[/*><!--*/
- function CodeHighlightOn(elem, id)
- {
-   var target = document.getElementById(id);
-   if(null != target) {
-     elem.cacheClassElem = elem.className;
-     elem.cacheClassTarget = target.className;
-     target.className = "code-highlighted";
-     elem.className   = "code-highlighted";
-   }
- }
- function CodeHighlightOff(elem, id)
- {
-   var target = document.getElementById(id);
-   if(elem.cacheClassElem)
-     elem.className = elem.cacheClassElem;
-   if(elem.cacheClassTarget)
-     target.className = elem.cacheClassTarget;
- }
-/*]]>*///-->
-</script>
-</head>
-<body>
-<div id="content">
-<h1 class="title">Automated Repair of Exploits in NETGEAR Router Binary</h1>
-<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">Summary</a></li>
-<li><a href="#sec-2"><span class="todo TODO">TODO</span> Description of Exploits</a></li>
-<li><a href="#sec-3"><span class="todo TODO">TODO</span> Run Router in a Virtual Machine</a></li>
-<li><a href="#sec-4"><span class="todo TODO">TODO</span> Evolutionary Repair Technique</a></li>
-<li><a href="#sec-5"><span class="todo TODO">TODO</span> Application of Repair Technique</a></li>
-<li><a href="#sec-6"><span class="todo TODO">TODO</span> Analysis of Evolved Repair</a></li>
-</ul>
-</div>
-</div>
-<div id="outline-container-sec-1" class="outline-2">
-<h2 id="sec-1">Summary</h2>
-<div class="outline-text-2" id="text-1">
-<p>
-Version 4 of NETGEAR's WNDR3700 wireless router contains exploits
-allowing unauthenticated users to change administrative options and
-completely disable authentication across reboots (see <sup><a id="fnr.1" name="fnr.1" class="footref" href="#fn.1">1</a></sup>).
-</p>
+    <p>Thanks to Zachary Cutlip for help reproducing these exploits in a VM.</p>
 
-<p>
-We fix these exploits using a method of automated program
-repair <sup><a id="fnr.2" name="fnr.2" class="footref" href="#fn.2">2</a></sup> which operates directly on binary ELF files and requires
-no access to source code.  This fix was found before NETGEAR addressed
-these exploits&#x2014;to my knowledge NETGEAR has not yet patched these
-exploits in the latest release of the firmware 1.0.1.42 as of
-2013-11-19.
-</p>
+    <p>Footnotes:</p>
+    <p>[1]  <a href="http://www.netgear.com/home/products/networking/wifi-routers/wndr3700.aspx">http://www.netgear.com/home/products/networking/wifi-routers/wndr3700.aspx</a></p>
 
-<p>
-This repository contains the instructions, code, and tooling used to
-develop this repair.  These tools may be used to automatically change
-the behavior other binary ELF executables, making it possible to fix
-customize and alter binaries executables without any aid from the
-software's developer.
-</p>
+    <p>[2]  <a href="http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html">http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html</a></p>
 
-<p>
-A detailed description of the exploit and the repair technique and the
-repairs found is available at <sup><a id="fnr.3" name="fnr.3" class="footref" href="#fn.3">3</a></sup> and step by step instructions to
-reproduce this repair are given in <a href="INSTRUCTIONS.html">INSTRUCTIONS</a>.
-</p>
+    <p>[3]  <a href="http://cs.unm.edu/~eschulte/data/schulte2013embedded.pdf">http://cs.unm.edu/~eschulte/data/schulte2013embedded.pdf</a></p>
 
-<p>
-Thanks to Zachary Cutlip for help reproducing these exploits in a VM.
-</p>
-</div>
-</div>
-<div id="outline-container-sec-2" class="outline-2">
-<h2 id="sec-2"><span class="todo TODO">TODO</span> Description of Exploits</h2>
-</div>
-<div id="outline-container-sec-3" class="outline-2">
-<h2 id="sec-3"><span class="todo TODO">TODO</span> Run Router in a Virtual Machine</h2>
-</div>
-<div id="outline-container-sec-4" class="outline-2">
-<h2 id="sec-4"><span class="todo TODO">TODO</span> Evolutionary Repair Technique</h2>
-<div class="outline-text-2" id="text-4">
-<ul class="org-ul">
-<li>The repair required working over MIPS RISC assembler allowing for
-simplified mutation operators.
-</li>
-</ul>
-</div>
-</div>
-<div id="outline-container-sec-5" class="outline-2">
-<h2 id="sec-5"><span class="todo TODO">TODO</span> Application of Repair Technique</h2>
-</div>
-<div id="outline-container-sec-6" class="outline-2">
-<h2 id="sec-6"><span class="todo TODO">TODO</span> Analysis of Evolved Repair</h2>
-<div class="outline-text-2" id="text-6">
-<ul class="org-ul">
-<li>The ELF file in question had no section table, so instead of
-mutating the <code>.text</code> section all loadable program sections were
-mutated
-</li>
-
-<li>The repairs required two distinct fixes to two different exploits in a
-single long evolutionary run (an instance of "iterative repair").
-</li>
-
-<li>The initial evolved repair broke untested behavior (e.g., it worked
-when the cgi file was called directly on the command line but not
-through the embedded <a href="http://wiki.openwrt.org/doc/uci/uhttpd">µHTTPd</a> webserver).  The minimized version of
-the repair fixed these issues and works as expected.
-</li>
-
-<li>The initial evolved repair differed from the original at 789
-distinct locations (measured with a unified diff), the minimized
-differed from the original at 2 such locations.
-</li>
-</ul>
-</div>
-</div>
-<div id="footnotes">
-<h2 class="footnotes">Footnotes: </h2>
-<div id="text-footnotes">
-
-<div class="footdef"><sup><a id="fn.1" name="fn.1" class="footnum" href="#fnr.1">1</a></sup> <p>
-<a href="http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html">http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html</a>
-</p></div>
-
-<div class="footdef"><sup><a id="fn.2" name="fn.2" class="footnum" href="#fnr.2">2</a></sup> <p>
-<a href="http://cs.unm.edu/~eschulte/data/schulte2013embedded.pdf">http://cs.unm.edu/~eschulte/data/schulte2013embedded.pdf</a>
-</p></div>
-
-<div class="footdef"><sup><a id="fn.3" name="fn.3" class="footnum" href="#fnr.3">3</a></sup> <p>
-<a href="http://eschulte.github.io/netgear-repair">http://eschulte.github.io/netgear-repair</a>
-</p></div>
-
-
-</div>
-</div></div>
-<div id="postamble" class="status">
-<p class="date">Created: 2013-11-19 Tue 11:22</p>
-<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.3c)</p>
-<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
-</div>
-</body>
+    <p>[4]  <a href="http://eschulte.github.io/netgear-repair">http://eschulte.github.io/netgear-repair</a></p>
+  </body>
 </html>
