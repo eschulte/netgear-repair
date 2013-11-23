@@ -125,10 +125,11 @@ the software vendor to acknowledge or address the exploit.
   :PROPERTIES:
   :CUSTOM_ID: exploits
   :END:
-In this work we repair a pair of exploits in the popular NETGEAR
-WNDR3700 wireless router.  Both exploits exist in the router's web
-server in a binary named =net-cgi=, and both are related to how
-=net-cgi= handles authentication cite:zcutlip.
+In this work we repair a pair of exploits in version 4 the popular
+NETGEAR WNDR3700 wireless router.  The "shodan" device search engine
+reports 1496 vulnerable routers cite:shodan.  Both exploits exist in
+the router's web server in a binary named =net-cgi=, and both are
+related to how =net-cgi= handles authentication cite:zcutlip.
 
 1. Any URI starting with the string "BRS" bypasses authentication.
 
@@ -143,10 +144,42 @@ passwords, and by accessing the page
 disable authentication in a manner which is permanent across reboots.
 
 * Repair Technique
+To repair the =net-cgi= file we must extract the binary executable and
+router file system from the firmware image distributed by NETGEAR.
+Using the extracted filesystem and executable we construct a test
+harness used both to exercise desirable behavior of =net-cgi= and to
+exercise the exploits.  This test harness will be the fitness function
+used by our GA repair algorithm to evaluate candidate repairs and to
+identify when repairs to the exploits have been found.
+
 ** Router Firmware Extraction and Virtualization
    :PROPERTIES:
    :CUSTOM_ID: firmware
    :END:
+NETGEAR distributes firmware holding a full system image for the
+WNDR3700 router which include the router file system holding the
+vulnerable =net-cgi= executable.  Extraction of the file system may be
+accomplished using =binwalk= [fn:2], a firmware extraction tool which
+scans the binary data in the firmware file searching for signatures
+which identify the types of embedded data.  The =binwalk= tool
+includes rules for identifying and extracting common embedded data
+types, include a squashfs cite:lougher2006squashfs section holding the
+router filesystem.
+
+The router runs on a big-endian MIPS architecture.  Using the QEMU
+cite:bellard2005qemu system emulator to emulate this architecture the
+Debian Linux operating system is run in emulation.  After copying the
+extracted router filesystem into the emulated MIPS Linux system,
+commands may be executed in the environment which closely approximates
+the environment of the NETGEAR router using the =chroot= command
+pointing to the base of the extracted NETGEAR file system.
+
+With this accomplished (and with a number of minor adjustments
+described in full in the reproduction information [fn:3]) is it
+possible to test both the existing desirable functionality and the
+exploitable vulnerabilities in the =net-cgi= executable from the
+command line using a Bash shell script [fn:4].
+
 ** Mutation of stripped MIPS ELF Files
    :PROPERTIES:
    :CUSTOM_ID: mips-mutation
@@ -282,6 +315,13 @@ patches?
 * Footnotes
 
 [fn:1] https://github.com/eschulte/netgear-repair
+
+[fn:2] http://binwalk.org
+
+[fn:3] http://eschulte.github.io/netgear-repair/INSTRUCTIONS.html
+
+[fn:4] https://github.com/eschulte/netgear-repair/blob/master/bin/test-cgi
+
 * COMMENT Notes [0/2]
 ** TODO define image and firmware
 ** TODO collect average bug lifetime from a bug database
