@@ -1,14 +1,22 @@
         Automated Repair of Exploits in NETGEAR Router Binary
 
-Version 4 of NETGEAR's WNDR3700 wireless router contains exploits
-allowing unauthenticated users to change administrative options and
-completely disable authentication across reboots (see [1]).
+NETGEAR's WNDR3700 [1] is a very popular wireless router.  Version 4
+of the WNDR3700 contains exploits allowing unauthenticated users to
+change administrative options and completely disable authentication
+across reboots (see [2] for a full description of the exploits).
 
-We fix these exploits using a method of automated program repair [2]
+We fixed these exploits using a method of automated program repair
 which operates directly on binary ELF files and requires no access to
-source code.  This fix was found before NETGEAR addressed these
+source code [3].  This fix was found before NETGEAR addressed these
 exploits---to my knowledge NETGEAR has not yet patched these exploits
 in the latest release of the firmware 1.0.1.42 as of 2013-11-19.
+
+The exploits exist in the WNDR3700's web interface.  A single ELF
+executable CGI file serves this interface and applies configuration
+changes made using the interface to the router.  Using copies of the
+NETGEAR firmware running in virtual machines to evaluate the fitness
+of candidate repairs, our technique discovered changes to this ELF
+file which patch the exploits described in [2].
 
 This repository contains the instructions, code, and tooling used to
 develop this repair.  These tools may be used to automatically change
@@ -17,14 +25,16 @@ customize and alter binaries executables without any aid from the
 software's developer.
 
 A detailed description of the exploit and the repair technique and the
-repairs found is available at [3] and step by step instructions to
+repairs found is available at [4] and step by step instructions to
 reproduce this repair are given in INSTRUCTIONS.
 
 Thanks to Zachary Cutlip for help reproducing these exploits in a VM.
 
 Footnotes:
-[1]  http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
+[1]  http://www.netgear.com/home/products/networking/wifi-routers/wndr3700.aspx
 
-[2]  http://cs.unm.edu/~eschulte/data/schulte2013embedded.pdf
+[2]  http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html
 
-[3]  http://eschulte.github.io/netgear-repair
+[3]  http://cs.unm.edu/~eschulte/data/schulte2013embedded.pdf
+
+[4]  http://eschulte.github.io/netgear-repair
