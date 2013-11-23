@@ -65,48 +65,53 @@ found not to be patched within 150 days of disclosure, and on any
 given date \sim10 vulnerabilities and >20 vulnerabilities were public and
 un-patched for Microsoft and Apple respectively cite:frei20080.
 
-We demonstrate a technique which may be used to automatically generate
-repairs to reproducible exploits cite:schulte2013embedded.  We
-demonstrate this technique by patching exploits in the NETGEAR
-WNDR3700 wireless router.  The technique requires no special
-information or access to source code making it possible for
+We propose a new option for security researchers in which verifiable
+exploits are used to automatically generate patches.  Such patches may
+be either published with the exploit, or sent privately to the
+software vendor where they may speed the development of a patch
+cite:weimer06.
+
+We demonstrate the feasibility of this approach using a technique of
+automated program repair applicable to both assembly code to binary
+ELF files cite:schulte2013embedded, to patch security vulnerabilities
+in the NETGEAR WNDR3700 wireless router.  The technique requires no
+special information or access to source code making it possible for
 researchers to repair even stripped binary executables without any
-cooperation with the software vendor.
+cooperation with the software vendor.  This technique should be
+realizable to any verified exploit, the proof of the exploit becomes
+the fitness function used to drive the repair algorithm.
 
+In the remainder of this paper we; review two recent exploits to the
+widely distributed (over XXXX available through shodan) NETGEAR
+WNDR3700 (Section [[#exploits]]), demonstrate the feasibility of running
+embedded firmware in a VM sandbox (Section [[#firmware]]), adapt existing
+techniques of automated program repair of x86 and ARM ELF files to run
+on stripped MIPS executables with no section tables (Section
+[[#mips-mutation]]) which are evolved in a parallelized steady state
+genetic algorithm and minimized using delta debugging (Section
+[[#pll-ga]]).  We then analyze the runtime behavior and results of the
+repair algorithm with respect to their functionality, security and
+maintainability.
 
+The contributions of this short paper are;
+1. use of system emulation to build a virtualized execution
+   environment allowing the evaluation of embedded device drivers
+2. an application of automated repair to stripped MIPS ELF files
+   recovered from router firmware
+3. an application of automated repair to a real-world un-patched
+   security exploit resulting in
+4. the first demonstration of multiple repair in a single evolutionary
+   run.
 
-Our Solution
-- Using evolutionary program repair users can fix embedded software
-  directly.
-- The proof of the exploit becomes the test used to drive the fix.
-
-In the remainder of this paper we
-1. demonstrate the feasibility of running embedded software in a VM sandbox
-2. demonstrate a timely fix to real exploits in real firmware
-3. adapt existing techniques of automated program repair of x86 and
-   ARM ELF files to run on stripped MIPS executables with no section
-   tables
-4. analyze the resulting fixes for impact and maintainability
-5. and discuss the utility of this technique to disrupt mono-culture
-   and proactively fix bugs
-
-The contributions of this short paper are
-- use of system emulation to build a virtualized execution environment
-  allowing the evaluation of embedded device drivers
-- an application of automated repair to stripped MIPS ELF files
-  recovered from router firmware (parallel repair leverages benefits
-  of virtualized execution environment)
-- an application of automated repair to a real-world un-patched
-  security exploit
-- an example of iterative repair
-
-In the pursuit of /Reproducible Research/ cite:buckheit1995wavelab, a
-companion version control repository [fn:1] contains the instructions,
-programs, and tooling used to extract and execute and repair the
-binary NETGEAR router image.  Additionally, the analysis performed in
-this document and all supporting figures may be automatically
-regenerated from new experimental data using the Org-mode Reproducible
-Research framework cite:schulte2012reproducible-research.
+In the pursuit of /Reproducible Research/ cite:buckheit1995wavelab
+cite:mesirov2010accessible and to encourage researchers to patches
+future discovered exploits, a companion version control
+repository [fn:1] contains the instructions, programs, and tooling
+used to extract and execute and repair the binary NETGEAR router
+image.  Additionally, the analysis performed in this document and all
+supporting figures may be automatically regenerated from new
+experimental data using the Org-mode Reproducible Research framework
+cite:schulte2012reproducible-research.
 
 The tooling and technique demonstrated herein may be generalized to
 other embedded binary executables, making it possible to patch future
@@ -114,9 +119,18 @@ exploits in closed-source commercial application without waiting for
 the software vendor to acknowledge or address the exploit.
 
 * Description of Exploits
+  :PROPERTIES:
+  :CUSTOM_ID: exploits
+  :END:
 * Repair Technique
 ** Router Firmware Extraction and Virtualization
+   :PROPERTIES:
+   :CUSTOM_ID: firmware
+   :END:
 ** Mutation of stripped MIPS ELF Files
+   :PROPERTIES:
+   :CUSTOM_ID: mips-mutation
+   :END:
 - Brief overview of ELF format files.
 
 - The ELF file in question had no section table, so instead of
@@ -199,7 +213,9 @@ Was it 1 or 2 point crossover?
 [[file:mut-ops.svg]]
 
 ** Parallel Automated Program Repair Technique
-** Application of Technique
+   :PROPERTIES:
+   :CUSTOM_ID: pll-ga
+   :END:
 * Repair Results
 ** Repair Run
 parameters used, runtime, etc...
