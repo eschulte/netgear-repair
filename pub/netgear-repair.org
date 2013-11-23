@@ -184,11 +184,23 @@ command line using a Bash shell script [fn:4].
    :PROPERTIES:
    :CUSTOM_ID: mips-mutation
    :END:
-- Brief overview of ELF format files.
+The repair of ELF format files is an extension of the technique
+introduced in cite:schulte2013embedded.  The mutation operations are
+used to modify the execution behavior of the ELF file.  In this case
+the =net-cgi= file is stripped a minimal ELF file which does not
+include much of the information assumed to exist by the previous
+repair technique.
 
-- The ELF file in question had no section table, so instead of
-  mutating the =.text= section all loadable program sections were
-  mutated
+ELF (Executable and Linking Format) cite:tis1995tool files may either
+be executed directly or may be linked with other files for future
+execution.  The ELF file contains a number of headers and tables
+containing administrative data, and sections holding program code and
+data.  The three main administrative elements of an ELF file are the
+ELF Header, the section table and the program table (see Figure [[elf]]).
+The ELF Header points to the section table and the program table, the
+section table holds information on the layout of sections in the ELF
+file on disk, and the program table holds information on how to copy
+section from disk into memory for program execution.
 
 #+name: ELF-layout
 #+header: :file (by-backend (latex 'nil) (t "elf-layout.svg"))
@@ -196,14 +208,43 @@ command line using a Bash shell script [fn:4].
 #+header: :cache (by-backend (latex "no") (t "yes"))
 #+begin_src latex
   \begin{tikzpicture}
-    \node[draw,rectangle] (elf) at (0,0) {ELF};
+    \node[draw,rectangle] (header) at (0,2) {ELF Header};
+    \node[draw,rectangle] (st) at (0,0) {Section Table};
+    \node[draw,rectangle] (body) at (0,-2) {...};
+    \node[draw,rectangle] (pt) at (0,-4) {Program Table};
   \end{tikzpicture}
 #+end_src
 
-#+RESULTS[bb66ecd978d3ee64cd671d03133e643c6fc7e8db]: ELF-layout
+#+label: elf
+#+Caption: Sections of an Executable and Linking Format (ELF) file.
+#+RESULTS[231e95ccf88ea7ad53cb8e22e97f1c1cdf720ff1]: ELF-layout
 [[file:elf-layout.svg]]
 
-Was it 1 or 2 point crossover?
+While the majority of ELF files include all three of these elements,
+only the ELF Header is guaranteed to exist.  In executable ELF files
+only the program table is required, and in linkable files only the
+section table is required.
+
+The previous ELF repair tool required a section table and a section
+name string table, which were used to find the =.text= section of the
+ELF file where program code is normally stored.  The data in the
+=.text= section was then coerced into a "genome" a linear array of
+assembly instructions which was modified by the mutation operations.
+Our extension of this technique does not require a section table,
+instead we build the genome from every section in the program table
+which has a "loadable" type.  These are the sections which are loaded
+into memory during program execution.
+
+Mutation operations must change program data without corrupting the
+structure of the file or breaking the many addresses hard coded into
+the program data itself (in general it is impossible to distinguish
+between an integer literal and an address in program data).  For this
+reason the mutation operations are designed to preserve the absolute
+size and the offsets within of the ELF program data.  This is made
+much easier because the MIPS is a RISC (Reduced Instruction Set
+Computing) architecture in which every argumented assembly instruction
+is 1 word long cite:hennessy1982mips.  The mutation and crossover
+operations used to modify ELF files are shown in Figure [[mutation-ops]].
 
 #+name: mutation-ops
 #+header: :file (by-backend (latex 'nil) (t "mut-ops.svg"))
@@ -262,6 +303,7 @@ Was it 1 or 2 point crossover?
   \end{tikzpicture}
 #+end_src
 
+#+label: mutation-ops
 #+RESULTS[17b362c56616d0afadd5ff0131a9baaacdfdb23b]: mutation-ops
 [[file:mut-ops.svg]]
 
