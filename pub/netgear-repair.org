@@ -6,45 +6,49 @@
 #+LaTeX: \usetikzlibrary{arrows,decorations,decorations.pathreplacing,shapes}
 
 #+LaTeX: \begin{abstract}
-Version 4 of NETGEAR's WNDR3700 wireless router contains exploits
-allowing unauthenticated users to change administrative options and
-completely disable authentication across reboots cite:zcutlip.
+Upon discovering a software exploit security researchers must decide
+either to publish the exploit informing users but risking increasing
+use by attackers, or to privately inform the software vendor leaving
+users in the dark and risking delay by the vendor.  We propose a third
+option in which researchers use newly discovered exploits to drive an
+automated repair technique capable of patching exploits with no access
+to source code or special information from the software vendor.
 
-In this work we repair these exploits using a method of automated
-program repair cite:schulte2013embedded which operates directly on
-binary ELF files and requires no access to source code.  This fix was
-found before NETGEAR addressed these exploits---to the author's
-knowledge NETGEAR has not patched these exploits at the time of
-submission.
+We demonstrate this approach by patching recently discovered exploits
+in version 4 of NETGEAR's WNDR3700 wireless router /before/ NETGEAR
+publicly addressed the exploits---to the author's knowledge NETGEAR
+has not patched these exploits at the time of submission.
 
-We walk through the repair process including; extraction of the faulty
+We demonstrate the repair process including; extraction of the faulty
 executable from a firmware image distributed by NETGEAR, reproduction
 the exploits in a virtual machine, and application of the repair
-technique.  The tooling and technique demonstrated herein (made
-available under open source licensing [fn:1]) may be generalized to
-other embedded binary executables and any reproducible exploit, making
-it possible to patch future exploits in closed-source commercial
-application without waiting for the software vendor to acknowledge or
-address the exploit.
+technique.  We analyze the feasibility of this technique and discuss
+the implications for the security community.
+
+The tooling and technique demonstrated herein are available under open
+source licensing [fn:1] and may be generalized to other embedded
+binary executables and reproducible exploits increasing the options
+available to security researchers upon discovering new exploits.
 #+LaTeX: \end{abstract}
 
 * Introduction
-Security exploits pose a significant monetary with cyber attacks
-estimated to have cost between $13 and $226 Billion in 2004
-cite:cashell2004economic.
+Security exploits pose significant monetary and social risks.  By
+Symantec's count 5,291 vulnerabilities were reported in 2012
+cite:symantec2013threat.
 
 Upon discovering new exploits researchers are faced with a decision
 between immediately publicly announcing the exploit before the vendor
 is allowed time to develop a patch in a policy known as "full
 disclosure" or privately informing the vendor of the exploit.  The
-former increases the number of attacks while the vendor fixes the
-patch cite:arora2006does, while the later risks the vendor ignoring
-the exploit (e.g., Oracle reportedly waited months after researchers
-privately reported a bug in Java while thousands of users were
-attacked before releasing a fix cite:greenberg2012oracle).
+former increases the number of attacks in the short term
+cite:arora2006does, while the later risks the vendor ignoring the
+exploit extending the life of the exploit (e.g., Oracle reportedly
+waited months after researchers privately reported a bug in Java while
+thousands of users were attacked before releasing a fix
+cite:greenberg2012oracle).
 
 In 2002, special advisor for cyberspace security to then President
-Bush, Richard Clarke said "It is irresponsible and...extremely
+Bush, Richard Clarke said "It is irresponsible and... extremely
 damaging to release information before the patch is out."  However
 there are instances when waiting to report may cause more damage and
 the question of when to report an exploit has been studied is not
@@ -82,16 +86,15 @@ realizable to any verified exploit, the proof of the exploit becomes
 the fitness function used to drive the repair algorithm.
 
 In the remainder of this paper we; review two recent exploits to the
-widely distributed (over XXXX available through shodan) NETGEAR
-WNDR3700 (Section [[#exploits]]), demonstrate the feasibility of running
-embedded firmware in a VM sandbox (Section [[#firmware]]), adapt existing
-techniques of automated program repair of x86 and ARM ELF files to run
-on stripped MIPS executables with no section tables (Section
-[[#mips-mutation]]) which are evolved in a parallelized steady state
-genetic algorithm and minimized using delta debugging (Section
-[[#pll-ga]]).  We then analyze the runtime behavior and results of the
-repair algorithm with respect to their functionality, security and
-maintainability.
+widely distributed NETGEAR WNDR3700 (Section [[#exploits]]), demonstrate
+the feasibility of running embedded firmware in a VM sandbox (Section
+[[#firmware]]), adapt existing techniques of automated program repair of
+x86 and ARM ELF files to run on stripped MIPS executables with no
+section tables (Section [[#mips-mutation]]) which are evolved in a
+parallelized steady state genetic algorithm and minimized using delta
+debugging (Section [[#pll-ga]]).  We then analyze the runtime behavior and
+results of the repair algorithm with respect to their functionality,
+security and maintainability.
 
 The contributions of this short paper are;
 1. use of system emulation to build a virtualized execution
@@ -122,6 +125,23 @@ the software vendor to acknowledge or address the exploit.
   :PROPERTIES:
   :CUSTOM_ID: exploits
   :END:
+In this work we repair a pair of exploits in the popular NETGEAR
+WNDR3700 wireless router.  Both exploits exist in the router's web
+server in a binary named =net-cgi=, and both are related to how
+=net-cgi= handles authentication cite:zcutlip.
+
+1. Any URI starting with the string "BRS" bypasses authentication.
+
+2. Any URI including the string "unauth.cgi" or
+   "securityquestions.cgi" bypass authentication even pages of the
+   form =http://router-address/proteted_page.html?foo=unauth.cgi=.
+
+Many administrative pages start with the "BRS" string, providing
+attackers with access to personal information such as user's
+passwords, and by accessing the page
+=http://router-address/BRS_02_genieHelp.html= attackers can completely
+disable authentication in a manner which is permanent across reboots.
+
 * Repair Technique
 ** Router Firmware Extraction and Virtualization
    :PROPERTIES:
