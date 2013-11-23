@@ -1,5 +1,5 @@
 #+Title: Automated Repair of Exploits in NETGEAR Router Binary
-#+Author: Eric Schulte
+#+Author:
 #+Options: toc:nil ^:{}
 #+HTML_Head: <link rel="stylesheet" type="text/css" href="../etc/netgear-repair.css" />
 #+LaTeX_Class: sigcomm-alternative
@@ -135,13 +135,13 @@ related to how =net-cgi= handles authentication cite:zcutlip.
 
 2. Any URI including the string "unauth.cgi" or
    "securityquestions.cgi" bypass authentication even pages of the
-   form =http://router-address/proteted_page.html?foo=unauth.cgi=.
+   form =http://router/page.html?foo=unauth.cgi=.
 
 Many administrative pages start with the "BRS" string, providing
 attackers with access to personal information such as user's
 passwords, and by accessing the page
-=http://router-address/BRS_02_genieHelp.html= attackers can completely
-disable authentication in a manner which is permanent across reboots.
+=http://router/BRS_02_genieHelp.html= attackers can completely disable
+authentication in a manner which is permanent across reboots.
 
 * Repair Technique
 To repair the =net-cgi= file we must extract the binary executable and
