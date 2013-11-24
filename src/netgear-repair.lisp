@@ -13,6 +13,12 @@
 (defvar orig nil
   "A software object holding the original broken net-cgi file.")
 
+(defvar baseline-fitness 19
+  "Fitness of the original program (when running all tests).")
+
+(defvar target-fitness 22
+  "Target fitness (when running all tests).")
+
 (defvar fixes nil "List to hold fixes.")
 
 (defvar *port* 6600
@@ -114,9 +120,9 @@ the selection of points in the genome as targets for mutation."
   ;; Sanity check
   (setf orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi"))
   (unless (fitness orig) (setf (fitness orig) (test orig)))
-  (assert (= (fitness orig) 7) (orig)
-          "Original program does not pass all regression tests! (~d/7)"
-          (fitness orig))
+  (assert (= (fitness orig) baseline-fitness) (orig)
+          "Original program does not pass all regression tests! (~d/~d)"
+          (fitness orig) baseline-fitness)
 
   ;; Annotate the ELF file with our oprofile samples
   ;; (annotate orig (read-sample-file "stuff/net-cgi.sample"))
@@ -134,7 +140,7 @@ the selection of points in the genome as targets for mutation."
                 (push
                  (evolve
                   #'test
-                  :target 10                        ; stop when passes all tests
+                  :target target-fitness            ; stop when passes all tests
                   :filter [#'not #'zerop #'fitness] ; ignore broken mutants
                   :period (expt 2 4)                ; record keeping
                   :period-fn #'checkpoint)
@@ -156,7 +162,8 @@ the selection of points in the genome as targets for mutation."
 and NEW while maintaining their phenotypic differences"
   ;; sanity check
   (let ((fit (test orig)))
-    (unless (= fit 7) (error "Original program has bad fitness!~%~S" fit)))
+    (unless (= fit baseline-fitness)
+      (error "Original program has bad fitness!~%~S" fit)))
   ;; calculate the original difference
   (let* ((base (lines orig))
          (diff (generate-seq-diff 'unified-diff base (lines new))))
@@ -175,4 +182,5 @@ and NEW while maintaining their phenotypic differences"
       (from-windows (minimize (diff-windows diff)
                               (lambda (windows)
                                 (ignore-errors
-                                  (= 10 (test (from-windows windows))))))))))
+                                  (= target-fitness
+                                     (test (from-windows windows))))))))))
