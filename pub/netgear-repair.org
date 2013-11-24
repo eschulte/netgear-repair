@@ -370,6 +370,7 @@ repair process continues.
       incorporate(pop, new, fitness)
       evict(pop, tournament(pop, tournament-size, -))
     until fitness >= target-fitness
+    new <- minimize(new)
     # User evaluates suitability of candidate repair
     new-regression-tests <- good-enough(new)
     suite <- suite ++ new-regression-tests
