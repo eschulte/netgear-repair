@@ -122,12 +122,14 @@ the selection of points in the genome as targets for mutation."
             (lambda ()
               (let ((*port* (+ 6600 n)))
                 (push
-                 (evolve #'test
+                 (evolve
+                  #'test
                   :target 10                        ; stop when passes all tests
                   :filter [#'not #'zerop #'fitness] ; ignore broken mutants
                   :period (expt 2 4)                ; record keeping
                   :period-fn #'checkpoint)
-                 fixes)))
+                 fixes)
+                (setf *running* nil)))
             :name (format nil "worker-~d" n))
            threads))
 
