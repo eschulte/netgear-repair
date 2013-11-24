@@ -7,13 +7,12 @@
 
 #+LaTeX: \begin{abstract}
 Upon discovering a software exploit security researchers must decide
-either to publish the exploit informing users but risking increasing
-use by attackers, or to privately inform the software vendor leaving
-users in the dark and risking delay by the vendor.  We propose an
-alternative in which researchers use the newly discovered exploits to
-drive an automated repair technique capable of patching exploits with
-no access to source code or special information from the software
-vendor.
+either to publish the exploit informing users and potential attackers,
+or to privately inform the software vendor leaving users in the dark
+and risking delay by the vendor.  We propose an alternative in which
+researchers use the newly discovered exploits to drive an automated
+repair technique capable of patching exploits with no access to source
+code or special information from the software vendor.
 
 We demonstrate this approach by patching recently discovered exploits
 in version 4 of NETGEAR's WNDR3700 wireless router /before/ NETGEAR
@@ -22,13 +21,15 @@ has not patched these exploits at the time of submission.
 
 We describe the repair process including; extraction of the faulty
 executable from a firmware image distributed by NETGEAR, reproduction
-of the exploits in a virtual machine, composition of a regression test
-suite, and application of the repair technique.  Of these the
-composition of a regression test suite places the largest burden on
-security researchers.  We address this concern by analyzing the
-feasibility and utility of this technique using various quality
-regression test suites and discuss the implications for the security
-community.
+of the exploits in a virtual machine and application of the repair
+technique.  Since exploit authors will not normally have access to a
+regression test suite we modify existing evolutionary repair technique
+by running repair without any regression test suite.  We propose a
+model of "lazy" regression test suite composition in which the user
+only writes regression tests as needed and find that in the case of
+the NETGEAR WNDR3700 only XXXX tests are needed to successfully
+perform repair.  We discuss the feasibility and utility of this
+technique for the security community.
 
 # The tooling and technique demonstrated herein are available under open
 # source licensing [fn:1] and may be generalized to other embedded
@@ -57,9 +58,7 @@ Bush, Richard Clarke said "It is irresponsible and... extremely
 damaging to release information before the patch is out."  However
 there are instances when waiting to report may cause more damage and
 the question of when to report an exploit has been studied is not
-easily decidable in all cases cite:arora2008optimal.  It has been
-shown that reporting a flaw with a patch in hand reduces the total
-number of attacks cite:arora2006does.
+easily decidable in all cases cite:arora2008optimal.
 
 Software vendors commonly delay releasing patches to security
 exploits.  Microsoft waits until the second Tuesday of every month
@@ -76,55 +75,64 @@ un-patched for Microsoft and Apple respectively cite:frei20080.
 
 We propose a new option for security researchers in which verifiable
 exploits are used to automatically generate patches.  Such patches may
-be either published with the exploit, or sent privately to the
-software vendor where they may speed the development of a patch
-cite:weimer06.
+be either published with the exploit (it has been shown that reporting
+an exploit with a patch in hand reduces the total number of attacks
+cite:arora2006does), or sent privately to the software vendor where
+they may speed the development of a patch cite:weimer06.
 
 We demonstrate the feasibility of this approach using a technique of
-automated program repair applicable to both assembly code to binary
-ELF files cite:schulte2013embedded, to patch security vulnerabilities
-in the NETGEAR WNDR3700 wireless router.  The technique requires no
-special information or access to source code making it possible for
-researchers to repair even stripped binary executables without any
-cooperation with the software vendor.  This technique should be
-realizable to any verified exploit, the proof of the exploit becomes
-the fitness function used to drive the repair algorithm.
+automated evolutionary program repair cite:schulte2013embedded to
+patch security vulnerabilities in the NETGEAR WNDR3700 wireless
+router.  The technique requires no special information or access to
+source code making it possible for researchers to repair even stripped
+binary executables without any cooperation with the software vendor.
+Although evolutionary program repair techniques typically require
+access to a regression test suite, we explore the feasibility of
+performing repair without any such test suite.  Our proposed technique
+should be applicable to any verified exploit, the binary executable
+and the proof of the exploit become the sole inputs required by the
+repair algorithm.
 
 In the remainder of this paper we; review two recent exploits to the
 widely distributed NETGEAR WNDR3700 (Section [[#exploits]]), demonstrate
-the feasibility of running embedded firmware in a VM sandbox (Section
-[[#firmware]]), adapt existing techniques of automated program repair of
-x86 and ARM ELF files to run on stripped MIPS executables with no
-section tables (Section [[#mips-mutation]]) which are evolved in a
-parallelized steady state genetic algorithm and minimized using delta
-debugging (Section [[#pll-ga]]).  We then analyze the runtime behavior and
+the feasibility of running the NETGEAR firmware in a VM sandbox
+(Section [[#firmware]]), adapt existing techniques of automated program
+repair originally applicable only to x86 and ARM ELF files to run on
+stripped MIPS executables with no section tables (Section
+[[#mips-mutation]]), and introduce and evaluate our modified program
+repair technique which does not require an extant regression test
+suite (Section [[#lazy]]).  We then analyze the runtime behavior and
 results of the repair algorithm with respect to their functionality,
 security and maintainability.
 
 The contributions of this short paper are;
-1. use of system emulation to build a virtualized execution
-   environment allowing the evaluation of embedded device drivers
+1. demonstrate the use of system emulation to build a virtualized
+   execution environment allowing the evaluation of embedded device
+   drivers
 2. an application of automated repair to stripped MIPS ELF files
    recovered from router firmware
-3. an application of automated repair to a real-world un-patched
+3. a modified version of evolutionary program repair which removes the
+   requirement for a regression test suite
+4. an application of automated repair to a real-world un-patched
    security exploit resulting in
-4. the first demonstration of multiple repair in a single evolutionary
+5. the first demonstration of multiple repair in a single evolutionary
    run.
 
 In the pursuit of /Reproducible Research/ cite:buckheit1995wavelab
-cite:mesirov2010accessible and to encourage researchers to patches
+cite:mesirov2010accessible and to encourage researchers to patch
 future discovered exploits, a companion version control
-repository [fn:1] contains the instructions, programs, and tooling
-used to extract and execute and repair the binary NETGEAR router
+repository [fn:1] contains all instructions, programs, and tooling
+required to extract, execute and repair the binary NETGEAR router
 image.  Additionally, the analysis performed in this document and all
 supporting figures may be automatically regenerated from new
 experimental data using the Org-mode Reproducible Research framework
 cite:schulte2012reproducible-research.
 
-The tooling and technique demonstrated herein may be generalized to
-other embedded binary executables, making it possible to patch future
-exploits in closed-source commercial application without waiting for
-the software vendor to acknowledge or address the exploit.
+We hope the ability to automatically patch vulnerable closed source
+applications without having to wait for the software vendor to
+acknowledge or address the exploit encourages users to patch their
+vulnerable systems and researchers to release patches with exploit
+announcements.
 
 * Description of Exploits
   :PROPERTIES:
@@ -312,15 +320,21 @@ operations used to modify ELF files are shown in Figure [[mutation-ops]].
 #+RESULTS[17b362c56616d0afadd5ff0131a9baaacdfdb23b]: mutation-ops
 [[file:mut-ops.svg]]
 
-** Parallel Automated Program Repair Technique
+** Lazy on demand Regression Testing
    :PROPERTIES:
-   :CUSTOM_ID: pll-ga
+   :CUSTOM_ID: lazy
    :END:
+
 * Repair Results
 ** Repair Run
 parameters used, runtime, etc...
 
-** Analysis of Repair
+- graph 1
+  - points -- number of regression tests added (and runtime)
+  - x axis -- coverage of repair (% instructions sampled)
+  - y axis -- functionality of repair (% pages successfully served)
+
+** Analysis of Repairs
 - The repairs required two distinct fixes to two different exploits in a
   single long evolutionary run (an instance of "iterative repair").
 
