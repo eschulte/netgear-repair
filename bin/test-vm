@@ -1,10 +1,26 @@
 #!/bin/bash
 #
-# Usage: test-vm [options...] executable
+# Usage: test-vm [options...] executable [TESTS...]
 # test executable on the VM
 #
 # Options:
 #  -p,--port ------- port to use for ssh forwarding
+#
+# Optional arguments TESTS... should be the names of those tests which
+# should be run.  Default behavior is to run all tests.
+#
+# Tests:
+#  advanced.js
+#  logo.jpg
+#  center_language.html
+#  Add_WPS_Client.htm
+#  base.gif
+#  dtree.css
+#  securityquestions.cgi
+#  unauth.cgi
+#  unauth.cgi-authentication
+#  securityquestions.cgi-authentication
+#  BRS-authentication
 #
 . bin/common
 
@@ -18,6 +34,7 @@ while [ $# -gt 0 ];do
     esac
     shift
 done
+EXE=$1; shift
 
-copy_to_vm $1 squashfs-root/usr/sbin/net-cgi
-run_in_vm /root/bin/test-cgi
+copy_to_vm $EXE squashfs-root/usr/sbin/net-cgi
+run_in_vm /root/bin/test-cgi $@
