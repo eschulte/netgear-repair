@@ -291,6 +291,50 @@ For a graph/table with
 |    | or percent of total files served |
 | Y1 | percentage of pages preserved    |
 | Y2 | repair run time (wall clock)     |
+** annotations do not overlap the minimized repair
+The repairs are *not* on the positive or negative execution trace.
+#+begin_src lisp :results output
+  (let ((orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi"))
+                        (mini (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi.minimized")))
+                    (annotate orig (read-sample-file "stuff/net-cgi.sample"))
+                    (loop
+                     :for a :in (coerce (genome orig) 'list)
+                     :for b :in (coerce (genome mini) 'list)
+                     :as i :from 0 :do
+                     (when (not (equalp (aget :bytes a) (aget :bytes b)))
+                       (format t "at ~d, ~a -> ~a~%" i a b))))
+  ;; => at 292412, ((BYTES . 175)) -> ((BYTES . 143))
+  ;; => at 332588, ((BYTES . 104)) -> ((BYTES . 0))
+#+end_src
+
+Graph union of execution traces, and point out locations of repairs
+#+name: traced-indices
+#+begin_src lisp
+  (defun indexes-if (pred sequence &aux indexes)
+    (loop :for el :in sequence :as i :from 0 :do
+       (when (funcall pred el) (push i indexes)))
+    (nreverse indexes))
+  (mapcar {list _ 1} (indexes-if {aget :trace} (coerce (genome orig) 'list)))
+#+end_src
+
+#+name: mini-indices
+#+begin_src sh
+echo -e "292412 1\n332588 1"
+#+end_src
+
+#+begin_src gnuplot :var trace=traced-indices :var mini=mini-indices :file stuff/traced-vs-minimized.svg
+  set title 'No overlap between traced indices and location of minimized edits'
+  set key above
+  unset ytics
+  set xlabel 'Byte offset in program data'
+  set yrange [0:1]
+  set xrange [0:441276]
+  plot trace w impulses title 'traced locations', \
+       mini  w impulses title 'minimized edit locations' lw 4
+#+end_src
+
+#+RESULTS:
+[[file:stuff/traced-vs-minimized.svg]]
 
 ** differences in the minimized repair
 #+begin_src lisp
