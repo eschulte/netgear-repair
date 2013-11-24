@@ -372,9 +372,3 @@ patches?
 * COMMENT Notes [0/2]
 ** TODO define image and firmware
 ** TODO collect average bug lifetime from a bug database
-* COMMENT Support
-#+begin_src emacs-lisp :results silent
-  (setq org-babel-latex-htlatex "htlatex")
-  (defmacro by-backend (&rest body)
-    `(case (if (boundp 'backend) (org-export-backend-name backend) nil) ,@body))
-#+end_src
