@@ -325,6 +325,38 @@ operations used to modify ELF files are shown in Figure [[mutation-ops]].
    :CUSTOM_ID: lazy
    :END:
 
+The algorithm for lazy regression testing is shown in Figure
+[[lazy-algorithm]].
+
+Interactive lazy regression testing repair algorithm.
+
+#+begin_src lisp
+  ;; Input: Vulnerable Program, elf: elf
+  ;; Input: Exploit Test, exploitablep: elf -> fitness
+  ;; Input: Interactive Evaluation, good-enough: elf -> (list failing tests)
+  ;; Parameters: pop-size, cross-rate, tournament-size
+  ;; Output: Patched version of Program
+  (let ((pop (loop :for i :below pop-size :collect (copy elf)))
+        (p' nil)
+        (fitness nil)
+        (regression-suite nil)
+        (target-fitness nil))
+    (loop :do
+       (setf target-fitness (+ 1 (length regression-suite)))
+       (loop :do
+          (set p' (if (< (random) cross-rate)
+                      (crossover (tournament pop tournament-size)
+                                 (tournament pop tournament-size))
+                      (tournament pop tourament-size)))
+          (set fitness (exploitablep p'))
+          :until (>= fitness target-fitness))
+       ;; interactively check
+       (let ((new-regression-tests (good-enough p')))
+         (if (null new-regression-tests)
+             (return p')
+             (push new-regression-tests regression-suite)))))
+#+end_src
+
 * Repair Results
 ** Repair Run
 parameters used, runtime, etc...
