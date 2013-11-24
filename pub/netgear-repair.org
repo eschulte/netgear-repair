@@ -324,39 +324,55 @@ operations used to modify ELF files are shown in Figure [[mutation-ops]].
    :PROPERTIES:
    :CUSTOM_ID: lazy
    :END:
+We present a novel evolutionary program repair which does not require
+a regression test suite.  We adopt the repair algorithm from
+cite:forrest2009genetic but instead of assuming that a regression test
+suite exists at the beginning of the algorithm, we only assume that a
+single test case exists exercising the exploit.  High level pseudocode
+for the repair algorithm is show in Figure [[lazy-algorithm]].
 
-The algorithm for lazy regression testing is shown in Figure
-[[lazy-algorithm]].
+We then embark upon an interactive repair process in which the
+algorithm fixes every available test (starting with only the exploit),
+the user then determines the suitability of the evolved repair either
+accepting the repair and terminating the algorithm, or rejecting the
+repair and supplying a regression test which the repair fails.  If the
+later, then the new test is incorporated into the test suite, and the
+repair process continues.
 
-Interactive lazy regression testing repair algorithm.
-
+#+label: lazy-algorithm
+#+Caption: High-level Pseudocode for interactive lazy-regression-testing repair algorithm.
 #+begin_src ruby
-  # Input: Vulnerable Program, elf: ELF
-  # Input: Exploit Test, exploit: elf -> Fitness
+  # Input: Vulnerable Program, original: ELF
+  # Input: Exploit Test, exploit: ELF -> Fitness
   # Input: Interactive Evaluation, good-enough: ELF -> (list (ELF -> Fitness))
   # Parameters: pop-size, cross-rate, tournament-size
   # Output: Patched version of Program
-  pop <- pop-size copies of elf
+  pop <- pop-size copies of original
   new <- null
   fitness <- null
   target-fitness <- null
+  suite <- [exploit]
   do
-    target-fitness <- length(exploit ++ regression-tests)
+    target-fitness <- length(suite)
     do
       if (random() < cross-rate)
-        new <- crossover(tournament(pop, tournament-size),
-                         tournament(pop, tournament-size))
+        new <- crossover(tournament(pop, tournament-size, +),
+                         tournament(pop, tournament-size, +))
       else
-        new <- tournament(pop, tournament-size)
+        new <- tournament(pop, tournament-size, +)
       end
       fitness <- 0
-      for test in (exploit ++ regression-tests) do
+      for test in suite do
         if test(new)
           fitness <- fitness + 1
         end
       end
+      incorporate(pop, new, fitness)
+      evict(pop, tournament(pop, tournament-size, -))
     until fitness >= target-fitness
+    # User evaluates suitability of candidate repair
     new-regression-tests <- good-enough(new)
+    suite <- suite ++ new-regression-tests
   until length(new-regression-tests) == 0
 #+end_src
 
