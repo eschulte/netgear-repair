@@ -24,6 +24,9 @@
 (defvar threads nil
   "List to hold all running threads.")
 
+(defvar tests nil
+  "Optional list of which tests to run.  If nil then run all tests.")
+
 (defun test (cgi)
   "Test CGI and return it's fitness."
   (with-temp-file (bin)
@@ -31,10 +34,17 @@
       (declare (ignorable path))
       (unless (zerop exit) (return-from test 0)))
     (multiple-value-bind (stdout stderr errno)
-        (shell "bin/test-vm -p ~d ~a" *port* bin)
+        (shell "bin/test-vm -p ~d ~a ~{~a~^ ~}" *port* bin tests)
       (declare (ignorable stderr) (ignorable errno))
-      (count-if [{string= "PASS"} #'car {split-sequence #\Space}]
-                (split-sequence #\Newline stdout)))))
+      (reduce (lambda-bind (acc (type multiplier))
+                (+ acc (* multiplier
+                          (count-if
+                           [{string= type} #'car {split-sequence #\Space}]
+                           (split-sequence #\Newline stdout)))))
+              '(("PASS"  2)
+                ("FAIL"  1)
+                ("ERROR" 0))
+              :initial-value 0))))
 
 (defvar checkpoint-counter 0)
 (defun checkpoint ()
