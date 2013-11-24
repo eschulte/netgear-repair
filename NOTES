@@ -267,7 +267,21 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes
+* Notes [0/1]
+** TODO different quality regression test suites
+Quality of tests
+|   0% | no pages, just run w/o error |
+|   x% | original run, very few       |
+|  25% |                              |
+|  50% |                              |
+| 100% |                              |
+
+For a graph/table with
+| X  | size of trace during testing     |
+|    | or percent of total files served |
+| Y1 | percentage of pages preserved    |
+| Y2 | repair run time (wall clock)     |
+
 ** differences in the minimized repair
 #+begin_src lisp
   (loop :for a :in (coerce (data (nth 3 (sections (elf original)))) 'list)
