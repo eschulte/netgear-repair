@@ -267,8 +267,18 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes [0/1]
-** TODO different quality regression test suites
+* Notes [1/2]
+** TODO lazy regression testing
+What if we don't write any regression test?
+
+Steps,
+1. start with just the exploit test
+2. evolve a fix
+3. minimize the fix
+4. evaluate, if broken add regression test identifying breakage, else
+   return
+
+** CANCELED different quality regression test suites
 Quality of tests
 |   0% | no pages, just run w/o error |
 |   x% | original run, very few       |
