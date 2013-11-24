@@ -33,6 +33,9 @@
 (defvar tests nil
   "Optional list of which tests to run.  If nil then run all tests.")
 
+(defvar *results-dir* "checkpoints"
+  "Directory in which to write results.")
+
 (defun test (cgi)
   "Test CGI and return it's fitness."
   (with-temp-file (bin)
@@ -56,7 +59,7 @@
 (defun checkpoint ()
   "Function used to checkpoint progress of the evolutionary search."
   ;; write out population stats
-  (with-open-file (out "checkpoints/stats.txt"
+  (with-open-file (out (format nil "~a/stats.txt" *results-dir*)
                        :direction :output
                        :if-exists :append
                        :if-does-not-exist :create)
@@ -71,8 +74,8 @@
   (when (zerop (mod checkpoint-counter 8))
     ;; store the best individual
     (let ((best (extremum *population* #'> :key #'fitness)))
-      (store best (format nil "checkpoints/~d-best-~d.store"
-                          *fitness-evals* (fitness best))))))
+      (store best (format nil "~a/~d-best-~d.store"
+                          *results-dir* *fitness-evals* (fitness best))))))
 
 
 ;;; Annotation
@@ -150,10 +153,24 @@ the selection of points in the genome as targets for mutation."
            threads))
 
   (make-thread (lambda ()
-                 (mapc #'join-thread threads)
-                 (store fixes (format nil "checkpoints/~d-fixes.store"
-                                      *fitness-evals*)))
+                 (ignore-errors (mapc #'join-thread threads))
+                 (store fixes (format nil "~a/~d-fixes.store"
+                                      *results-dir* *fitness-evals*)))
                :name "cleanup"))
+
+(defun run-many (&key (from 0) (below 10))
+  "Run multiple iterations of `run'."
+  (loop :for run :from from :below below :do
+     (setf *results-dir* (format nil "checkpoints/interactive/1-~d" run)
+           fixes nil
+           *population* nil
+           *fitness-evals* 0
+           threads nil)
+     (join-thread (run))
+     (store `((:best          . ,(lastcar fixes))
+              (:fitness-evals . ,*fitness-evals*)
+              (:population    . ,*population*))
+            (format nil "~a/summary.store" *results-dir*))))
 
 
 ;;; Delta Debugging
