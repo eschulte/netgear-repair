@@ -158,6 +158,18 @@ the selection of points in the genome as targets for mutation."
                                       *results-dir* *fitness-evals*)))
                :name "cleanup"))
 
+(defun release-reaper ()
+  (make-thread
+   (lambda ()
+     (loop :until (null (remove-if-not #'thread-alive-p threads)) :do
+        (sleep (* 60 15))
+        (unless *running*
+          (sleep 60)
+          (unless *running*
+            (mapc #'destroy-thread
+                  (remove-if-not #'thread-alive-p threads))))))
+   :name "reaper"))
+
 (defun run-many (&key (from 0) (below 10))
   "Run multiple iterations of `run'."
   (loop :for run :from from :below below :do
