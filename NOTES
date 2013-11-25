@@ -281,14 +281,12 @@ Steps,
 ** TODO evaluate lazy regression testing
 | run | evals | fitness of best | fitness of minimized best |
 |-----+-------+-----------------+---------------------------|
-|   1 | 17231 |              22 |                           |
-|   2 | 26879 |              21 |                           |
-|   3 | 23764 |              19 |                           |
-|   4 | 47906 |               6 |                           |
-|   5 | 13102 |              16 |                           |
-|   6 | 20677 |              18 |                           |
-
-
+|   1 | 17231 |              22 | 22                        |
+|   2 | 26879 |              21 | 22                        |
+|   3 | 23764 |              19 | 22                        |
+|   4 | 47906 |               6 | 6                         |
+|   5 | 13102 |              16 | 22                        |
+|   6 | 20677 |              18 | 22                        |
 
 ** CANCELED different quality regression test suites
 Quality of tests
