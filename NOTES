@@ -267,7 +267,7 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes [1/2]
+* Notes [1/3]
 ** TODO lazy regression testing
 What if we don't write any regression test?
 
@@ -277,6 +277,18 @@ Steps,
 3. minimize the fix
 4. evaluate, if broken add regression test identifying breakage, else
    return
+
+** TODO evaluate lazy regression testing
+| run | evals | fitness of best | fitness of minimized best |
+|-----+-------+-----------------+---------------------------|
+|   1 | 17231 |              22 |                           |
+|   2 | 26879 |              21 |                           |
+|   3 | 23764 |              19 |                           |
+|   4 | 47906 |               6 |                           |
+|   5 | 13102 |              16 |                           |
+|   6 | 20677 |              18 |                           |
+
+
 
 ** CANCELED different quality regression test suites
 Quality of tests

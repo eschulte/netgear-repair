@@ -137,38 +137,32 @@ the selection of points in the genome as targets for mutation."
 
   ;; Launch evolution threads
   (loop :for n :below number-of-threads :do
-     (push (make-thread
-            (lambda ()
-              (let ((*port* (+ 6600 n)))
-                (push
-                 (evolve
-                  #'test
-                  :target target-fitness            ; stop when passes all tests
-                  :filter [#'not #'zerop #'fitness] ; ignore broken mutants
-                  :period (expt 2 4)                ; record keeping
-                  :period-fn #'checkpoint)
-                 fixes)
-                (setf *running* nil)))
-            :name (format nil "worker-~d" n))
-           threads))
+     (let ((name (format nil "worker-~d" n)))
+       (push
+        (make-thread
+         (lambda ()
+           (let ((*port* (+ 6600 n)))
+             (push
+              (evolve
+               #'test
+               :target target-fitness            ; stop when passes all tests
+               :filter [#'not #'zerop #'fitness] ; ignore broken mutants
+               :period (expt 2 4)                ; record keeping
+               :period-fn #'checkpoint)
+              fixes)
+             (setf *running* nil)
+             (sleep 120)                ; kill peers after 2 min
+             (mapc #'destroy-thread
+                   (remove-if [{string= name} #'thread-name]
+                              threads))))
+         :name (format nil "worker-~d" n))
+        threads)))
 
   (make-thread (lambda ()
                  (ignore-errors (mapc #'join-thread threads))
                  (store fixes (format nil "~a/~d-fixes.store"
                                       *results-dir* *fitness-evals*)))
                :name "cleanup"))
-
-(defun release-reaper ()
-  (make-thread
-   (lambda ()
-     (loop :until (null (remove-if-not #'thread-alive-p threads)) :do
-        (sleep (* 60 15))
-        (unless *running*
-          (sleep 60)
-          (unless *running*
-            (mapc #'destroy-thread
-                  (remove-if-not #'thread-alive-p threads))))))
-   :name "reaper"))
 
 (defun run-many (&key (from 0) (below 10))
   "Run multiple iterations of `run'."
