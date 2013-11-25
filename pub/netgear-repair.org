@@ -344,7 +344,7 @@ repair process continues.
 #+begin_src ruby
   # Input: Vulnerable Program, original: ELF
   # Input: Exploit Test, exploit: ELF -> Fitness
-  # Input: Interactive Evaluation, good-enough: ELF -> (list (ELF -> Fitness))
+  # Input: Interactive Check, good-enough: ELF -> [ELF -> Fitness]
   # Parameters: pop-size, cross-rate, tournament-size
   # Output: Patched version of Program
   pop <- pop-size copies of original
@@ -354,23 +354,7 @@ repair process continues.
   suite <- [exploit]
   do
     target-fitness <- length(suite)
-    do
-      if (random() < cross-rate)
-        new <- crossover(tournament(pop, tournament-size, +),
-                         tournament(pop, tournament-size, +))
-      else
-        new <- tournament(pop, tournament-size, +)
-      end
-      fitness <- 0
-      for test in suite do
-        if test(new)
-          fitness <- fitness + 1
-        end
-      end
-      incorporate(pop, new, fitness)
-      evict(pop, tournament(pop, tournament-size, -))
-    until fitness >= target-fitness
-    new <- minimize(new)
+    new <- minimize(genprog_repair(pop, target-fitness))
     # User evaluates suitability of candidate repair
     new-regression-tests <- good-enough(new)
     suite <- suite ++ new-regression-tests
