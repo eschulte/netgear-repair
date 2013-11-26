@@ -29,9 +29,9 @@
   "Un-minimized evolved fixes found using only the exploit tests.")
 ;; <= (mapcar [#'lastcar #'restore] 1-fix-paths)
 
-(defvar 1-full-fitnesses (let ((tests nil)) (mapcar #'test 1-evolved))
+(defvar 1-full-fitnesses '(8 22 21 19 6 16 17 20 14 21)
   "Fitness of `1-evolved' using the full regression tests suite.")
-;; => (8 22 21 19 6 16 17 20 14 21)
+;; <= (let ((tests nil)) (mapcar #'test 1-evolved))
 
 (defvar 1-diff-sizes '(500 134 205 199 319 95 556 79 10 182)
   "Number of unified diff windows of `1-evolved' against the original.")
@@ -40,6 +40,12 @@
   "Minimized evolved fixes found using only the exploit tests.")
 ;; <= (mapcar {delta-debug orig} 1-evolved)
 
-(defvar 1-full-min-fitnesses (let ((tests nil)) (mapcar #'test 1-minimized))
+(defvar 1-full-min-fitnesses '(22 22 22 22 6 22 22 22 14 22)
   "Fitness of `1-minimized' using the full regression tests suite.")
-;; => (22 22 22 22 6 22 22 22 14 22)
+;; <= (let ((tests nil)) (mapcar #'test 1-minimized))
+
+(defvar 1-min-dif-sizes '(2 3 2 2 2 2 3 3 1 2)
+  "Number of unified diff windows of `1-minimized' against the original.")
+;; <= (mapcar [#'length #'diff-windows
+;;             {generate-seq-diff 'unified-diff (lines orig)} #'lines]
+;;            1-minimized)

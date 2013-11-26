@@ -296,27 +296,32 @@ information from the first round pick, maybe use it as fault
 localization information.
 
 ** TODO evaluate lazy regression testing
-#+begin_src lisp :colnames '(id evals evolved minimized)
-      (mapcar #'list
-              (loop :for i :below 10 :collect i)
-              1-fix-evals
-              1-full-fitnesses
-              1-full-min-fitnesses)
+#+begin_src lisp :colnames '(id evals full-diff min-diff full-fit min-fit)
+  (mapcar #'list
+          (loop :for i :below 10 :collect i)
+          1-fix-evals
+          1-diff-sizes
+          1-min-dif-sizes
+          1-full-fitnesses
+          1-full-min-fitnesses)
 #+end_src
 
 #+RESULTS:
-| id | evals | evolved | minimized |
-|----+-------+---------+-----------|
-|  0 | 90405 |       8 |        22 |
-|  1 | 17231 |      22 |        22 |
-|  2 | 26879 |      21 |        22 |
-|  3 | 23764 |      19 |        22 |
-|  4 | 47906 |       6 |         6 |
-|  5 | 13102 |      16 |        22 |
-|  6 | 76960 |      17 |        22 |
-|  7 | 11831 |      20 |        22 |
-|  8 |  2846 |      14 |        14 |
-|  9 | 25600 |      21 |        22 |
+| id | evals | full-diff | min-diff | full-fit | min-fit |
+|----+-------+-----------+----------+----------+---------|
+|  0 | 90405 |       500 |        2 |        8 |      22 |
+|  1 | 17231 |       134 |        3 |       22 |      22 |
+|  2 | 26879 |       205 |        2 |       21 |      22 |
+|  3 | 23764 |       199 |        2 |       19 |      22 |
+|  4 | 47906 |       319 |        2 |        6 |       6 |
+|  5 | 13102 |        95 |        2 |       16 |      22 |
+|  6 | 76960 |       556 |        3 |       17 |      22 |
+|  7 | 11831 |        79 |        3 |       20 |      22 |
+|  8 |  2846 |        10 |        1 |       14 |      14 |
+|  9 | 25600 |       182 |        2 |       21 |      22 |
+
+*** Diff Size
+
 
 ** CANCELED different quality regression test suites
 Quality of tests
