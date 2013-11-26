@@ -1,6 +1,6 @@
 #+Title: Automated Repair of Exploits in NETGEAR Router Binary
 #+Author:
-#+Options: ^:{}
+#+Options: toc:nil ^:{}
 #+HTML_Head: <link rel="stylesheet" type="text/css" href="../etc/netgear-repair.css" />
 #+LaTeX_Class: sigcomm-alternative
 #+LaTeX: \usetikzlibrary{arrows,decorations,decorations.pathreplacing,shapes}
@@ -421,7 +421,7 @@ into fitness valleys as in run 8 Table [[minimized-stats]]).
   :PROPERTIES:
   :CUSTOM_ID: results
   :END:
-** Demonstration Methodology
+** Methodology
 We demonstrate our technique by patching two NETGEAR WNDR3700
 exploits.  All repairs were performed on a server-class machine with
 32 physical Intel Xeon 2.60GHz cores, Hyper-Threading and 120 GB of
@@ -506,7 +506,7 @@ real-world extant software.
 #+name: fitness-by-time-graph
 #+headers: :file (by-backend (latex 'nil) (t "fitness-improvement.svg"))
 #+headers: :cache yes
-#+begin_src gnuplot
+#+begin_src gnuplot :exports results
   set title 'Fitness Improvement Over Time w/o Regression Test'
   set ytics 1
   set xtics rotate by -45
@@ -525,16 +525,16 @@ real-world extant software.
 *** Minimization Impact
 In many cases the initial evolved repair broke untested behavior.  For
 example evolved repairs sometimes worked when =net-cgi= was called
-directly on the command line but not through the embedded [[http://wiki.openwrt.org/doc/uci/uhttpd][µHTTPd]]
-webserver, or the evolved file failed to serve pages not used in the
-exploit test.  As shown in Table [[minimized-stats]], in most cases the
-minimized version of the evolved executable fixed all of the
+directly on the command line but not through the embedded
+µHTTPd [fn:6] webserver, or the evolved file failed to serve pages not
+used in the exploit test.  As shown in Table [[minimized-stats]], in most
+cases the minimized version of the evolved executable fixed all of the
 regressions found in the evolved repair.  The functionality numbers in
 Table [[minimized-stats]] were generated using a hand-written regression
 test suite.
 
 #+label: minimized-stats
-#+Caption: Size and functionality of evolved repair before and after minimization.
+#+Caption: Difference and functionality of evolved repair before and after minimization.  In these columns "Full" refers to evolved solutions before minimization and "Min" refers to post-minimization solutions.  Columns labeled "Diff" report the number of unified diff windows against the original program data. The columns labeled "Fit" report the fitness measured with a full regression test suite including the exploit tests with a maximum fitness of 22.
 | Run Id | Fit Evals | Full Diff | Min Diff | Full Fit | Min Fit |
 |--------+-----------+-----------+----------+----------+---------|
 |      0 |     90405 |       500 |        2 |        8 |      22 |
@@ -547,11 +547,20 @@ test suite.
 |      7 |     11831 |        79 |        3 |       20 |      22 |
 |      8 |      2846 |        10 |        1 |       14 |      14 |
 |      9 |     25600 |       182 |        2 |       21 |      22 |
+|--------+-----------+-----------+----------+----------+---------|
+|   mean |   33652.4 |     227.9 |      2.2 |     16.4 |    19.6 |
+#+TBLFM: @12$2=vmean(@2..@-1)::@12$3=vmean(@2..@-1)::@12$4=vmean(@2..@-1)::@12$5=vmean(@2..@-1)::@12$6=vmean(@2..@-1)
 
 *** Repair Size
-The initial evolved repair differed from the original at 789 distinct
-locations (measured with a unified diff), the minimized differed from
-the original at 2 such locations.
+As shown in Table [[minimized-stats]], the initial evolved repair differed
+from the original at >200 locations on average in the ELF program
+data, while the minimized repairs differed at only 1-3 locations on
+average.  This great discrepancy is due to the accumulation of edits
+in non-tested portions of the program data.  Since these portions of
+the genome were not tested there was no evolutionary pressure to purge
+harmful edits.  The elimination of these accumulated edits is the main
+purpose of minimization, and is the reason for the consistent increase
+in regression test behavior found in the minimized repairs.
 
 * Related Work
 ** Security
@@ -642,4 +651,6 @@ Also, GRANTS GRANTS GRANTS.
 [fn:4] https://github.com/eschulte/netgear-repair/blob/master/bin/test-cgi
 
 [fn:5] http://www.shodanhq.com/search?q=wndr3700v4+http
+
+[fn:6] http://wiki.openwrt.org/doc/uci/uhttpd
 
