@@ -332,7 +332,7 @@ regression tests be written.
 
 #+label: lazy-algorithm
 #+Caption: High-level Pseudocode for interactive lazy-regression-testing repair algorithm.
-#+begin_src fundamental
+#+begin_src fundamental -n
   # Input: Vulnerable Program, original: ELF
   # Input: Exploit Test, exploit: ELF -> Fitness
   # Input: Interactive Check, good-enough: ELF -> [ELF -> Fitness]
@@ -355,14 +355,14 @@ in cite:forrest2009genetic, but it uses a /steady state/ evolutionary
 computational algorithm cite:Luke2013Metaheuristics for reduced memory
 usage and ease of parallelization of fitness evaluation.  High level
 pseudocode for the =evolutionary_subroutine= is shown in Listing
-[[#evolutionary-subroutine]].
+[[evolutionary-subroutine]].
 
 #+label: evolutionary-subroutine
 #+Caption: High-level Pseudocode for the steady state parallel evolutionary repair subroutine.
-#+begin_src fundamental
+#+begin_src fundamental -n
   # Input: Vulnerable Program, original: ELF
   # Input: Test suite, suite: [ELF -> Fitness]
-  # Parameters: max-population-size, tournament-size
+  # Parameters: max-population-size, tournament-size, cross-rate
   # Output: Patched version of Program
   let fitness <- evaluate(original, suite)
   let pop <- max-pop-size copies of <original, fitness>
@@ -381,7 +381,7 @@ pseudocode for the =evolutionary_subroutine= is shown in Listing
       evict(pop, tournament(pop,tournament-size,-))
     endif
   until fitness > length(suite)
-  p
+  return p
 #+end_src
 
 * Repair Results
@@ -406,19 +406,25 @@ each test back to the host test script.
 Repair was run using a maximum population size of 512 individuals,
 selection is performed using a tournament size of 2.  When the
 population overflows the maximum population size, an individual is
-selected for eviction using a negative tournament of size 2.
+selected for eviction using a negative tournament of size 2.  Newly
+selected individuals are crossed over $\frac{2}{3}$'s of the time.
 
-Every time an individual is selected 
+| parameter           |         value |
+|---------------------+---------------|
+| max-population-size |           512 |
+| tournament-size     |             2 |
+| cross-rate          | $\frac{2}{3}$ |
 
 *** Repair Runtime
 The repair algorithm itself uses 32 threads for parallel fitness
 evaluation.  Each thread is paired with a single QEMU VM on which it
-tests fitness.  When any thread finds a repair termination of the
-repair loop of the algorithm terminates globally and the candidate
-repair is presented to the user (line XX of Listing [[#lazy-algorithm]]).
+tests fitness.  When any thread finds a repair the inner repair loop
+(=evolutionary_subroutine=) of the algorithm terminates globally and
+the candidate repair is presented to the user (line 11 of Listing
+[[lazy-algorithm]]).
 
 The time taken to perform a fitness evaluation varies with the size of
-the regression suite.  Table [[#test-speed]] shows the average number of
+the regression suite.  Table [[test-speed]] shows the average number of
 fitness evaluations performed in our setup per minute over a variety
 of regression test sizes.
 
