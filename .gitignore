@@ -1,0 +1,13 @@
+*~
+*.aux
+*.bbl
+*.blg
+*.dvi
+*.log
+*.out
+*.pdf
+*.tex
+
+*.html
+*.svg
+*.txt
