@@ -14,22 +14,20 @@ researchers use the newly discovered exploits to drive an automated
 repair technique capable of patching exploits with no access to source
 code or special information from the software vendor.
 
+We adapt existing evolutionary automated software repair techniques to
+the special requirements of exploit repair.  We adapt the technique to
+work on stripped MIPS ELF files, we remove the requirements for fault
+localization information and we adapt the algorithm to work without
+any pre-existing regression test suite.  We find that even without any
+regression test suite 80% of repairs of our example exploit retain
+program functionality.
+
 We demonstrate this approach by patching recently discovered exploits
 in version 4 of NETGEAR's WNDR3700 wireless router /before/ NETGEAR
 publicly addressed the exploits---to the author's knowledge NETGEAR
-has not patched these exploits at the time of submission.
-
-We describe the repair process including; extraction of the faulty
-executable from a firmware image distributed by NETGEAR, reproduction
-of the exploits in a virtual machine and application of the repair
-technique.  Since exploit authors will not normally have access to a
-regression test suite we modify existing evolutionary repair technique
-by running repair without any regression test suite.  We propose a
-model of "lazy" regression test suite composition in which the user
-only writes regression tests as needed and find that in 80% of cases
-the NETGEAR WNDR3700 exploits may be repaired without having to write
-/any/ regression tests.  We discuss the feasibility and utility of
-this technique for the security community.
+has not patched these exploits at the time of submission.  We discuss
+the feasibility and utility of this technique for the security
+community.
 #+LaTeX: \end{abstract}
 
 # The tooling and technique demonstrated herein are available under
@@ -44,98 +42,79 @@ Symantec's count 5,291 vulnerabilities were reported in 2012
 cite:symantec2013threat.
 
 Upon discovering new exploits researchers are faced with a decision
-between immediately publicly announcing the exploit before the vendor
-is allowed time to develop a patch in a policy known as "full
-disclosure" or privately informing the vendor of the exploit.  The
-former increases the number of attacks in the short term
-cite:arora2006does, while the later risks the vendor ignoring the
-exploit extending the life of the exploit (e.g., Oracle reportedly
-waited months after researchers privately reported a bug in Java while
-thousands of users were attacked before releasing a fix
-cite:greenberg2012oracle).
+between publicly announcing the exploit in a policy known as "full
+disclosure" or privately informing the vendor of the exploit and
+trusting the vendor to address the problem.  Although "full
+disclosure" may increase attacks in the short term (In 2002, special
+advisor for cyberspace security to then President Bush, Richard Clarke
+said "It is irresponsible and... extremely damaging to release
+information before the patch is out") there are risks associated with
+informing vendors as well (e.g., Oracle reportedly waited months after
+researchers privately reported a bug in Java while thousands of users
+were attacked before releasing a fix cite:greenberg2012oracle).
 
-In 2002, special advisor for cyberspace security to then President
-Bush, Richard Clarke said "It is irresponsible and... extremely
-damaging to release information before the patch is out."  However
-there are instances when waiting to report may cause more damage and
-the question of when to report an exploit has been studied is not
-easily decidable in all cases cite:arora2008optimal.
+We propose a new option for security researchers in which reproducible
+exploits are used to drive an automatic repair technique.  Such
+patches may be either published with the exploit (it has been shown
+that reporting an exploit with a patch in hand reduces the total
+number of attacks cite:arora2006does), or sent privately to the
+software vendor where they may speed the development of a patch
+cite:weimer06.
 
-Software vendors commonly delay releasing patches to security
-exploits.  Microsoft waits until the second Tuesday of every month
-(known as "Patch Tuesday") to release security patches
-cite:lemos2003microsoft, leading malicious users to release new
-exploits on the second Wednesday of every month (known as "Exploit
-Wednesday") to maximize the time before a patch is released.
+In recent years automated methods of program repair have been shown
+capable of repairing defects in real software cite:forrest2009genetic
+cite:nguyen2013semfix cite:perkins2009automatically.  Methods of
+evolutionary program repair have been developed which are capable of
+repairing defects directly in x86 or ARM ELF files and which require
+no access to program source code cite:schulte2013embedded.  We adapt
+evolutionary program repair techniques to the unique needs of security
+researchers who have no access to either source code or to a
+regression test suite, and who are generating repairs without any
+special information or cooperation from the software vendor.  Although
+evolutionary program repair techniques typically require access to a
+regression test suite, we explore the feasibility of performing repair
+without any such test suite and find that for our example exploit
+regression test suites are most often not necessary.
 
-In a study of high and medium risk vulnerabilities in Microsoft and
-Apple products between 2002 and 2008, ~10% of vulnerabilities were
-found not to be patched within 150 days of disclosure, and on any
-given date \sim10 vulnerabilities and >20 vulnerabilities were public and
-un-patched for Microsoft and Apple respectively cite:frei20080.
-
-We propose a new option for security researchers in which verifiable
-exploits are used to automatically generate patches.  Such patches may
-be either published with the exploit (it has been shown that reporting
-an exploit with a patch in hand reduces the total number of attacks
-cite:arora2006does), or sent privately to the software vendor where
-they may speed the development of a patch cite:weimer06.
-
-We demonstrate the feasibility of this approach using a technique of
-automated evolutionary program repair cite:schulte2013embedded to
-patch security vulnerabilities in the NETGEAR WNDR3700 wireless
-router.  The technique requires no special information or access to
-source code making it possible for researchers to repair even stripped
-binary executables without any cooperation with the software vendor.
-Although evolutionary program repair techniques typically require
-access to a regression test suite, we explore the feasibility of
-performing repair without any such test suite.  Our proposed technique
-should be applicable to any verified exploit, the binary executable
-and the proof of the exploit become the sole inputs required by the
-repair algorithm.
+We demonstrate the feasibility of this technique by patching security
+vulnerabilities in the widely popular NETGEAR WNDR3700 wireless router
+before NETGEAR publicly addressed the exploits.
 
 In the remainder of this paper we; review two recent exploits to the
-widely distributed NETGEAR WNDR3700 (Section [[#exploits]]), demonstrate
-the feasibility of running the NETGEAR firmware in a VM sandbox
-(Section [[#firmware]]), adapt existing techniques of automated program
-repair originally applicable only to x86 and ARM ELF files to run on
-stripped MIPS executables with no section tables (Section
-[[#mips-mutation]]), and introduce and evaluate our modified program
-repair technique which does not require an extant regression test
-suite (Section [[#lazy]]).  We then analyze the runtime behavior and
-results of the repair algorithm with respect to their functionality,
-security and maintainability.
+NETGEAR WNDR3700 (Section [[#exploits]]), we demonstrate the feasibility
+of running the NETGEAR firmware in a VM sandbox (Section [[#firmware]]),
+we review our novel techniques of automated program repair (Sections
+[[#mips-mutation]] and [[#lazy]]), and we evaluate the effectiveness of this
+technique and the quality of the repairs it generates (Section
+[[#results]]).
 
-The contributions of this short paper are;
-1. demonstrate the use of system emulation to build a virtualized
-   execution environment allowing the evaluation of embedded device
-   drivers
-2. an application of automated repair to stripped MIPS ELF files
+The novel contributions of this short paper are;
+1. an application of automated repair to stripped MIPS ELF files
    recovered from router firmware
-3. a modified version of evolutionary program repair which does not
-   use fault localization (would have made this repair impossible)
-4. a modified version of evolutionary program repair which removes the
-   requirement for a regression test suite
-5. an application of automated repair to a real-world un-patched
+2. a modified version of evolutionary program repair which removes the
+   requirements for fault localization information, and for a
+   regression test suite
+3. an application of automated repair to a real-world un-patched
    security exploit resulting in
-6. the first demonstration of multiple repair in a single evolutionary
-   run.
+4. the first demonstration of multiple iterative repairs in a single
+   evolutionary run.
 
 In the pursuit of /Reproducible Research/ cite:buckheit1995wavelab
 cite:mesirov2010accessible and to encourage researchers to patch
-future discovered exploits, a companion version control
-repository [fn:1] contains all instructions, programs, and tooling
-required to extract, execute and repair the binary NETGEAR router
-image.  Additionally, the analysis performed in this document and all
-supporting figures may be automatically regenerated from new
-experimental data using the Org-mode Reproducible Research framework
+future discovered exploits, we've released a companion version control
+repository [fn:1].  This repository contains the instructions, source
+code, and tooling needed to extract, execute and repair the binary
+NETGEAR router image vulnerabilities.  All software needed to
+reproduce this work is free and open source.  Additionally, the
+analysis performed in this document and all supporting figures may be
+automatically regenerated from new experimental data using the
+Org-mode Reproducible Research framework
 cite:schulte2012reproducible-research.
 
 We hope the ability to automatically patch vulnerable closed source
-applications without having to wait for the software vendor to
-acknowledge or address the exploit encourages users to patch their
-vulnerable systems and researchers to release patches with exploit
-announcements.
+applications without dependence upon the software vendor encourages
+users to patch vulnerable systems and researchers to release patches
+with exploit announcements.
 
 * Description of Exploits
   :PROPERTIES:
@@ -365,6 +344,9 @@ repair process continues.
 #+end_src
 
 * Repair Results
+  :PROPERTIES:
+  :CUSTOM_ID: results
+  :END:
 ** Repair Run
 parameters used, runtime, etc...
 
@@ -396,8 +378,32 @@ out.
 
 * Related Work
 ** Security
-- motivate the use case, questions of when to report
-- move much of the intro to here
+The former increases the number of attacks in the short term
+cite:arora2006does, while the later risks the vendor ignoring the
+exploit extending the life of the exploit (e.g., Oracle reportedly
+waited months after researchers privately reported a bug in Java while
+thousands of users were attacked before releasing a fix
+cite:greenberg2012oracle).
+
+In 2002, special advisor for cyberspace security to then President
+Bush, Richard Clarke said "It is irresponsible and... extremely
+damaging to release information before the patch is out."  However
+there are instances when waiting to report may cause more damage and
+the question of when to report an exploit has been studied is not
+easily decidable in all cases cite:arora2008optimal.
+
+Software vendors commonly delay releasing patches to security
+exploits.  Microsoft waits until the second Tuesday of every month
+(known as "Patch Tuesday") to release security patches
+cite:lemos2003microsoft, leading malicious users to release new
+exploits on the second Wednesday of every month (known as "Exploit
+Wednesday") to maximize the time before a patch is released.
+
+In a study of high and medium risk vulnerabilities in Microsoft and
+Apple products between 2002 and 2008, ~10% of vulnerabilities were
+found not to be patched within 150 days of disclosure, and on any
+given date \sim10 vulnerabilities and >20 vulnerabilities were public and
+un-patched for Microsoft and Apple respectively cite:frei20080.
 
 ** Automated Program Repair
 - clearview
