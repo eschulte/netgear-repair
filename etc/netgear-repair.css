@@ -15,6 +15,12 @@
 .outline-text-3 {
   margin-left: 2em; }
 
+.org-src-name {
+  display: block;
+  margin: auto;
+  max-width: 80%;
+  text-align: center; }
+
 h3 {
   margin-left: 1em;
   color: black;
