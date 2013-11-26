@@ -279,14 +279,26 @@ Steps,
    return
 
 ** TODO evaluate lazy regression testing
-| run | evals | fitness of best | fitness of minimized best |
-|-----+-------+-----------------+---------------------------|
-|   1 | 17231 |              22 | 22                        |
-|   2 | 26879 |              21 | 22                        |
-|   3 | 23764 |              19 | 22                        |
-|   4 | 47906 |               6 | 6                         |
-|   5 | 13102 |              16 | 22                        |
-|   6 | 20677 |              18 | 22                        |
+#+begin_src lisp :colnames '(id evals evolved)
+    (mapcar #'list
+            (loop :for i :below 10 :collect i)
+            1-fix-evals
+            1-full-fitnesses)
+#+end_src
+
+#+RESULTS:
+| id | evals | evolved |
+|----+-------+---------|
+|  0 | 90405 |       8 |
+|  1 | 17231 |      22 |
+|  2 | 26879 |      21 |
+|  3 | 23764 |      19 |
+|  4 | 47906 |       6 |
+|  5 | 13102 |      16 |
+|  6 | 76960 |      17 |
+|  7 | 11831 |      20 |
+|  8 |  2846 |      14 |
+|  9 | 25600 |      21 |
 
 ** CANCELED different quality regression test suites
 Quality of tests
