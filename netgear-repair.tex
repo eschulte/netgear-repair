@@ -377,23 +377,26 @@ attempts to repair the NETGEAR WNDR3700 exploits did not require any
 regression tests be written.
 
 \begin{figure}[H]
-\begin{verbatim}
- 1  # Input: Vulnerable Program, original: ELF
- 2  # Input: Exploit Test, exploit: ELF -> Fitness
- 3  # Input: Interactive Check, good-enough: ELF -> [ELF -> Fitness]
- 4  # Output: Patched version of Program
- 5  new <- null
- 6  fitness <- null
- 7  suite <- [exploit]
- 8  do
- 9    new <- minimize(evolutionary_subroutine(original, suite))
-10    # User evaluates suitability of candidate repair
-11    new-regression-tests <- good-enough(new)
-12    suite <- suite ++ new-regression-tests
-13  until length(new-regression-tests) == 0
-14  return new
-\end{verbatim}
-\caption{\label{lazy-algorithm}High-level Pseudocode for interactive lazy-regression-testing repair algorithm.}
+\begin{algorithmic}[1]
+\small
+\item[{\textbf{Input: }} {Vulnerable Program, $\mathsf{original}$ : $ELF$}]
+\item[{\textbf{Input: }} {Exploit Tests, $\mathsf{exploits}$ : $[ELF \rightarrow Fitness]$}]
+\item[{\textbf{Input: }} {Interactive Check, $\mathsf{good-enough}$ : $ELF \rightarrow [ELF \rightarrow Fitness]$}]
+\item[{\textbf{Output: }} {Patched version of Program}] 
+  \STATE {\bf let} $new \leftarrow \mathsf{null}$ 
+  \STATE {\bf let} $fitness \leftarrow \mathsf{null}$ 
+  \STATE {\bf let} $suite \leftarrow \mathsf{exploits}$ 
+  \REPEAT {
+    \STATE {\bf let} $\mathsf{full} \leftarrow \mathsf{evolutionarySubroutine}(\mathsf{original}, \mathsf{suite})$
+    \STATE $new \leftarrow \mathsf{minimize()}$
+    \STATE {\bf let} $newRegressionTests \leftarrow \mathsf{good-enough}(\mathsf{new})$ 
+    \STATE $\mathsf{suite} \leftarrow \mathsf{suite} ++ \mathsf{newRegressionTests}$
+  }
+  \UNTIL { $length(\mathsf{newRegressionTests}) \equiv 0$ }
+  \RETURN { $\mathsf{new}$ }
+\end{algorithmic}
+\caption{\label{lazy-algorithm}High-level Pseudocode for interactive
+lazy-regression-testing repair algorithm.}
 \end{figure}
 
 The \texttt{evolutionary\_subroutine} in Listing \ref{lazy-algorithm} has the same
@@ -405,32 +408,34 @@ pseudocode for the \texttt{evolutionary\_subroutine} is shown in Listing
 \ref{evolutionary-subroutine}.
 
 \begin{figure}[H]
-\begin{verbatim}
- 1  # Input: Vulnerable Program, original: ELF
- 2  # Input: Test suite, suite: [ELF -> Fitness]
- 3  # Parameters: max-population-size, tournament-size, cross-rate
- 4  # Output: Patched version of Program
- 5  let fitness <- evaluate(original, suite)
- 6  let pop <- max-pop-size copies of <original, fitness>
- 7  do in every thread
- 8    let p <- null
- 9    if random() < cross-rate then
-10      p <- crossover(tournament(pop,tournament-size,+),
-11                     tournament(pop,tournament-size,+))
-12    else
-13      p <- tournament(pop,tournament-size,+)
-14    endfi
-15    p <- mutate(p)
-16    fitness <- evaluate(suite, p)
-17    incorporate(pop, <p, fitness>)
-18    if length(pop) > max-population-size then
-19      evict(pop, tournament(pop,tournament-size,-))
-20    endif
-21  until fitness > length(suite)
-22  return p
-\end{verbatim}
-\caption{\label{evolutionary-subroutine}High-level Pseudocode for the steady state parallel evolutionary repair subroutine.}
-
+\begin{algorithmic}[1]
+\small
+\item[{\textbf{Input: }} {Vulnerable Program, $\mathsf{original}$ : $ELF$}]
+\item[{\textbf{Input: }} {Test Suite, $\mathsf{suite}$ : $[ELF \rightarrow Fitness]$}]
+\item[{\textbf{Parameters: }} {$populationSize$, $tournamentSize$, $crossRate$}]
+\item[{\textbf{Output: }} {Patched version of Program}] 
+  \STATE {\bf let} $fitness \leftarrow \mathsf{evaluate}(\mathsf{original}, \mathsf{suite})$ 
+  \STATE {\bf let} $pop \leftarrow \mathsf{populationSize}$ copies of $\langle \mathsf{original}, \mathsf{fitness} \rangle$
+  \REPEAT {
+    \IF {$\mathsf{Random}() < CrossRate$}
+      \STATE {\bf let} $\mathsf{p_{1}} \leftarrow \mathsf{crossover}(\mathsf{tournament}(\mathsf{pop}, \mathsf{tounamentSize}, +))$
+      \STATE {\bf let} $\mathsf{p_{2}} \leftarrow \mathsf{crossover}(\mathsf{tournament}(\mathsf{pop}, \mathsf{tounamentSize}, +))$
+      \STATE {\bf let} $\mathsf{p} \leftarrow \mathsf{crossover}(\mathsf{p_{1}}, \mathsf{p_{2}})$
+    \ELSE
+      \STATE $p \leftarrow \mathsf{tournament}(\mathsf{pop}, \mathsf{tounamentSize}, +)$
+    \ENDIF
+    \STATE {\bf let} $p' \leftarrow \mathsf{Mutate}(p)$
+    \STATE {\bf let} $fitness \leftarrow \mathsf{evaluate}(\mathsf{suite}, \mathsf{p'})$
+    \STATE $\mathsf{incorporate}(pop,\langle p', \mathsf{Fitness}(\mathsf{Run}(p')) \rangle)$
+    \IF {$\mathsf{length}(\mathsf{pop}) > \mathsf{maxPopulationSize}$}
+      \STATE $\mathsf{evict}(\mathsf{pop}, \mathsf{tournament}(\mathsf{pop}, \mathsf{tounamentSize}, -))$
+    \ENDIF
+  }
+  \UNTIL { $\mathsf{fitness} > \mathsf{length}(\mathsf{suite})$ }
+  \RETURN { $\mathsf{p'}$ }
+\end{algorithmic}
+\caption{\label{evolutionary-subroutine}High-level Pseudocode for the
+steady state parallel evolutionary repair subroutine.}
 \end{figure}
 
 A careful reader will notice that every time the user rejects the
