@@ -544,23 +544,17 @@ the original at 2 such locations.
 
 * Related Work
 ** Security
-The former increases the number of attacks in the short term
-cite:arora2006does, while the later risks the vendor ignoring the
-exploit extending the life of the exploit (e.g., Oracle reportedly
-waited months after researchers privately reported a bug in Java while
-thousands of users were attacked before releasing a fix
-cite:greenberg2012oracle).
+There has been a significant effort to understand the impacts of
+disclosure of discovered exploits.  Researchers typically must decide
+between public disclosure (termed "full disclosure") or private
+disclosure to the vendor of the vulnerable software.  The former
+increases the number of attacks in the short term cite:arora2006does,
+while the later risks the vendor ignoring the exploit extending the
+life of the exploit.
 
-In 2002, special advisor for cyberspace security to then President
-Bush, Richard Clarke said "It is irresponsible and... extremely
-damaging to release information before the patch is out."  However
-there are instances when waiting to report may cause more damage and
-the question of when to report an exploit has been studied is not
-easily decidable in all cases cite:arora2008optimal.
-
-Software vendors commonly delay releasing patches to security
-exploits.  Microsoft waits until the second Tuesday of every month
-(known as "Patch Tuesday") to release security patches
+Even major software vendors commonly delay releasing patches to
+security exploits.  Microsoft waits until the second Tuesday of every
+month (known as "Patch Tuesday") to release security patches
 cite:lemos2003microsoft, leading malicious users to release new
 exploits on the second Wednesday of every month (known as "Exploit
 Wednesday") to maximize the time before a patch is released.
@@ -571,21 +565,22 @@ found not to be patched within 150 days of disclosure, and on any
 given date \sim10 vulnerabilities and >20 vulnerabilities were public and
 un-patched for Microsoft and Apple respectively cite:frei20080.
 
+The question of when to report an exploit has been studied is not
+easily decidable in all cases cite:arora2008optimal.
+
 ** EC
 TODO: EC background
 
 ** Automated Program Repair
+TODO
 - genprog
 - clearview
 - semfix
 
 * Discussion
-This technique demonstrates the current ability of end users to fix
-software exploits in embedded devices without any special information
-or help from the software vendor.
-
-Estimate the amount of money cost by delay in release of vendor
-patches?
+This technique demonstrates the ability of end users to fix software
+exploits in closed source software without any special information or
+aid from the software vendor.
 
 ** Threats to Validity
 This initial work is based upon a single exploit repair so it is
