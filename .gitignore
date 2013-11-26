@@ -6,7 +6,6 @@
 *.log
 *.out
 *.pdf
-*.tex
 
 *.html
 *.svg
