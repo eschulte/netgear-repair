@@ -209,16 +209,34 @@ execution.
 #+header: :cache (by-backend (latex "no") (t "yes"))
 #+begin_src latex
   \begin{tikzpicture}
-    \node[draw,rectangle] (header) at (0,2) {ELF Header};
-    \node[draw,rectangle] (st) at (0,0) {Section Table};
-    \node[draw,rectangle] (body) at (0,-2) {...};
-    \node[draw,rectangle] (pt) at (0,-4) {Program Table};
+    % ELF File
+    \node[draw, rectangle, minimum height=14em, minimum width=8em] (whole) at (0,0) {};
+    \node[draw, rectangle, minimum height=2em, minimum width=8em] (header) at (0,2.125) {ELF Header};
+    \node[minimum width=8em] (st) at (0,1) {Section Table};
+    \node[minimum width=8em] (body1) at (0,-0) {...};
+    \node[minimum width=8em] (body2) at (0,-0.5) {Section Data};
+    \node[minimum width=8em] (body3) at (0,-1) {...};
+    \node[minimum width=8em] (pt) at (0,-2) {Program Table};
+    % External Users
+    \node[draw, circle, fill=blue!20, minimum width=6em] (linker) at (-3,1) {Linker};
+    \node[draw, circle, fill=red!20, minimum width=6em]  (memory) at (3,-2) {Memory};
+    % Arrows to Users
+    \draw[->,thick] (st.west) to (linker.east);
+    \draw[->,thick] (pt.east) to (memory.west);
+    % Section Table Arrows
+    \draw[->,thick,densely dotted,bend right=90] (body1.east) to (st.east);
+    \draw[->,thick,densely dotted,bend right=90] (body2.east) to (st.east);
+    \draw[->,thick,densely dotted,bend right=90] (body3.east) to (st.east);
+    % Program Table Arrows
+    \draw[->,thick,densely dotted,bend right=90] (body1.west) to (pt.west);
+    \draw[->,thick,densely dotted,bend right=90] (body2.west) to (pt.west);
+    \draw[->,thick,densely dotted,bend right=90] (body3.west) to (pt.west);
   \end{tikzpicture}
 #+end_src
 
 #+label: elf
-#+Caption: Sections of an Executable and Linking Format (ELF) file.
-#+RESULTS[231e95ccf88ea7ad53cb8e22e97f1c1cdf720ff1]: ELF-layout
+#+Caption: Sections and their uses in an Executable and Linking Format (ELF) file.
+#+RESULTS[b7b56b24cc15d546060f5cb1d7fc0c68f4307040]: ELF-layout
 [[file:elf-layout.svg]]
 
 While the majority of ELF files include all three of these elements,
@@ -530,8 +548,9 @@ un-patched for Microsoft and Apple respectively cite:frei20080.
 ** GP
 
 ** Automated Program Repair
-- clearview
 - genprog
+- clearview
+- semfix
 
 * Discussion
 This technique demonstrates the current ability of end users to fix
