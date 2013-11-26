@@ -122,8 +122,9 @@ with exploit announcements.
   :END:
 In this work we repair a pair of exploits in version 4 the popular
 NETGEAR WNDR3700 wireless router.  The "shodan" device search engine
-reports 1496 vulnerable routers cite:shodan.  Both exploits exist in
-the router's web server in a binary named =net-cgi=, and both are
+is able to find 1496 vulnerable publicly accessible routers at the
+time of submission cite:shodan.  Both exploits exist in the router's
+web server in a binary executable named =net-cgi=, and both are
 related to how =net-cgi= handles authentication cite:zcutlip.
 
 1. Any URI starting with the string "BRS" bypasses authentication.
@@ -139,13 +140,12 @@ passwords, and by accessing the page
 authentication in a manner which is permanent across reboots.
 
 * Repair Technique
-To repair the =net-cgi= file we must extract the binary executable and
-router file system from the firmware image distributed by NETGEAR.
-Using the extracted filesystem and executable we construct a test
-harness used both to exercise desirable behavior of =net-cgi= and to
-exercise the exploits.  This test harness will be the fitness function
-used by our GA repair algorithm to evaluate candidate repairs and to
-identify when repairs to the exploits have been found.
+To repair the =net-cgi= executable we must extract it and the router
+file system from the firmware image distributed by NETGEAR.  Using the
+extracted filesystem and executable we construct a test harness used
+exercise the exploits in =net-cgi=.  This test harness is used by the
+repair algorithm to evaluate candidate repairs and to identify when
+repairs to the exploits have been found.
 
 ** Router Firmware Extraction and Virtualization
    :PROPERTIES:
@@ -156,46 +156,52 @@ WNDR3700 router which include the router file system holding the
 vulnerable =net-cgi= executable.  Extraction of the file system may be
 accomplished using =binwalk= [fn:2], a firmware extraction tool which
 scans the binary data in the firmware file searching for signatures
-which identify the types of embedded data.  The =binwalk= tool
+identifying the types of embedded data sections.  The =binwalk= tool
 includes rules for identifying and extracting common embedded data
-types, include a squashfs cite:lougher2006squashfs section holding the
-router filesystem.
+types, including a squashfs cite:lougher2006squashfs section which in
+this case holds the router's file system.
 
 The router runs on a big-endian MIPS architecture.  Using the QEMU
-cite:bellard2005qemu system emulator to emulate this architecture the
-Debian Linux operating system is run in emulation.  After copying the
-extracted router filesystem into the emulated MIPS Linux system,
-commands may be executed in the environment which closely approximates
-the environment of the NETGEAR router using the =chroot= command
-pointing to the base of the extracted NETGEAR file system.
+cite:bellard2005qemu system emulator to emulate this architecture a
+Debian Linux operating system is run in emulation.  The extracted
+router file system is copied into the emulated MIPS Linux system.  A
+number of special directories (e.g., =/proc/=, =/dev/= etc...) are
+mounted inside the extracted file system and bound to the
+corresponding directories on the virtual machine.  At this point
+commands may be executed in an environment which closely approximates
+the execution environment of the NETGEAR router using the =chroot=
+command to confine executable access to within the extracted NETGEAR
+file system.
 
-With this accomplished (and with a number of minor adjustments
-described in full in the reproduction information [fn:3]) is it
-possible to test both the existing desirable functionality and the
-exploitable vulnerabilities in the =net-cgi= executable from the
-command line using a Bash shell script [fn:4].
+With this accomplished (and with other minor adjustments described in
+full in the reproduction information [fn:3]) is it possible to run
+NETGEAR router in virtualization.  In particular the web interface of
+the router may be accessed either using an external web browser or the
+=net-cgi= executable may be called directly from the command line
+using a Bash shell script [fn:4].
 
 ** Mutation of stripped MIPS ELF Files
    :PROPERTIES:
    :CUSTOM_ID: mips-mutation
    :END:
 The repair of ELF format files is an extension of the technique
-introduced in cite:schulte2013embedded.  The mutation operations are
-used to modify the execution behavior of the ELF file.  In this case
-the =net-cgi= file is stripped a minimal ELF file which does not
-include much of the information assumed to exist by the previous
-repair technique.
+introduced in cite:schulte2013embedded.  Mutation operations are used
+to modify the execution behavior of the ELF file.  In this case the
+=net-cgi= file is stripped a minimal ELF file which does not include
+much of the information assumed to exist by the previous repair
+technique.
 
 ELF (Executable and Linking Format) cite:tis1995tool files may either
-be executed directly or may be linked with other files for future
-execution.  The ELF file contains a number of headers and tables
-containing administrative data, and sections holding program code and
-data.  The three main administrative elements of an ELF file are the
-ELF Header, the section table and the program table (see Figure [[elf]]).
-The ELF Header points to the section table and the program table, the
-section table holds information on the layout of sections in the ELF
-file on disk, and the program table holds information on how to copy
-section from disk into memory for program execution.
+be executed directly or may be linked with other object files to form
+an executable or library.  The ELF file contains a number of headers
+and tables containing administrative data, and sections holding
+program code and data.  The three main administrative elements of an
+ELF file are the ELF Header, the section table and the program table
+(see Figure [[elf]]).  The ELF Header points to the section table and the
+program table, the section table holds information on the layout of
+sections in the ELF file on disk, and the program table holds
+information on how to copy section from disk into memory for program
+execution.
 
 #+name: ELF-layout
 #+header: :file (by-backend (latex 'nil) (t "elf-layout.svg"))
@@ -216,9 +222,9 @@ section from disk into memory for program execution.
 [[file:elf-layout.svg]]
 
 While the majority of ELF files include all three of these elements,
-only the ELF Header is guaranteed to exist.  In executable ELF files
-only the program table is required, and in linkable files only the
-section table is required.
+only the ELF Header is guaranteed to exist in all cases.  In
+executable ELF files the program table is required, and in linkable
+files the section table is required.
 
 The previous ELF repair tool required a section table and a section
 name string table, which were used to find the =.text= section of the
@@ -226,9 +232,9 @@ ELF file where program code is normally stored.  The data in the
 =.text= section was then coerced into a "genome" a linear array of
 assembly instructions which was modified by the mutation operations.
 Our extension of this technique does not require a section table,
-instead we build the genome from every section in the program table
-which has a "loadable" type.  These are the sections which are loaded
-into memory during program execution.
+instead we build the genome by concatenating the data of every section
+in the program table which has a "loadable" type.  These are the
+sections whose data are loaded into memory during program execution.
 
 Mutation operations must change program data without corrupting the
 structure of the file or breaking the many addresses hard coded into
@@ -236,7 +242,7 @@ the program data itself (in general it is impossible to distinguish
 between an integer literal and an address in program data).  For this
 reason the mutation operations are designed to preserve the absolute
 size and the offsets within of the ELF program data.  This is made
-much easier because the MIPS is a RISC (Reduced Instruction Set
+easier by the fact that MIPS is a RISC (Reduced Instruction Set
 Computing) architecture in which every argumented assembly instruction
 is 1 word long cite:hennessy1982mips.  The mutation and crossover
 operations used to modify ELF files are shown in Figure [[mutation-ops]].
@@ -280,6 +286,7 @@ operations used to modify ELF files are shown in Figure [[mutation-ops]].
     \draw[->,thick] (s1-from.east) to (s1-to.west);
     \draw[->,thick] (s2-from.east) to (s2-to.west);
     % Crossover
+    \node at (0,-1.7) {One Point Crossover};
     \foreach \x in {-1.5,1.5}{
       \foreach \y in {-3.8,-3.4,-3,-2.6,-2.2}{
         \node[asmrow,fill=green!40] at (\x,\y) {};
@@ -290,28 +297,28 @@ operations used to modify ELF files are shown in Figure [[mutation-ops]].
         \node[asmrow,fill=blue!60] at (\x,\y) {};
       }
     }
-    \node at (0,-1.7) {Two Point Crossover};
-    \draw[->,thick] (-2,-2.4) to (2,-2.4);
     \draw[->,thick] (-2,-3.2) to (2,-3.2);
-    \node[asmrow,fill=blue!60] at (1.5,-2.6) {};
-    \node[asmrow,fill=blue!60] at (1.5,-3) {};
+    \node[asmrow,fill=blue!60] at (1.5,-3.4) {};
+    \node[asmrow,fill=blue!60] at (1.5,-3.8) {};
   \end{tikzpicture}
 #+end_src
 
 #+label: mutation-ops
-#+RESULTS[17b362c56616d0afadd5ff0131a9baaacdfdb23b]: mutation-ops
+#+Caption: Mutation and Crossover operations in MIPS ELF files.  The program data is represented as a fixed length array of single-word sections.  These operators change these sections maintaining length and offset in the array.
+#+RESULTS[a223f0b59d917bf2751392ff703713d47c829371]: mutation-ops
 [[file:mut-ops.svg]]
 
 ** Lazy on demand Regression Testing
    :PROPERTIES:
    :CUSTOM_ID: lazy
    :END:
-We present a novel evolutionary program repair which does not require
-a regression test suite.  We adopt the repair algorithm from
-cite:forrest2009genetic but instead of assuming that a regression test
-suite exists at the beginning of the algorithm, we only assume that a
-single test case exists exercising the exploit.  High level pseudocode
-for the repair algorithm is show in Figure [[lazy-algorithm]].
+We present a novel evolutionary program repair algorithm which does
+not require a pre-existing regression test suite.  We adopt the repair
+algorithm from cite:forrest2009genetic but instead of assuming that a
+regression test suite exists at the beginning of the algorithm, we
+only assume that a single test case exists exercising an exploit.
+High level pseudocode for the repair algorithm is show in Figure
+[[lazy-algorithm]].
 
 We then embark upon an interactive repair process in which the
 algorithm fixes every available test (starting with only the exploit),
@@ -319,28 +326,29 @@ the user then determines the suitability of the evolved repair either
 accepting the repair and terminating the algorithm, or rejecting the
 repair and supplying a regression test which the repair fails.  If the
 later, then the new test is incorporated into the test suite, and the
-repair process continues.
+repair process continues.  In Section [[#results]] we find that 80% of our
+attempts to repair the NETGEAR WNDR3700 exploits did not require any
+regression tests be written.
 
 #+label: lazy-algorithm
 #+Caption: High-level Pseudocode for interactive lazy-regression-testing repair algorithm.
-#+begin_src ruby
+#+begin_src fundamental
   # Input: Vulnerable Program, original: ELF
   # Input: Exploit Test, exploit: ELF -> Fitness
   # Input: Interactive Check, good-enough: ELF -> [ELF -> Fitness]
-  # Parameters: pop-size, cross-rate, tournament-size
   # Output: Patched version of Program
-  pop <- pop-size copies of original
   new <- null
   fitness <- null
   target-fitness <- null
   suite <- [exploit]
   do
     target-fitness <- length(suite)
-    new <- minimize(genprog_repair(pop, target-fitness))
+    new <- minimize(evolutionary_repair(pop, suite, target-fitness))
     # User evaluates suitability of candidate repair
     new-regression-tests <- good-enough(new)
     suite <- suite ++ new-regression-tests
   until length(new-regression-tests) == 0
+  return new
 #+end_src
 
 * Repair Results
@@ -400,7 +408,7 @@ Apple products between 2002 and 2008, ~10% of vulnerabilities were
 found not to be patched within 150 days of disclosure, and on any
 given date \sim10 vulnerabilities and >20 vulnerabilities were public and
 un-patched for Microsoft and Apple respectively cite:frei20080.
-
+** GP
 ** Automated Program Repair
 - clearview
 - genprog
