@@ -1,4 +1,3 @@
-% Created 2013-11-26 Tue 15:16
 \documentclass{sigcomm-alternate}
 
 \usepackage{amsmath}
@@ -156,6 +155,7 @@ We hope the ability to automatically patch vulnerable closed source
 applications without dependence upon the software vendor encourages
 users to patch vulnerable systems and researchers to release patches
 with exploit announcements.
+
 \section{Description of Exploits}
 \label{sec-2}
 In this work we repair a pair of exploits in version 4 of the popular
@@ -169,15 +169,17 @@ both are related to how \texttt{net-cgi} handles authentication \cite{zcutlip}.
 \item Any URI starting with the string "BRS" bypasses authentication.
 
 \item Any URI including the string "unauth.cgi" or
-"securityquestions.cgi" bypass authentication even pages of the
-form "\url{http://router/page.html?foo=unauth.cgi}".
+  "securityquestions.cgi" bypass authentication even pages of the form
+  \texttt{http://router/page.html?foo=unauth.cgi}.
 \end{enumerate}
 
 Many administrative pages start with the "BRS" string, providing
 attackers with access to personal information such as user's
-passwords, and by accessing the page
-"\url{http://router/BRS_02_genieHelp.html}" attackers can completely disable
-authentication in a manner which is permanent across reboots.
+passwords, and by accessing the page\\
+\texttt{http://router/BRS\_02\_genieHelp.html} attackers can
+completely disable authentication in a manner which is permanent
+across reboots.
+
 \section{Repair Technique}
 \label{sec-3}
 To repair the \texttt{net-cgi} executable we must extract it and the router
@@ -187,7 +189,7 @@ exercise the exploits in \texttt{net-cgi}.  This test harness is used by the
 repair algorithm to evaluate candidate repairs and to identify when
 repairs to the exploits have been found.
 
-\subsection{Router Firmware Extraction and Virtualization}
+\subsection{Firmware Extraction and Virtualization}
 \label{sec-3-1}
 NETGEAR distributes firmware holding a full system image for the
 WNDR3700 router which include the router file system holding the
@@ -212,11 +214,12 @@ command to confine executable access to within the extracted NETGEAR
 file system.
 
 With this accomplished (and with other minor adjustments described in
-full in the reproduction information \footnote{\url{http://eschulte.github.io/netgear-repair/INSTRUCTIONS.html}}) is it possible to run
-NETGEAR router in virtualization.  In particular the web interface of
-the router may be accessed either using an external web browser or the
-\texttt{net-cgi} executable may be called directly from the command line
-using a Bash shell script \footnote{\url{https://github.com/eschulte/netgear-repair/blob/master/bin/test-cgi}}.
+full in the reproduction information) is it possible to run NETGEAR
+router in virtualization.  In particular the web interface of the
+router may be accessed either using an external web browser or the
+\texttt{net-cgi} executable may be called directly from the command
+line using a Bash shell script.
+
 \subsection{Mutation of stripped MIPS ELF Files}
 \label{sec-3-2}
 The repair of ELF format files is an extension of the evolutionary
@@ -238,8 +241,9 @@ sections in the ELF file on disk, and the program table holds
 information on how to copy section from disk into memory for program
 execution.
 
+\begin{figure}[htb]
+  \centering
 \begin{tikzpicture}
-\label{elf}
   % ELF File
   \node[draw, rectangle, minimum height=14em, minimum width=8em] (whole) at (0,0) {};
   \node[minimum width=8em] (header) at (0,2.125) {ELF Header};
@@ -264,6 +268,9 @@ execution.
   \draw[->,thick,densely dotted,bend right=90] (body2.west) to (pt.west);
   \draw[->,thick,densely dotted,bend right=90] (body3.west) to (pt.west);
 \end{tikzpicture}
+\caption{\label{elf}Sections and their uses in an Executable and
+  Linking Format (ELF) file.}
+\end{figure}
 
 While the majority of ELF files include all three of these elements,
 only the ELF Header is guaranteed to exist in all cases.  In
@@ -292,6 +299,8 @@ is 1 word long \cite{hennessy1982mips}.  The mutation and crossover
 operations used to modify ELF files are shown in Figure \ref{mutation-ops}.
 
 \tikzstyle{asmrow} = [rectangle, draw, minimum width=2em, minimum height=1em]
+\begin{figure}[htb]
+  \centering
 \begin{tikzpicture}
   % Mutation
   \foreach \x in {-3.5,-2.5,-0.5,0.5,2.5,3.5}{
@@ -340,6 +349,13 @@ operations used to modify ELF files are shown in Figure \ref{mutation-ops}.
   \node[asmrow,fill=blue!60] at (1.5,-3.4) {};
   \node[asmrow,fill=blue!60] at (1.5,-3.8) {};
 \end{tikzpicture}
+\caption{Mutation and Crossover operations in MIPS ELF files.  The
+  program data is represented as a fixed length array of single-word
+  sections.  These operators change these sections maintaining length
+  and offset in the array.}
+  \label{mutation-ops}
+\end{figure}
+
 \subsection{Lazy on demand Regression Testing}
 \label{sec-3-3}
 We present a novel evolutionary program repair algorithm which does
@@ -376,8 +392,8 @@ regression tests be written.
 12    suite <- suite ++ new-regression-tests
 13  until length(new-regression-tests) == 0
 14  return new
-\end{verbatim}\caption{\label{lazy-algorithm}High-level Pseudocode for interactive lazy-regression-testing repair algorithm.}
-
+\end{verbatim}
+\caption{\label{lazy-algorithm}High-level Pseudocode for interactive lazy-regression-testing repair algorithm.}
 \end{figure}
 
 The \texttt{evolutionary\_subroutine} in Listing \ref{lazy-algorithm} has the same
@@ -412,7 +428,8 @@ pseudocode for the \texttt{evolutionary\_subroutine} is shown in Listing
 20    endif
 21  until fitness > length(suite)
 22  return p
-\end{verbatim}\caption{\label{evolutionary-subroutine}High-level Pseudocode for the steady state parallel evolutionary repair subroutine.}
+\end{verbatim}
+\caption{\label{evolutionary-subroutine}High-level Pseudocode for the steady state parallel evolutionary repair subroutine.}
 
 \end{figure}
 
@@ -428,6 +445,7 @@ landscape.  This algorithmic choice acknowledges the fitness of the
 original program, and for this reason gives it primacy over the
 evolved solutions of previous iterations (which may well have evolved
 into fitness valleys as in run 8 Table \ref{minimized-stats}).
+
 \section{Repair Demonstration}
 \label{sec-4}
 \subsection{Methodology}
@@ -462,11 +480,11 @@ crossed over $\frac{2}{3}$'s of the time.
 \begin{table}[htb]
 \centering
 \begin{tabular}{lr}
-parameter & value\\
+parameter           & value         \\
 \hline
-max-population-size & 512\\
-tournament-size & 2\\
-cross-rate & $\frac{2}{3}$\\
+max-population-size & 512           \\
+tournament-size     & 2             \\
+cross-rate          & $\frac{2}{3}$ \\
 \end{tabular}\caption{\label{parameters}The parameters used to evolve repairs to the NETGEAR WNDR3700 exploits.}
 
 \end{table}
@@ -499,15 +517,19 @@ of regression test sizes.
 
 \begin{table}[htb]
 \centering
-\begin{tabular}{lrrrr}
-suite size & 0 & 1 & 5 & 10\\
+\begin{tabular}{l|r}
+suite size & evals per minute w/32 cores \\
 \hline
-evals per minute w/32 cores & TODO &  &  & \\
+0          & TODO                        \\
+1          & TODO                        \\
+5          & TODO                        \\
+10         & TODO                        \\
 \end{tabular}\caption{\label{test-speed}Using 32 virtual machines to evaluate fitness in parallel we are able to perform the following number of fitness evaluation per minute as a function of regression suite size.}
-
 \end{table}
+
 \subsection{Analysis of Repairs}
 \label{sec-4-2}
+
 \subsubsection{Iterative Repair}
 \label{sec-4-2-1}
 The repairs required two distinct fixes to two different exploits in a
@@ -515,39 +537,60 @@ single long evolutionary run.  This is an instance of "iterative
 repair" which has not previously been observed in the repair of
 real-world extant software.
 
-\url{fitness-improvement.tex}
+\begin{figure}[htb]
+  \centering
+  \include{fitness-improvement.tex}
+  \caption{Mean fitness as a function of the number of fitness
+    evaluations.  Collected over 10 runs using only the two exploits
+    to access variant fitness.  A fitness of 3 indicates that all
+    three tests are failed but do not throw an error.  A fitness value
+    of 6 passes all three tests.  One exploit is exercised by two
+    tests, so typically a run fixes either the 1-test or 2-test
+    exploit first, then fixes the second later.  These two different
+    repair scenarios are clearly visible in the graph.}
+  \label{fit-by-time}
+\end{figure}
+
 \subsubsection{Minimization Impact}
 \label{sec-4-2-2}
 In many cases the initial evolved repair broke untested behavior.  For
-example evolved repairs sometimes worked when \texttt{net-cgi} was called
-directly on the command line but not through the embedded
-µHTTPd \footnote{\url{http://wiki.openwrt.org/doc/uci/uhttpd}} webserver, or the evolved file failed to serve pages not
-used in the exploit test.  As shown in Table \ref{minimized-stats}, in most
-cases the minimized version of the evolved executable fixed all of the
+example evolved repairs sometimes worked when \texttt{net-cgi} was
+called directly on the command line but not through the embedded
+µHTTPd \footnote{\url{http://wiki.openwrt.org/doc/uci/uhttpd}}
+webserver, or the evolved file failed to serve pages not used in the
+exploit test.  As shown in Table \ref{minimized-stats}, in most cases
+the minimized version of the evolved executable fixed all of the
 regressions found in the evolved repair.  The functionality numbers in
-Table \ref{minimized-stats} were generated using a hand-written regression
-test suite.
+Table \ref{minimized-stats} were generated using a hand-written
+regression test suite.
 
 \begin{table}[htb]
 \centering
 \begin{tabular}{rrrrrr}
-Run Id & Fit Evals & Full Diff & Min Diff & Full Fit & Min Fit\\
+Run Id & Fit Evals & Full Diff & Min Diff & Full Fit & Min Fit \\
 \hline
-0 & 90405 & 500 & 2 & 8 & 22\\
-1 & 17231 & 134 & 3 & 22 & 22\\
-2 & 26879 & 205 & 2 & 21 & 22\\
-3 & 23764 & 199 & 2 & 19 & 22\\
-4 & 47906 & 319 & 2 & 6 & 6\\
-5 & 13102 & 95 & 2 & 16 & 22\\
-6 & 76960 & 556 & 3 & 17 & 22\\
-7 & 11831 & 79 & 3 & 20 & 22\\
-8 & 2846 & 10 & 1 & 14 & 14\\
-9 & 25600 & 182 & 2 & 21 & 22\\
+0      & 90405     & 500       & 2        & 8        & 22      \\
+1      & 17231     & 134       & 3        & 22       & 22      \\
+2      & 26879     & 205       & 2        & 21       & 22      \\
+3      & 23764     & 199       & 2        & 19       & 22      \\
+4      & 47906     & 319       & 2        & 6        & 6       \\
+5      & 13102     & 95        & 2        & 16       & 22      \\
+6      & 76960     & 556       & 3        & 17       & 22      \\
+7      & 11831     & 79        & 3        & 20       & 22      \\
+8      & 2846      & 10        & 1        & 14       & 14      \\
+9      & 25600     & 182       & 2        & 21       & 22      \\
 \hline
-mean & 33652.4 & 227.9 & 2.2 & 16.4 & 19.6\\
-\end{tabular}\caption{\label{minimized-stats}Difference and functionality of evolved repair before and after minimization.  In these columns "Full" refers to evolved solutions before minimization and "Min" refers to post-minimization solutions.  Columns labeled "Diff" report the number of unified diff windows against the original program data. The columns labeled "Fit" report the fitness measured with a full regression test suite including the exploit tests with a maximum fitness of 22.}
-
+mean   & 33652.4   & 227.9     & 2.2      & 16.4     & 19.6    \\
+\end{tabular}
+\caption{\label{minimized-stats}Difference and functionality of
+evolved repair before and after minimization.  In these columns "Full"
+refers to evolved solutions before minimization and "Min" refers to
+post-minimization solutions.  Columns labeled "Diff" report the number
+of unified diff windows against the original program data. The columns
+labeled "Fit" report the fitness measured with a full regression test
+suite including the exploit tests with a maximum fitness of 22.}
 \end{table}
+
 \subsubsection{Repair Size}
 \label{sec-4-2-3}
 As shown in Table \ref{minimized-stats}, the initial evolved repair differed
@@ -579,24 +622,31 @@ exploits on the second Wednesday of every month (known as "Exploit
 Wednesday") to maximize the time before a patch is released.
 
 In a study of high and medium risk vulnerabilities in Microsoft and
-Apple products between 2002 and 2008, \textasciitilde{}10\% of vulnerabilities were
-found not to be patched within 150 days of disclosure, and on any
-given date $\sim$10 vulnerabilities and >20 vulnerabilities were public and
-un-patched for Microsoft and Apple respectively \cite{frei20080}.
+Apple products between 2002 and 2008, \textasciitilde{}10\% of
+vulnerabilities were found not to be patched within 150 days of
+disclosure, and on any given date $\sim$10 vulnerabilities and >20
+vulnerabilities were public and un-patched for Microsoft and Apple
+respectively \cite{frei20080}.
 
 The question of when to report an exploit has been studied is not
 easily decidable in all cases \cite{arora2008optimal}.
+
 \subsection{EC}
 \label{sec-5-2}
+
 TODO: EC background
+
 \subsection{Automated Program Repair}
 \label{sec-5-3}
+
 TODO
+
 \begin{itemize}
 \item genprog
 \item clearview
 \item semfix
 \end{itemize}
+
 \section{Discussion}
 \label{sec-6}
 This technique demonstrates the ability of end users to fix software
@@ -618,8 +668,10 @@ software (cf. \cite{schulte2013software}).  Specifically in
 software mutants differs by only \textasciitilde{}60\% between software tested with a
 null regression test suites and software tested with the best
 obtainable quality regression test suites.
+
 \subsection{Next Steps}
 \label{sec-6-2}
+
 \begin{itemize}
 \item operation directly on a binary image
 \begin{itemize}
@@ -637,6 +689,7 @@ password reset
 \item self certifying patches
 \end{itemize}
 \end{itemize}
+
 \section{Acknowledgments}
 \label{sec-7}
 Foremost we'd like to thank Zachary Cutlip who analyzed and announced
@@ -650,5 +703,5 @@ Also, GRANTS GRANTS GRANTS.
 
 \bibliographystyle{plain}
 \bibliography{netgear-repair}
-% Emacs 24.3.1 (Org mode 8.2.3c)
+
 \end{document}
