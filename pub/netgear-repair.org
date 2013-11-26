@@ -26,16 +26,17 @@ technique.  Since exploit authors will not normally have access to a
 regression test suite we modify existing evolutionary repair technique
 by running repair without any regression test suite.  We propose a
 model of "lazy" regression test suite composition in which the user
-only writes regression tests as needed and find that in the case of
-the NETGEAR WNDR3700 only XXXX tests are needed to successfully
-perform repair.  We discuss the feasibility and utility of this
-technique for the security community.
-
-# The tooling and technique demonstrated herein are available under open
-# source licensing [fn:1] and may be generalized to other embedded
-# binary executables and reproducible exploits increasing the options
-# available to security researchers upon discovering new exploits.
+only writes regression tests as needed and find that in 80% of cases
+the NETGEAR WNDR3700 exploits may be repaired without having to write
+/any/ regression tests.  We discuss the feasibility and utility of
+this technique for the security community.
 #+LaTeX: \end{abstract}
+
+# The tooling and technique demonstrated herein are available under
+# open source licensing [fn:1] and may be generalized to other
+# embedded binary executables and reproducible exploits increasing the
+# options available to security researchers upon discovering new
+# exploits.
 
 * Introduction
 Security exploits pose significant monetary and social risks.  By
