@@ -111,11 +111,13 @@ The contributions of this short paper are;
    drivers
 2. an application of automated repair to stripped MIPS ELF files
    recovered from router firmware
-3. a modified version of evolutionary program repair which removes the
+3. a modified version of evolutionary program repair which does not
+   use fault localization (would have made this repair impossible)
+4. a modified version of evolutionary program repair which removes the
    requirement for a regression test suite
-4. an application of automated repair to a real-world un-patched
+5. an application of automated repair to a real-world un-patched
    security exploit resulting in
-5. the first demonstration of multiple repair in a single evolutionary
+6. the first demonstration of multiple repair in a single evolutionary
    run.
 
 In the pursuit of /Reproducible Research/ cite:buckheit1995wavelab
@@ -370,6 +372,10 @@ parameters used, runtime, etc...
   - x axis -- coverage of repair (% instructions sampled)
   - y axis -- functionality of repair (% pages successfully served)
 
+(see [[file:~/research/epr/topics/netgear-repair/NOTES::*evaluate%20lazy%20regression%20testing][evaluate lazy regression testing]])
+
+Report timing results for different sizes of test suites.
+
 ** Analysis of Repairs
 - The repairs required two distinct fixes to two different exploits in a
   single long evolutionary run (an instance of "iterative repair").
@@ -388,6 +394,14 @@ Apply Zak's technique of proactive repair and see if anything shakes
 out.
 
 * Related Work
+** Security
+- motivate the use case, questions of when to report
+- move much of the intro to here
+
+** Automated Program Repair
+- clearview
+- genprog
+
 * Next Steps
 - operation directly on a binary image
   - would require better virtualization
@@ -419,6 +433,3 @@ patches?
 
 [fn:4] https://github.com/eschulte/netgear-repair/blob/master/bin/test-cgi
 
-* COMMENT Notes [0/2]
-** TODO define image and firmware
-** TODO collect average bug lifetime from a bug database
