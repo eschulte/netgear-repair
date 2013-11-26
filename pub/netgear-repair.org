@@ -428,6 +428,16 @@ or help from the software vendor.
 Estimate the amount of money cost by delay in release of vendor
 patches?
 
+* Acknowledgments
+Foremost we'd like to thank Zachary Cutlip who analyzed and announced
+the NETGEAR exploits, and who helped us to reproduce the exploits
+locally.  Without his help this work would not have been possible.  We
+would also like to thank Mark Harman for discussion of program repair
+without a regression test suite, and Stephen Harding for initially
+formulating the interactive lazy regression repair algorithm.
+
+Also, GRANTS GRANTS GRANTS.
+
 #+BIBLIOGRAPHY: netgear-repair plain
 
 * Footnotes
