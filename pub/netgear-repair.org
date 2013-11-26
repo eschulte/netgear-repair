@@ -456,6 +456,24 @@ of regression test sizes.
 The repairs required two distinct fixes to two different exploits in a
 single long evolutionary run (an instance of "iterative repair").
 
+#+name: fitness-by-time-graph
+#+headers: :file (by-backend (latex 'nil) (t "fitness-improvement.svg"))
+#+headers: :cache yes
+#+begin_src gnuplot
+  set title 'Fitness Improvement Over Time w/o Regression Test'
+  set ytics 1
+  set xtics rotate by -45
+  set key outside
+  set ylabel 'Mean Population Fitness'
+  set xlabel 'Fitness Evaluations'
+  plot for [run in "0 1 2 3 4 5 6 7 8 9"] \
+       "<(awk '{for(i=2;i<=NF;i++){mean+=$i};mean=(mean/(NF-1));print $1, mean}' ../results/1-".run."/stats.txt)" \
+       using 1:2 with lines title "run:".run
+#+end_src
+
+#+RESULTS[3555c0ce22627902b7db6dcaf72d888680be0914]: fitness-by-time-graph
+[[file:fitness-improvement.svg]]
+
 *** Correctness Improvement through Minimization
 The initial evolved repair broke untested behavior (e.g., it worked
 when the cgi file was called directly on the command line but not
