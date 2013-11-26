@@ -403,12 +403,15 @@ the command line and reports the result of "PASS" "FAIL" or "ERROR" of
 each test back to the host test script.
 
 *** Repair Parameters
-Repair was run using a maximum population size of 512 individuals,
-selection is performed using a tournament size of 2.  When the
-population overflows the maximum population size, an individual is
-selected for eviction using a negative tournament of size 2.  Newly
-selected individuals are crossed over $\frac{2}{3}$'s of the time.
+Repair was run using the parameters shown in Table [[parameters]].  The
+maximum population size was 512 individuals, selection is performed
+using a tournament size of 2.  When the population overflows the
+maximum population size, an individual is selected for eviction using
+a negative tournament of size 2.  Newly selected individuals are
+crossed over $\frac{2}{3}$'s of the time.
 
+#+label: parameters
+#+Caption: The parameters used to evolve repairs to the NETGEAR WNDR3700 exploits.
 | parameter           |         value |
 |---------------------+---------------|
 | max-population-size |           512 |
@@ -464,11 +467,31 @@ single long evolutionary run (an instance of "iterative repair").
 #+RESULTS[3555c0ce22627902b7db6dcaf72d888680be0914]: fitness-by-time-graph
 [[file:fitness-improvement.svg]]
 
-*** Correctness Improvement through Minimization
-The initial evolved repair broke untested behavior (e.g., it worked
-when the cgi file was called directly on the command line but not
-through the embedded [[http://wiki.openwrt.org/doc/uci/uhttpd][µHTTPd]] webserver).  The minimized version of the
-repair fixed these issues and works as expected.
+*** Minimization Impact
+In many cases the initial evolved repair broke untested behavior.  For
+example evolved repairs sometimes worked when =net-cgi= was called
+directly on the command line but not through the embedded [[http://wiki.openwrt.org/doc/uci/uhttpd][µHTTPd]]
+webserver, or the evolved file failed to serve pages not used in the
+exploit test.  As shown in Table [[minimized-stats]], in most cases the
+minimized version of the evolved executable fixed all of the
+regressions found in the evolved repair.  The functionality numbers in
+Table [[minimized-stats]] were generated using a hand-written regression
+test suite.
+
+#+label: minimized-stats
+#+Caption: Size and functionality of evolved repair before and after minimization.
+| run id | total fitness evals | tests un-minimized | tests minimized |
+|--------+---------------------+--------------------+-----------------|
+|      0 |               90405 |                  8 |              22 |
+|      1 |               17231 |                 22 |              22 |
+|      2 |               26879 |                 21 |              22 |
+|      3 |               23764 |                 19 |              22 |
+|      4 |               47906 |                  6 |               6 |
+|      5 |               13102 |                 16 |              22 |
+|      6 |               76960 |                 17 |              22 |
+|      7 |               11831 |                 20 |              22 |
+|      8 |                2846 |                 14 |              14 |
+|      9 |               25600 |                 21 |              22 |
 
 *** Repair Size
 The initial evolved repair differed from the original at 789 distinct
@@ -503,12 +526,37 @@ Apple products between 2002 and 2008, ~10% of vulnerabilities were
 found not to be patched within 150 days of disclosure, and on any
 given date \sim10 vulnerabilities and >20 vulnerabilities were public and
 un-patched for Microsoft and Apple respectively cite:frei20080.
+
 ** GP
+
 ** Automated Program Repair
 - clearview
 - genprog
 
-* Next Steps
+* Discussion
+This technique demonstrates the current ability of end users to fix
+software exploits in embedded devices without any special information
+or help from the software vendor.
+
+Estimate the amount of money cost by delay in release of vendor
+patches?
+
+** Threats to Validity
+This initial work is based upon a single exploit repair so it is
+possible that the results indicating the effectiveness of repair
+without any regression test suite will not generalize.  However, the
+authors do not believe that these results are based on any property
+unique to the NETGEAR exploits, rather we believe that the ability of
+the evolutionary repair algorithm to find functional repairs without
+the use of any regression test suite is due to both the beneficial
+impact of minimization, and to the natural mutational robustness of
+software (cf. cite:schulte2013software).  Specifically in
+cite:schulte2013software Schulte et al. find that the functionality of
+software mutants differs by only ~60% between software tested with a
+null regression test suites and software tested with the best
+obtainable quality regression test suites.
+
+** Next Steps
 - operation directly on a binary image
   - would require better virtualization
   - would require better fault localization
@@ -518,14 +566,6 @@ un-patched for Microsoft and Apple respectively cite:frei20080.
   - combination with a fuzz tester in a closed exploit/repair loop
 - distributed diversity
   - self certifying patches
-
-* Conclusion
-This technique demonstrates the current ability of end users to fix
-software exploits in embedded devices without any special information
-or help from the software vendor.
-
-Estimate the amount of money cost by delay in release of vendor
-patches?
 
 * Acknowledgments
 Foremost we'd like to thank Zachary Cutlip who analyzed and announced

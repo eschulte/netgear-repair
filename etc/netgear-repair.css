@@ -21,6 +21,9 @@
   max-width: 80%;
   text-align: center; }
 
+table {
+    margin: auto; }
+
 h3 {
   margin-left: 1em;
   color: black;
