@@ -372,10 +372,6 @@ Report timing results for different sizes of test suites.
   distinct locations (measured with a unified diff), the minimized
   differed from the original at 2 such locations.
 
-* COMMENT Proactive Repair?
-Apply Zak's technique of proactive repair and see if anything shakes
-out.
-
 * Related Work
 ** Security
 The former increases the number of attacks in the short term
