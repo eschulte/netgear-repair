@@ -430,19 +430,9 @@ of regression test sizes.
 
 #+label: test-speed
 #+Caption: Using 32 virtual machines to evaluate fitness in parallel we are able to perform the following number of fitness evaluation per minute as a function of regression suite size.
-| # regression tests | evaluations per minute / 32 cores |
-|--------------------+-----------------------------------|
-|                  0 |                                   |
-|                  1 |                                   |
-|                  2 |                                   |
-|                  3 |                                   |
-|                  4 |                                   |
-|                  5 |                                   |
-|                  6 |                                   |
-|                  7 |                                   |
-|                  8 |                                   |
-|                  9 |                                   |
-|                 10 |                                   |
+| suite size                  | 0 | 1 | 5 | 10 |
+|-----------------------------+---+---+---+----|
+| evals per minute w/32 cores |   |   |   |    |
 
 # Alternate:
 # 
