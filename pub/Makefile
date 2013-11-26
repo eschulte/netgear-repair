@@ -25,5 +25,8 @@ BATCH_EMACS=$(EMACS) --batch --debug-init --eval '$(STARTUP)' --load init.el
 
 all: $(PAPER).pdf $(PAPER).html
 
+push: $(PAPER).html
+	rsync -aruvz ./ moons.cs.unm.edu:public_html/notes/netgear-repair
+
 clean:
 	rm -f $(PAPER).{,aux,bbl,blg,log,out,pdf,tex,html} *~
