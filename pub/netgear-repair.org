@@ -317,7 +317,7 @@ not require a pre-existing regression test suite.  We adopt the repair
 algorithm from cite:forrest2009genetic but instead of assuming that a
 regression test suite exists at the beginning of the algorithm, we
 only assume that a single test case exists exercising an exploit.
-High level pseudocode for the repair algorithm is show in Figure
+High level pseudocode for the repair algorithm is show in Listing
 [[lazy-algorithm]].
 
 We then embark upon an interactive repair process in which the
@@ -343,7 +343,7 @@ regression tests be written.
   suite <- [exploit]
   do
     target-fitness <- length(suite)
-    new <- minimize(evolutionary_repair(pop, suite, target-fitness))
+    new <- minimize(evolutionary_subroutine(pop, suite, target-fitness))
     # User evaluates suitability of candidate repair
     new-regression-tests <- good-enough(new)
     suite <- suite ++ new-regression-tests
@@ -351,21 +351,63 @@ regression tests be written.
   return new
 #+end_src
 
+The =evolutionary_subroutine= in Listing [[lazy-algorithm]] has the same
+high level organization as the evolutionary repair algorithm presented
+in cite:forrest2009genetic, but it uses a /steady state/ evolutionary
+computational algorithm cite:Luke2013Metaheuristics for reduced memory
+usage and ease of parallelization of fitness evaluation.
+
 * Repair Results
   :PROPERTIES:
   :CUSTOM_ID: results
   :END:
 ** Repair Run
-parameters used, runtime, etc...
+We demonstrate our technique by repair two NETGEAR WNDR3700 exploits.
+All repairs were performed on a server-class machine with 64 Intel
+Xeon 2.60GHz cores and 120 GB of Memory.  To perform fitness
+evaluations we use 32 QEMU virtual machines, each running Debian Linux
+with the NETGEAR router firmware environment available inside of a
+=chroot=.
 
-- graph 1
-  - points -- number of regression tests added (and runtime)
-  - x axis -- coverage of repair (% instructions sampled)
-  - y axis -- functionality of repair (% pages successfully served)
+The test framework includes both a host and a guest test script.  The
+host script copies a new version of the =net-cgi= executable to the
+guest VM, and invokes the guest test script which runs =net-cgi= on
+the command line and reports the result of "PASS" "FAIL" or "ERROR" of
+each test back to the host test script.
 
-(see [[file:~/research/epr/topics/netgear-repair/NOTES::*evaluate%20lazy%20regression%20testing][evaluate lazy regression testing]])
+The repair algorithm itself uses 32 threads for parallel fitness
+evaluation.  Each thread is paired with a single QEMU VM on which it
+tests fitness.  When any thread finds a repair termination of the
+repair loop of the algorithm terminates globally and the candidate
+repair is presented to the user (line XX of Listing [[#lazy-algorithm]]).
 
-Report timing results for different sizes of test suites.
+The time taken to perform a fitness evaluation varies with the size of
+the regression suite.  Table [[#test-speed]] shows the average number of
+fitness evaluations performed in our setup per minute over a variety
+of regression test sizes.
+
+#+label: test-speed
+#+Caption: Using 32 virtual machines to evaluate fitness in parallel we are able to perform the following number of fitness evaluation per minute as a function of regression suite size.
+| # regression tests | evaluations per minute / 32 cores |
+|--------------------+-----------------------------------|
+|                  0 |                                   |
+|                  1 |                                   |
+|                  2 |                                   |
+|                  3 |                                   |
+|                  4 |                                   |
+|                  5 |                                   |
+|                  6 |                                   |
+|                  7 |                                   |
+|                  8 |                                   |
+|                  9 |                                   |
+|                 10 |                                   |
+
+# Alternate:
+# 
+# - graph 1
+#   - points -- number of regression tests added (and runtime)
+#   - x axis -- coverage of repair (% instructions sampled)
+#   - y axis -- functionality of repair (% pages successfully served)
 
 ** Analysis of Repairs
 - The repairs required two distinct fixes to two different exploits in a
