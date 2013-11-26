@@ -339,11 +339,9 @@ regression tests be written.
   # Output: Patched version of Program
   new <- null
   fitness <- null
-  target-fitness <- null
   suite <- [exploit]
   do
-    target-fitness <- length(suite)
-    new <- minimize(evolutionary_subroutine(pop, suite, target-fitness))
+    new <- minimize(evolutionary_subroutine(pop, suite))
     # User evaluates suitability of candidate repair
     new-regression-tests <- good-enough(new)
     suite <- suite ++ new-regression-tests
@@ -355,7 +353,36 @@ The =evolutionary_subroutine= in Listing [[lazy-algorithm]] has the same
 high level organization as the evolutionary repair algorithm presented
 in cite:forrest2009genetic, but it uses a /steady state/ evolutionary
 computational algorithm cite:Luke2013Metaheuristics for reduced memory
-usage and ease of parallelization of fitness evaluation.
+usage and ease of parallelization of fitness evaluation.  High level
+pseudocode for the =evolutionary_subroutine= is shown in Listing
+[[#evolutionary-subroutine]].
+
+#+label: evolutionary-subroutine
+#+Caption: High-level Pseudocode for the steady state parallel evolutionary repair subroutine.
+#+begin_src fundamental
+  # Input: Vulnerable Program, original: ELF
+  # Input: Test suite, suite: [ELF -> Fitness]
+  # Parameters: max-population-size, tournament-size
+  # Output: Patched version of Program
+  let fitness <- evaluate(original, suite)
+  let pop <- max-pop-size copies of <original, fitness>
+  do in every thread
+    let p <- null
+    if random() < cross-rate then
+      p <- crossover(tournament(pop,tournament-size,+),
+                     tournament(pop,tournament-size,+))
+    else
+      p <- tournament(pop,tournament-size,+)
+    endfi
+    p <- mutate(p)
+    fitness <- evaluate(suite, p)
+    incorporate(pop, <p, fitness>)
+    if length(pop) > max-population-size then
+      evict(pop, tournament(pop,tournament-size,-))
+    endif
+  until fitness > length(suite)
+  p
+#+end_src
 
 * Repair Results
   :PROPERTIES:
@@ -375,6 +402,15 @@ guest VM, and invokes the guest test script which runs =net-cgi= on
 the command line and reports the result of "PASS" "FAIL" or "ERROR" of
 each test back to the host test script.
 
+*** Repair Parameters
+Repair was run using a maximum population size of 512 individuals,
+selection is performed using a tournament size of 2.  When the
+population overflows the maximum population size, an individual is
+selected for eviction using a negative tournament of size 2.
+
+Every time an individual is selected 
+
+*** Repair Runtime
 The repair algorithm itself uses 32 threads for parallel fitness
 evaluation.  Each thread is paired with a single QEMU VM on which it
 tests fitness.  When any thread finds a repair termination of the
@@ -410,17 +446,20 @@ of regression test sizes.
 #   - y axis -- functionality of repair (% pages successfully served)
 
 ** Analysis of Repairs
-- The repairs required two distinct fixes to two different exploits in a
-  single long evolutionary run (an instance of "iterative repair").
+*** Iterative Repair
+The repairs required two distinct fixes to two different exploits in a
+single long evolutionary run (an instance of "iterative repair").
 
-- The initial evolved repair broke untested behavior (e.g., it worked
-  when the cgi file was called directly on the command line but not
-  through the embedded [[http://wiki.openwrt.org/doc/uci/uhttpd][µHTTPd]] webserver).  The minimized version of
-  the repair fixed these issues and works as expected.
+*** Correctness Improvement through Minimization
+The initial evolved repair broke untested behavior (e.g., it worked
+when the cgi file was called directly on the command line but not
+through the embedded [[http://wiki.openwrt.org/doc/uci/uhttpd][µHTTPd]] webserver).  The minimized version of the
+repair fixed these issues and works as expected.
 
-- The initial evolved repair differed from the original at 789
-  distinct locations (measured with a unified diff), the minimized
-  differed from the original at 2 such locations.
+*** Repair Size
+The initial evolved repair differed from the original at 789 distinct
+locations (measured with a unified diff), the minimized differed from
+the original at 2 such locations.
 
 * Related Work
 ** Security
