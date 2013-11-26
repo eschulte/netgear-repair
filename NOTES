@@ -271,34 +271,52 @@ following in the lisp REPL.
 ** TODO lazy regression testing
 What if we don't write any regression test?
 
-Steps,
-1. start with just the exploit test
-2. evolve a fix
-3. minimize the fix
-4. evaluate, if broken add regression test identifying breakage, else
-   return
+pseudocode
+: # Input: Vulnerable Program, original: ELF
+: # Input: Exploit Test, exploit: ELF -> Fitness
+: # Input: Interactive Check, good-enough: ELF -> [ELF -> Fitness]
+: # Parameters: pop-size, cross-rate, tournament-size
+: # Output: Patched version of Program
+: pop <- pop-size copies of original
+: new <- null
+: fitness <- null
+: target-fitness <- null
+: suite <- [exploit]
+: do
+:   target-fitness <- length(suite)
+:   new <- minimize(genprog_repair(pop, target-fitness))
+:   # User evaluates suitability of candidate repair
+:   new-regression-tests <- good-enough(new)
+:   suite <- suite ++ new-regression-tests
+: until length(new-regression-tests) == 0
+
+When starting the subsequent rounds, should we keep the results from
+the first round?  No, not now.  Future work could incorporate
+information from the first round pick, maybe use it as fault
+localization information.
 
 ** TODO evaluate lazy regression testing
-#+begin_src lisp :colnames '(id evals evolved)
-    (mapcar #'list
-            (loop :for i :below 10 :collect i)
-            1-fix-evals
-            1-full-fitnesses)
+#+begin_src lisp :colnames '(id evals evolved minimized)
+      (mapcar #'list
+              (loop :for i :below 10 :collect i)
+              1-fix-evals
+              1-full-fitnesses
+              1-full-min-fitnesses)
 #+end_src
 
 #+RESULTS:
-| id | evals | evolved |
-|----+-------+---------|
-|  0 | 90405 |       8 |
-|  1 | 17231 |      22 |
-|  2 | 26879 |      21 |
-|  3 | 23764 |      19 |
-|  4 | 47906 |       6 |
-|  5 | 13102 |      16 |
-|  6 | 76960 |      17 |
-|  7 | 11831 |      20 |
-|  8 |  2846 |      14 |
-|  9 | 25600 |      21 |
+| id | evals | evolved | minimized |
+|----+-------+---------+-----------|
+|  0 | 90405 |       8 |        22 |
+|  1 | 17231 |      22 |        22 |
+|  2 | 26879 |      21 |        22 |
+|  3 | 23764 |      19 |        22 |
+|  4 | 47906 |       6 |         6 |
+|  5 | 13102 |      16 |        22 |
+|  6 | 76960 |      17 |        22 |
+|  7 | 11831 |      20 |        22 |
+|  8 |  2846 |      14 |        14 |
+|  9 | 25600 |      21 |        22 |
 
 ** CANCELED different quality regression test suites
 Quality of tests

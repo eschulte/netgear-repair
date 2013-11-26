@@ -124,7 +124,7 @@ the selection of points in the genome as targets for mutation."
   (setf orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi"))
   (unless (fitness orig) (setf (fitness orig) (test orig)))
   (assert (= (fitness orig) baseline-fitness) (orig)
-          "Original program does not pass all regression tests! (~d/~d)"
+          "Original program does not have baseline fitness! (~d/~d)"
           (fitness orig) baseline-fitness)
 
   ;; Annotate the ELF file with our oprofile samples
@@ -164,10 +164,10 @@ the selection of points in the genome as targets for mutation."
                                       *results-dir* *fitness-evals*)))
                :name "cleanup"))
 
-(defun run-many (&key (from 0) (below 10))
+(defun run-many (&key (from 0) (below 10) (prefix 1))
   "Run multiple iterations of `run'."
   (loop :for run :from from :below below :do
-     (setf *results-dir* (format nil "checkpoints/interactive/1-~d" run)
+     (setf *results-dir* (format nil "checkpoints/interactive/~d-~d" prefix run)
            fixes nil
            *population* nil
            *fitness-evals* 0

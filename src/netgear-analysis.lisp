@@ -25,17 +25,21 @@
           1-fix-paths))
 ;; => (90405 17231 26879 23764 47906 13102 76960 11831 2846 25600)
 
-(defvar 1-evolved (mapcar [#'lastcar #'restore] 1-fix-paths)
+(defvar 1-evolved (restore "stuff/1-evolved.store")
   "Un-minimized evolved fixes found using only the exploit tests.")
-;; => (store 1-evolved "stuff/1-evolved.store")
+;; <= (mapcar [#'lastcar #'restore] 1-fix-paths)
 
 (defvar 1-full-fitnesses (let ((tests nil)) (mapcar #'test 1-evolved))
   "Fitness of `1-evolved' using the full regression tests suite.")
 ;; => (8 22 21 19 6 16 17 20 14 21)
 
-(defvar 1-minimized (mapcar {delta-debug orig} 1-evolved)
+(defvar 1-diff-sizes '(500 134 205 199 319 95 556 79 10 182)
+  "Number of unified diff windows of `1-evolved' against the original.")
+
+(defvar 1-minimized (restore "stuff/1-minimized.store")
   "Minimized evolved fixes found using only the exploit tests.")
-;; => (store 1-minimized "stuff/1-minmized.store")
+;; <= (mapcar {delta-debug orig} 1-evolved)
 
 (defvar 1-full-min-fitnesses (let ((tests nil)) (mapcar #'test 1-minimized))
   "Fitness of `1-minimized' using the full regression tests suite.")
+;; => (22 22 22 22 6 22 22 22 14 22)
