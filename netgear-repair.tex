@@ -50,28 +50,34 @@
 \usetikzlibrary{arrows,decorations,decorations.pathreplacing,shapes}
 
 \begin{abstract}
-Upon discovering a software exploit security researchers must decide
-either to publish the exploit informing users and potential attackers,
-or to privately inform the software vendor leaving users in the dark
-and risking delay by the vendor.  We propose an alternative in which
-researchers use the newly discovered exploits to drive an automated
-repair technique capable of patching exploits with no access to source
-code or special information from the software vendor.
+  When a security researcher discovers a software exploit, she must
+  decide whether to publish the exploit information, informing users
+  and potential attackers, or to privately inform the software vendor,
+  leaving users in the dark until the vendor takes action.  Using an
+  alternative approach presented here, researchers can instead use
+  newly discovered exploits to guide an automated repair process which
+  is capable of patching exploits even without access to source code
+  or special information from the software vendor.
 
-We adapt existing evolutionary automated software repair techniques to
-the special requirements of exploit repair.  We adapt the technique to
-work on stripped MIPS ELF files, we remove the requirements for fault
-localization information and we adapt the algorithm to work without
-any pre-existing regression test suite.  We find that even without any
-regression test suite 80\% of repairs of our example exploit retain
-program functionality.
+  The repair process presented here is an extension of earlier work
+  that developed automated software repair techniques using
+  evolutionary computation.  Here, we adapt the technique to the
+  special requirements of a NETGEAR router exploit, including
+  modifications for stripped MIPS ELF files, removing the requirement
+  for fault localization, and demonstrating that the algorithm can
+  work without any pre-existing regression test suite.  Under this
+  rigorous test scenario, 80\% of proposed repairs for the example
+  exploit retained program functionality.
 
-We demonstrate this approach by patching recently discovered exploits
-in version 4 of NETGEAR's WNDR3700 wireless router \emph{before} NETGEAR
-publicly addressed the exploits---to the author's knowledge NETGEAR
-has not patched these exploits at the time of submission.  We discuss
-the feasibility and utility of this technique for the security
-community.
+The scenario is illustrated by patching recently discovered exploits
+in version 4 of NETGEAR's WNDR3700 wireless router---at the time of submission,
+% \emph{before} NETGEAR
+%publicly addressed the exploits---to the author's knowledge 
+NETGEAR had not publicly released patches for these signficant
+security exploits.  
+%We discuss
+%the feasibility and utility of this technique for the security
+%community.
 \end{abstract}
 
 \section{Introduction}
