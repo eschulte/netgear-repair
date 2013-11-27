@@ -50,112 +50,122 @@
 \usetikzlibrary{arrows,decorations,decorations.pathreplacing,shapes}
 
 \begin{abstract}
-  When a security researcher discovers a software exploit, she must
-  decide whether to publish the exploit information, informing users
-  and potential attackers, or to privately inform the software vendor,
-  leaving users in the dark until the vendor takes action.  Using an
-  alternative approach presented here, researchers can instead use
-  newly discovered exploits to guide an automated repair process which
-  is capable of patching exploits even without access to source code
-  or special information from the software vendor.
+<<<<<<< .mine
+% WRW thinks the old Abstract put too much emphasis on Vigilante / Dawn
+% Song research. In the modern era, the question isn't whether or not to
+% release the exploit, but whether or not to release the patch (which can
+% be reverse-engineered to get the exploit, which is then used against
+% those who haven't applied the patch.)
+The speed with which researchers an vendors respond to security
+vulnerabilities is critical, especially after exploits have been made
+available. The situation is especially dire for end users who lack
+product source code and must typically fall back on techniques such as
+signature generation and packet filtering, rather than addressing the root
+cause. We propose an alternative in which newly-discovered exploits drive
+an automated repair technique capable of patching vulnerabilities with no
+access to source code or special information from the software vendor.
 
-  The repair process presented here is an extension of earlier work
-  that developed automated software repair techniques using
-  evolutionary computation.  Here, we adapt the technique to the
-  special requirements of a NETGEAR router exploit, including
-  modifications for stripped MIPS ELF files, removing the requirement
-  for fault localization, and demonstrating that the algorithm can
-  work without any pre-existing regression test suite.  Under this
-  rigorous test scenario, 80\% of proposed repairs for the example
-  exploit retained program functionality.
+We propose an evolutionary automated software repair technique focused on
+the special requirements of security repairs to binaries.  We adapt 
+existing approaches to work on stripped ELF files, remove previous 
+requirements for fault localization information, and we propose a
+repair algorithm that can work without a pre-existing regression test
+suite. 
 
-The scenario is illustrated by patching recently discovered exploits
-in version 4 of NETGEAR's WNDR3700 wireless router---at the time of submission,
-% \emph{before} NETGEAR
-%publicly addressed the exploits---to the author's knowledge 
-NETGEAR had not publicly released patches for these signficant
-security exploits.  
-%We discuss
-%the feasibility and utility of this technique for the security
-%community.
+We demonstrate this approach by patching recently discovered exploits
+in version 4 of NETGEAR's WNDR3700 wireless router \emph{before} NETGEAR
+publicly addressed the exploits. To the authors' knowledge, NETGEAR has not
+patched these exploits at the time of submission. We find that even without
+any regression tests, 80\% of repairs of our example exploit retain program
+functionality, and with a few user-created tests, FIXME-100\% do so. 
+% We discuss the feasibility and utility of this technique for the security
+% community.
+
 \end{abstract}
 
 \section{Introduction}
 \label{sec-1}
-Security exploits pose significant monetary and social risks.  By
-Symantec's count 5,291 vulnerabilities were reported in 2012
-\cite{symantec2013threat}.
+% WRW really thinks that "full disclosure" is not the fight we want to be
+% making, since we'll lose. The setup for your experiments is: the exploit
+% is already available, the company is slow, what can end-users do to
+% protect themselves? 
+Security exploits pose significant monetary and social risks. By Symantec's
+count 5,291 vulnerabilities were reported in 2012
+alone~\cite{symantec2013threat}. Despite this, human developers take
+28-FIXME-ERIC days, on average, to address security-critical defects. Even
+when informed, developers do not always act immediately:  in one example,
+Oracle reportedly waited months after researchers privately reported a bug
+in Java while thousands of users were attacked before releasing a
+fix~\cite{greenberg2012oracle}.  Compounding this, a survey of 2,000
+human-written operating system fixes found that 14--24\% were
+incorrect~\cite{fixes-become-bugs}: the official patch may be late, wrong,
+or both.  
 
-Upon discovering new exploits researchers are faced with a decision
-between publicly announcing the exploit in a policy known as "full
-disclosure" or privately informing the vendor of the exploit and
-trusting the vendor to address the problem.  Although "full
-disclosure" may increase attacks in the short term (In 2002, special
-advisor for cyberspace security to then President Bush, Richard Clarke
-said "It is irresponsible and\ldots{} extremely damaging to release
-information before the patch is out") there are risks associated with
-informing vendors as well (e.g., Oracle reportedly waited months after
-researchers privately reported a bug in Java while thousands of users
-were attacked before releasing a fix \cite{greenberg2012oracle}).
+We propose a new option in which reproducible exploits are used to drive an
+automatic repair technique. This technique operates even when developer
+source code and test suites are not available, and is thus more highly
+applicable. A locally-produced patch may be used for internal protection,
+redistributed with the exploit (reporting an exploit with a patch in hand
+has been shown to reduce the total number of attacks~\cite{arora2006does}),
+or sent to the software vendor to speed the development of an official
+patch~\cite{weimer06}.
 
-We propose a new option for security researchers in which reproducible
-exploits are used to drive an automatic repair technique.  Such
-patches may be either published with the exploit (it has been shown
-that reporting an exploit with a patch in hand reduces the total
-number of attacks \cite{arora2006does}), or sent privately to the
-software vendor where they may speed the development of a patch
-\cite{weimer06}.
-
-In recent years automated methods of program repair have been shown
-capable of repairing defects in real software \cite{forrest2009genetic,zeller2010,nguyen2013semfix,perkins2009automatically}.
+In recent years, automated methods of program repair have been shown
+capable of repairing defects in real software
+% FIXME: For security crowd, focus on ClearView and GenProg.
+(e.g.,~\cite{clearview,genprog-tse-security,par,nguyen2013semfix}).
 Methods of evolutionary program repair have been developed which are
-capable of repairing defects directly in x86 or ARM ELF files and
-which require no access to program source code
-\cite{schulte2013embedded}.  We adapt evolutionary program repair
-techniques to the unique needs of security researchers who have no
-access to either source code or to a regression test suite, and who
-are generating repairs without any special information or cooperation
-from the software vendor.  Although evolutionary program repair
-techniques typically require access to a regression test suite, we
-explore the feasibility of performing repair without any such test
-suite and find that for our example exploit regression test suites are
-most often not necessary.
+capable of repairing defects directly in x86 or ARM ELF files,
+requiring no access to program source code~\cite{schulte2013embedded}.  
+We propose a new evolutionary program repair technique adapted to
+the non-vendor-level repair of security vulnerabilities: neither source
+code nor test suites nor any special information or cooperation from the
+vendor are available. 
 
-We demonstrate the feasibility of this technique by patching security
+We demonstrate the feasibility of our technique by patching security
 vulnerabilities in the widely popular NETGEAR WNDR3700 wireless router
-before NETGEAR publicly addressed the exploits.
+before NETGEAR publicly addressed the exploits.  Although previous
+evolutionary program repair techniques explicitly require access to a
+regression test suite, we explore the feasibility of performing repair
+without any such test suite and find that for our example exploit,
+regression test suites are most often not necessary. In addition, we find
+that the complexity of security vulnerabilities requires iterative
+applications of repair actions within a single evolutionary run. 
 
-In the remainder of this paper we; review two recent exploits to the
-NETGEAR WNDR3700 (Section \ref{sec-2}), we demonstrate the feasibility
-of running the NETGEAR firmware in a VM sandbox (Section \ref{sec-3-1}),
-we review our novel techniques of automated program repair (Sections
-\ref{sec-3-2} and \ref{sec-3-3}), and we evaluate the effectiveness of this
+In the remainder of this paper we review two recent exploits to the
+NETGEAR WNDR3700 (Section \ref{sec-2}); demonstrate the feasibility
+of running the NETGEAR firmware in a VM sandbox (Section \ref{sec-3-1});
+review our novel techniques of automated program repair (Sections
+\ref{sec-3-2} and \ref{sec-3-3}); and evaluate the effectiveness of this
 technique and the quality of the repairs it generates (Section
 \ref{sec-4}).
 
 The novel contributions of this short paper are;
-\begin{enumerate}
-\item an application of automated repair to stripped MIPS ELF files
-recovered from router firmware
-\item a modified version of evolutionary program repair which removes the
-requirements for fault localization information, and for a
-regression test suite
-\item an application of automated repair to a real-world un-patched
-security exploit resulting in
+\begin{itemize}
+\item a novel automated repair technique suitable for non-vendor repairs to
+security vulnerabilities (not requiring source code, test cases, or fault
+localization), and 
+\item an application our approach to a real-world un-patched
+security exploit, resulting in
 \item the first demonstration of multiple iterative repairs in a single
 evolutionary run.
-\end{enumerate}
+\end{itemize}
 
-In the pursuit of \emph{Reproducible Research} \cite{buckheit1995wavelab,mesirov2010accessible} and to encourage researchers to patch
-future discovered exploits, we've released a companion version control
-repository \footnote{\url{https://github.com/eschulte/netgear-repair}}.  This repository contains the instructions, source
+In the pursuit of reproducible
+research~\cite{buckheit1995wavelab,mesirov2010accessible} and to encourage
+others to patch
+future discovered exploits, we have released a companion open source
+repository.\footnote{\url{https://github.com/eschulte/netgear-repair}}
+This repository contains the instructions, source
 code, and tooling needed to extract, execute and repair the binary
-NETGEAR router image vulnerabilities.  All software needed to perform
-repair work is freely available under open source licensing.
+NETGEAR router image vulnerabilities, as well as the data used for the
+analyses and figures in this document.
+\iffalse
 Additionally, the analysis performed in this document and all
 supporting figures may be automatically regenerated from new
 experimental data using the Org-mode reproducible research framework
 \cite{schulte2012reproducible-research}.
+\fi
 
 We hope the ability to automatically patch vulnerable closed source
 applications without dependence upon the software vendor encourages
@@ -164,88 +174,120 @@ with exploit announcements.
 
 \section{Description of Exploits}
 \label{sec-2}
-In this work we repair a pair of exploits in version 4 of the popular
-NETGEAR WNDR3700 wireless router.  The "shodan" \footnote{\url{http://www.shodanhq.com/search?q=wndr3700v4+http}} device search
-engine returns hundreds of vulnerable publicly accessible WNDR3700
-routers at the time of submission \cite{shodan}.  Both exploits exist in
-the router's web server in a binary executable named \texttt{net-cgi}, and
-both are related to how \texttt{net-cgi} handles authentication \cite{zcutlip}.
+In this work we repair two exploits in version 4 of the NETGEAR WNDR3700
+wireless router. The popularity of this router means that vulnerable
+systems of widespread. For example, the
+``shodan''\footnote{\url{http://www.shodanhq.com/search?q=wndr3700v4+http}}
+device search engine alone returns hundreds of vulnerable publicly
+accessible WNDR3700 routers at the time of submission. 
+Both exploits exist in the router's internal web server in a binary
+executable named \texttt{net-cgi}, and both are related to how
+\texttt{net-cgi} handles authentication~\cite{zcutlip}.
 
+The vendor-deployed binary is insecure in that: 
 \begin{enumerate}
-\item Any URI starting with the string "BRS" bypasses authentication.
+\item Any URI starting with the string ``{\tt BRS}'' bypasses authentication.
 
-\item Any URI including the string "unauth.cgi" or
-  "securityquestions.cgi" bypass authentication even pages of the form
-  \texttt{http://router/page.html?foo=unauth.cgi}.
+\item Any URI including the substring ``{\tt unauth.cgi}'' or
+  ``{\tt securityquestions.cgi}'' bypass authentication. This applies
+  even to requests of the form 
+  \texttt{http://router/page.html?foo=unauth.cgi}, meaning that 
+  the vulnerability effectively applies to all internal webpages. 
 \end{enumerate}
 
-Many administrative pages start with the "BRS" string, providing
-attackers with access to personal information such as user's
-passwords, and by accessing the page\\
+Many administrative pages start with the ``{\tt BRS}'' string, providing
+attackers with access to personal information such as 's
+passwords, and by accessing the page
 \texttt{http://router/BRS\_02\_genieHelp.html} attackers can
 completely disable authentication in a manner which is permanent
 across reboots.
 
 \section{Repair Technique}
 \label{sec-3}
-To repair the \texttt{net-cgi} executable we must extract it and the router
-file system from the firmware image distributed by NETGEAR.  Using the
-extracted filesystem and executable we construct a test harness used
-exercise the exploits in \texttt{net-cgi}.  This test harness is used by the
-repair algorithm to evaluate candidate repairs and to identify when
-repairs to the exploits have been found.
+
+Our repair technique for this vulnerability consists of three stages:
+\begin{enumerate}
+\item Extract the binary executable from the firmware and reproduce
+the exploit (Section~\ref{sec-3-1}).
+\item Apply evolutionary program repair techniques based on mutations to
+that stripped MIPS ELF binary (Section~\ref{sec-3-2}). 
+\item Lazily construct test cases, as needed, to improve the quality of
+unsatisfactory candidate repairs (Section~\ref{sec-3-3}). 
+\end{enumerate} 
+
+The first step in repairing the \texttt{net-cgi} executable is extracting
+it and the router file system from the firmware image distributed by
+NETGEAR.  Using the extracted filesystem and executable we construct a test
+harness used exercise the exploits in \texttt{net-cgi}.  This test harness
+is used by the repair algorithm to evaluate candidate repairs and to
+identify when repairs to the exploits have been found.
 
 \subsection{Firmware Extraction and Virtualization}
 \label{sec-3-1}
 NETGEAR distributes firmware holding a full system image for the
 WNDR3700 router which include the router file system holding the
-vulnerable \texttt{net-cgi} executable.  Extraction of the file system may be
-accomplished using \texttt{binwalk} \footnote{\url{http://binwalk.org}}, a firmware extraction tool which
-scans the binary data in the firmware file searching for signatures
+vulnerable \texttt{net-cgi} executable. Our prototype repair tool
+extracted the file system using the 
+\texttt{binwalk}\footnote{\url{http://binwalk.org}} firmware extraction
+tool. Such tools scan the binary data in the raw monolothic firmware file,
+searching for signatures
 identifying the types of embedded data sections.  The \texttt{binwalk} tool
 includes rules for identifying and extracting common embedded data
-types, including a squashfs \cite{lougher2006squashfs} section which in
-this case holds the router's file system.
+types, including the {\tt squashfs}\cite{lougher2006squashfs} which
+holds the router's file system.
 
-The router runs on a big-endian MIPS architecture.  Using the QEMU
-\cite{bellard2005qemu} system emulator to emulate this architecture a
-Debian Linux operating system is run in emulation.  The extracted
-router file system is copied into the emulated MIPS Linux system.  A
-number of special directories (e.g., \texttt{/proc/}, \texttt{/dev/} etc\ldots{}) are
-mounted inside the extracted file system and bound to the
-corresponding directories on the virtual machine.  At this point
-commands may be executed in an environment which closely approximates
-the execution environment of the NETGEAR router using the \texttt{chroot}
-command to confine executable access to within the extracted NETGEAR
-file system.
+The router runs on a big-endian MIPS architecture, and thus safely
+reproducing the exploit and evaluating candidate repairs requires emulation
+on most desktop systems. Our prototype implementation uses the QEMU system
+emulator~\cite{bellard2005qemu} to emulate this architecture in a
+lightweight manner; a Debian Linux operating system is run in emulation.
+The extracted router file system is copied into the emulated MIPS Linux
+system.  A number of special directories (e.g., \texttt{/proc/},
+\texttt{/dev/} etc.) are mounted inside the extracted file system and bound
+to the corresponding directories on the virtual machine.  At this point,
+commands may be executed in an environment which closely approximates the
+execution environment of the NETGEAR router using the \texttt{chroot}
+command to confine executable access to within the extracted NETGEAR file
+system. Additional minor adjustments are described in full in the
+reproduction information.
 
-With this accomplished (and with other minor adjustments described in
-full in the reproduction information) is it possible to run NETGEAR
-router in virtualization.  In particular the web interface of the
-router may be accessed either using an external web browser or the
-\texttt{net-cgi} executable may be called directly from the command
-line using a Bash shell script.
+At this point the NETGERA router may be run in virtualization.  In
+particular, the web interface of the router may be accessed either using an
+external web browser or the \texttt{net-cgi} executable may be called
+directly from the command line.
 
-\subsection{Mutation of stripped MIPS ELF Files}
+\subsection{Automated Program Repair and ELF Files}
 \label{sec-3-2}
-The repair of ELF format files is an extension of the evolutionary
-computation (EC) repair technique introduced in
-\cite{schulte2013embedded}.  Mutation operations are used to modify the
-execution behavior of the ELF file.  In this case the \texttt{net-cgi} file
-is stripped a minimal ELF file which does not include much of the
-information assumed to exist by the previous repair technique.
 
-ELF (Executable and Linking Format) \cite{tis1995tool} files may either
-be executed directly or may be linked with other object files to form
-an executable or library.  The ELF file contains a number of headers
+FIXME: We need one to two paragraphs here explaining and outlining how
+evolutionary program repair actually works. Representation/genome, population,
+mutation, crossover, fitness, selection, minimization. I know it has been
+previously described, but this community will not be familiar with it. In
+fact, showing the ``vanilla'' approach may make it easier to show how you
+are more awesome (mutate binaries, no need for fault localization, binary
+fitness function, etc.). 
+
+\subsubsection{Challenge: Mutating Stripped Binaries}
+
+Executable programs for Unix and embedded system are commonly distributed
+as ELF (Executable and Linking Format)~\cite{tis1995tool} files. 
+Each ELF file contains a number of headers
 and tables containing administrative data, and sections holding
 program code and data.  The three main administrative elements of an
-ELF file are the ELF Header, the section table and the program table
-(see Figure \ref{elf}).  The ELF Header points to the section table and the
+ELF file are the ELF header, the section table and the program table
+(see Figure \ref{elf}).  The ELF header points to the section table and the
 program table, the section table holds information on the layout of
 sections in the ELF file on disk, and the program table holds
 information on how to copy section from disk into memory for program
 execution.
+
+Our proposed approach to repairing stripped MIPS ELF files is an extension
+of previous work on the evolutionary repair of unstripped Intel and ARM
+files~\cite{schulte2013embedded}. 
+Mutation operations are used to modify the
+execution behavior of the ELF file.  In this case the \texttt{net-cgi} file
+is stripped a minimal ELF file which does not include much of the
+information assumed to exist by previous repair techniques.
 
 \begin{figure}[htb]
   \centering
@@ -283,26 +325,27 @@ only the ELF Header is guaranteed to exist in all cases.  In
 executable ELF files the program table is required, and in linkable
 files the section table is required.
 
-The previous ELF repair tool required a section table and a section
+Previous work required a section table and a section
 name string table, which were used to find the \texttt{.text} section of the
 ELF file where program code is normally stored.  The data in the
-\texttt{.text} section was then coerced into a "genome" a linear array of
+\texttt{.text} section was then coerced into a genome, a linear array of
 assembly instructions which was modified by the mutation operations.
-Our extension of this technique does not require a section table,
-instead we build the genome by concatenating the data of every section
-in the program table which has a "loadable" type.  These are the
+Our extension of this technique does not require a section table.
+Instead, we build the genome by concatenating the data of every section
+in the program table which has a ``loadable'' type.  These are the
 sections whose data are loaded into memory during program execution.
 
 Mutation operations must change program data without corrupting the
 structure of the file or breaking the many addresses hard coded into
-the program data itself (in general it is impossible to distinguish
-between an integer literal and an address in program data).  For this
-reason the mutation operations are designed to preserve the absolute
-size and the offsets within of the ELF program data.  This is made
-easier by the fact that MIPS is a RISC (Reduced Instruction Set
-Computing) architecture in which every argumented assembly instruction
-is 1 word long \cite{hennessy1982mips}.  The mutation and crossover
-operations used to modify ELF files are shown in Figure \ref{mutation-ops}.
+the program data itself (e.g., as destinations for conditional jumps). 
+In general, it is impossible to distinguish
+between an integer literal and an address in program data.  For this
+reason, we propose mutation operations designed to preserve operand absolute
+sizes and offsets within of the ELF program data.  This is made
+easier because every argumented assembly instruction in the MIPS RISC 
+architecture is one word long~\cite{hennessy1982mips}.  Our mutation and
+crossover operations used to modify stripped MIPS ELF files are shown in
+Figure~\ref{mutation-ops}.
 
 \tikzstyle{asmrow} = [rectangle, draw, minimum width=2em, minimum height=1em]
 \begin{figure}[htb]
@@ -355,32 +398,37 @@ operations used to modify ELF files are shown in Figure \ref{mutation-ops}.
   \node[asmrow,fill=blue!60] at (1.5,-3.4) {};
   \node[asmrow,fill=blue!60] at (1.5,-3.8) {};
 \end{tikzpicture}
-\caption{Mutation and Crossover operations in MIPS ELF files.  The
+\caption{Mutation and Crossover operations for stripped MIPS ELF files.  The
   program data is represented as a fixed length array of single-word
   sections.  These operators change these sections maintaining length
   and offset in the array.}
   \label{mutation-ops}
 \end{figure}
 
-\subsection{Lazy on demand Regression Testing}
+\subsection{On-Demand Regression Testing}
 \label{sec-3-3}
-We present a novel evolutionary program repair algorithm which does
-not require a pre-existing regression test suite.  We adopt the repair
-algorithm from \cite{forrest2009genetic} but instead of assuming that a
-regression test suite exists at the beginning of the algorithm, we
-only assume that a single test case exists exercising an exploit.
+
+A critical challenge in automated program repair is assessing the validity
+of a candidate repair. FIXME-ERIC: say more here. 
+
+In contrast to previous approaches, 
+our evolutionary program repair algorithm does
+not require a pre-existing regression test suite.  Instead, we  
+only assume that a demonstration of the exploit exists, and treat that as a
+single available test. 
 High level pseudocode for the repair algorithm is show in Listing
 \ref{lazy-algorithm}.
 
-We then embark upon an interactive repair process in which the
-algorithm fixes every available test (starting with only the exploit),
-the user then determines the suitability of the evolved repair either
-accepting the repair and terminating the algorithm, or rejecting the
-repair and supplying a regression test which the repair fails.  If the
-later, then the new test is incorporated into the test suite, and the
-repair process continues.  In Section \ref{sec-4} we find that 80\% of our
+Our approach is thus an interactive repair process in which the
+algorithm searches for a patch that 
+passes every available test (starting with only the exploit). 
+Whenever a candidate repair is produced that passes all available tests,
+the user evaluates its suitability. If the repair is accepted, the process
+terminates. Otherwise, the user supplies a new regression test that the repair
+fails (a witness to its unsuitability) and the process repeats. 
+In Section \ref{sec-4} we find that 80\% of our
 attempts to repair the NETGEAR WNDR3700 exploits did not require any
-regression tests be written.
+user-written regression tests.
 
 \begin{figure}[H]
 \begin{algorithmic}[1]
@@ -405,13 +453,13 @@ regression tests be written.
 lazy-regression-testing repair algorithm.}
 \end{figure}
 
-The \texttt{evolutionary\_subroutine} in Listing \ref{lazy-algorithm} has the same
-high level organization as the evolutionary repair algorithm presented
-in \cite{forrest2009genetic}, but it uses a \emph{steady state} evolutionary
-computational algorithm \cite{Luke2013Metaheuristics} for reduced memory
-usage and ease of parallelization of fitness evaluation.  High level
-pseudocode for the \texttt{evolutionary\_subroutine} is shown in Listing
-\ref{evolutionary-subroutine}.
+The \texttt{evolutionary\_subroutine} in Listing \ref{lazy-algorithm} has
+the same high level organization as previous work~\cite{FIXME},
+but it uses a \emph{steady state}
+evolutionary computational algorithm~\cite{Luke2013Metaheuristics} for
+reduced memory usage and ease of parallelization of fitness evaluation.
+High level pseudocode for the \texttt{evolutionary\_subroutine} is shown in
+Listing \ref{evolutionary-subroutine}.
 
 \begin{figure}[H]
 \begin{algorithmic}[1]
@@ -444,14 +492,16 @@ pseudocode for the \texttt{evolutionary\_subroutine} is shown in Listing
 steady state parallel evolutionary repair subroutine.}
 \end{figure}
 
-A careful reader will notice that every time the user rejects the
-solution returned by \texttt{evolutionary\_subroutine} the evolved and
+Note that every time the user rejects the
+solution returned by \texttt{evolutionary\_subroutine}, the evolved and
 minimized solution is discarded and a new population is generated by
+(FIXME: ``minimized'' is used before being defined here)
 again copying the original by the \texttt{evolutionary\_subroutine}.  Unlike
-in most applications of EC, but as in nature, EC of extant programs
+most applications of EC, but as in nature, our EC of extant programs
 always starts from a point in the fitness landscape which is very
 nearly optimal.  This is because the original program is not a random
-guess, but is a highly engineered solution to the program fitness
+combinations of instructions, but is instead 
+a highly engineered solution to the program fitness
 landscape.  This algorithmic choice acknowledges the fitness of the
 original program, and for this reason gives it primacy over the
 evolved solutions of previous iterations (which may well have evolved
@@ -471,22 +521,23 @@ environment available inside of a \texttt{chroot}.
 The test framework includes both a host and a guest test script.  The
 host script copies a variant of the \texttt{net-cgi} executable to the guest
 VM, and invokes the guest test script which runs \texttt{net-cgi} on the
-command line and reports the result of "PASS" "FAIL" or "ERROR" of
-each test back to the host test script, which uses these values to
-calculate a scalar fitness for the variant.
+command line and reports a result of {\sc Pass}, {\sc Fail}, or 
+{\sc Error} for each test back to the host test script, which uses these
+values to calculate a scalar fitness for the variant. 
+FIXME: What's the difference between Fail and Error? 
 
-We report the results of 10 repair attempts, each following the high
+We report the results of ten repair attempts, each following the high
 level algorithm shown in Listing \ref{lazy-algorithm} and using the
-following EC parameters.
+following EC parameters. 
 
 \subsubsection{Repair Parameters}
 \label{sec-4-1-1}
 Repair was run using the parameters shown in Table \ref{parameters}.  The
 maximum population size was 512 individuals, selection is performed
-using a tournament size of 2.  When the population overflows the
+using a tournament size of two.  When the population overflows the
 maximum population size, an individual is selected for eviction using
-a negative tournament of size 2.  Newly selected individuals are
-crossed over $\frac{2}{3}$'s of the time.
+a negative tournament of size two.  Newly selected individuals are
+crossed over two-thirds of the time.
 
 \begin{table}[htb]
 \centering
@@ -495,16 +546,18 @@ parameter           & value         \\
 \hline
 max-population-size & 512           \\
 tournament-size     & 2             \\
-cross-rate          & $\frac{2}{3}$ \\
+crossover-rate      & $\frac{2}{3}$ \\
 \end{tabular}\caption{\label{parameters}The parameters used to evolve repairs to the NETGEAR WNDR3700 exploits.}
 
 \end{table}
 
 These parameters differ significantly from those used in previous EC
-repair algorithms \cite{forrest2009genetic,legoues2011systematicstudy,le2012representations} in that we
+repair algorithms
+(e.g.,~\cite{forrest2009genetic,legoues2011systematicstudy,le2012representations})
+in that we
 use larger populations (of 512 instead of 40 individuals), running for
 many more fitness evaluations ($\leq$100,000 instead of $\leq$400).  The
-parameters used in this paper are more inline with traditional EC
+parameters used in this paper are closer to traditional EC
 parameters given the size of the software genome, and allow our
 technique to overcome the lack of any fault localization information.
 
@@ -512,6 +565,7 @@ The increased memory required by the larger population size is offset
 by the use of a steady state EC algorithm, and the increased
 computational demand of the greater number of fitness evaluations is
 offset by parallelization of fitness evaluation.
+
 \subsubsection{Repair Runtime}
 \label{sec-4-1-2}
 The repair algorithm itself uses 32 threads for parallel fitness
@@ -544,8 +598,8 @@ suite size & evals per minute w/32 cores \\
 \subsubsection{Iterative Repair}
 \label{sec-4-2-1}
 The repairs required two distinct fixes to two different exploits in a
-single long evolutionary run.  This is an instance of "iterative
-repair" which has not previously been observed in the repair of
+single long evolutionary run.  This is an instance of ``iterative
+repair'' which has not previously been observed in the repair of
 real-world extant software.
 
 \begin{figure}[htb]
@@ -565,22 +619,22 @@ real-world extant software.
 
 \subsubsection{Minimization Impact}
 \label{sec-4-2-2}
-In many cases the initial evolved repair broke untested behavior.  For
-example evolved repairs sometimes worked when \texttt{net-cgi} was
+
+In some cases the initial evolved repair was not satisfactory.  For
+example, evolved repairs sometimes worked when \texttt{net-cgi} was
 called directly on the command line but not through the embedded
-µHTTPd \footnote{\url{http://wiki.openwrt.org/doc/uci/uhttpd}}
-webserver, or the evolved file failed to serve pages not used in the
-exploit test.  As shown in Table \ref{minimized-stats}, in most cases
-the minimized version of the evolved executable fixed all of the
-regressions found in the evolved repair.  The functionality numbers in
-Table \ref{minimized-stats} were generated using a hand-written
-regression test suite.
+$\mu$HTTPd webserver,\footnote{\url{http://wiki.openwrt.org/doc/uci/uhttpd}}
+or the evolved file failed to serve pages not used in the
+exploit test.  As shown in Table \ref{minimized-stats}, however, in most
+cases the minimized version of the evolved executable was satisfactory
+and passed all hand-written regression tests available, even those not used
+during the repair process. 
 
 \begin{table}[htb]
 \centering
 \begin{tabular}{rrrrrr}
 Run Id & Fit Evals & Full Diff & Min Diff & Full Fit & Min Fit \\
-\hline
+\toprule
 0      & 90405     & 500       & 2        & 8        & 22      \\
 1      & 17231     & 134       & 3        & 22       & 22      \\
 2      & 26879     & 205       & 2        & 21       & 22      \\
@@ -591,52 +645,56 @@ Run Id & Fit Evals & Full Diff & Min Diff & Full Fit & Min Fit \\
 7      & 11831     & 79        & 3        & 20       & 22      \\
 8      & 2846      & 10        & 1        & 14       & 14      \\
 9      & 25600     & 182       & 2        & 21       & 22      \\
-\hline
+\bottomrule
 mean   & 33652.4   & 227.9     & 2.2      & 16.4     & 19.6    \\
 \end{tabular}
 \caption{\label{minimized-stats}Difference and functionality of
-evolved repair before and after minimization.  In these columns "Full"
-refers to evolved solutions before minimization and "Min" refers to
-post-minimization solutions.  Columns labeled "Diff" report the number
+evolved repair before and after minimization.  In these columns ``Full''
+refers to evolved solutions before minimization and ``Min'' refers to
+post-minimization solutions.  Columns labeled ``Diff'' report the number
 of unified diff windows against the original program data. The columns
-labeled "Fit" report the fitness measured with a full regression test
+labeled ``Fit'' report the fitness measured with a full regression test
 suite including the exploit tests with a maximum fitness of 22.}
 \end{table}
 
 \subsubsection{Repair Size}
 \label{sec-4-2-3}
 As shown in Table \ref{minimized-stats}, the initial evolved repair differed
-from the original at >200 locations on average in the ELF program
-data, while the minimized repairs differed at only 1-3 locations on
-average.  This great discrepancy is due to the accumulation of edits
+from the original at over 200 locations on average in the ELF program
+data, while the minimized repairs differed at only 1--3 locations on
+average.  This great discrepancy is due to the accumulation of candidate edits
 in non-tested portions of the program data.  Since these portions of
-the genome were not tested there was no evolutionary pressure to purge
+the genome were not tested, there was no evolutionary pressure to purge
 harmful edits.  The elimination of these accumulated edits is the main
-purpose of minimization, and is the reason for the consistent increase
-in regression test behavior found in the minimized repairs.
+purpose of our minimization step, and is the reason for the consistent
+increase in regression test behavior found in the minimized repairs.
+
 \section{Related Work}
 \label{sec-5}
 \subsection{Security}
 \label{sec-5-1}
 There has been a significant effort to understand the impacts of
 disclosure of discovered exploits.  Researchers typically must decide
-between public disclosure (termed "full disclosure") or private
+between public disclosure (termed ``full disclosure'') or private
 disclosure to the vendor of the vulnerable software.  The former
 increases the number of attacks in the short term \cite{arora2006does},
 while the later risks the vendor ignoring the exploit extending the
 life of the exploit.
 
+FIXME: This is great related work, but this argument isn't really the
+central thrust of the paper. Compare to the introduction.
+
 Even major software vendors commonly delay releasing patches to
 security exploits.  Microsoft waits until the second Tuesday of every
-month (known as "Patch Tuesday") to release security patches
+month (known as ``Patch Tuesday'') to release security patches
 \cite{lemos2003microsoft}, leading malicious users to release new
-exploits on the second Wednesday of every month (known as "Exploit
-Wednesday") to maximize the time before a patch is released.
+exploits on the second Wednesday of every month (known as ``Exploit
+Wednesday'') to maximize the time before a patch is released.
 
 In a study of high and medium risk vulnerabilities in Microsoft and
-Apple products between 2002 and 2008, \textasciitilde{}10\% of
+Apple products between 2002 and 2008, about 10\% of
 vulnerabilities were found not to be patched within 150 days of
-disclosure, and on any given date $\sim$10 vulnerabilities and >20
+disclosure, and on any given date about 10 vulnerabilities and over 20
 vulnerabilities were public and un-patched for Microsoft and Apple
 respectively \cite{frei20080}.
 
@@ -671,15 +729,14 @@ This initial work is based upon a single exploit repair so it is
 possible that the results indicating the effectiveness of repair
 without any regression test suite will not generalize.  However, the
 authors do not believe that these results are based on any property
-unique to the NETGEAR exploits, rather we believe that the ability of
+unique to the NETGEAR exploits. Rather, we believe that the ability of
 the evolutionary repair algorithm to find functional repairs without
 the use of any regression test suite is due to both the beneficial
 impact of minimization, and to the natural mutational robustness of
-software (cf. \cite{schulte2013software}).  Specifically in
-\cite{schulte2013software} Schulte et al. find that the functionality of
-software mutants differs by only \textasciitilde{}60\% between software tested with a
-null regression test suites and software tested with the best
-obtainable quality regression test suites.
+software. Specifically, Schulte \emph{et al.}~\cite{schulte2013software} 
+find that the functionality of software mutants differs by only about 60\%
+between software tested with an empty regression test suites and software
+tested with the best obtainable quality regression test suites.
 
 \subsection{Next Steps}
 \label{sec-6-2}
