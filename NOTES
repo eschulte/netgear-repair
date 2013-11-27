@@ -267,7 +267,7 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes [3/5]
+* Notes [4/5]
 ** DONE lazy regression testing
 What if we don't write any regression test?
 
@@ -295,7 +295,7 @@ the first round?  No, not now.  Future work could incorporate
 information from the first round pick, maybe use it as fault
 localization information.
 
-** TODO evaluate lazy regression testing [1/2]
+** TODO evaluate lazy regression testing [2/2]
 *** DONE Diffs and fitnesses
 #+begin_src lisp :colnames '(id evals full-diff min-diff full-fit min-fit)
   (mapcar #'list
@@ -321,12 +321,42 @@ localization information.
 |  8 |  2846 |        10 |        1 |       14 |      14 |
 |  9 | 25600 |       182 |        2 |       21 |      22 |
 
-*** TODO Run Times of different Test Sizes
-Run this when the machine is otherwise no in use.
+*** DONE Run Times of different Test Sizes
+#+RESULTS: runtime-by-suite-size
+|  3 | 3297.119 |
+|  4 | 3758.629 |
+|  7 | 5766.221 |
+| 11 | 7852.544 |
 
+#+name: runtime-by-suite-size
 #+begin_src lisp
-  (make-thread (lambda ()
-                 (let ((test-suites))
+  (let ((test-suites '(("BRS-authentication"
+                        "securityquestions.cgi-authentication"
+                        "unauth.cgi-authentication")
+                       ("center_language.html"
+                        "BRS-authentication"
+                        "securityquestions.cgi-authentication"
+                        "unauth.cgi-authentication")
+                       ("advanced.js"
+                        "center_language.html"
+                        "base.gif"
+                        "securityquestions.cgi"
+                        "BRS-authentication"
+                        "securityquestions.cgi-authentication"
+                        "unauth.cgi-authentication")
+                       ("advanced.js"
+                        "logo.jpg"
+                        "center_language.html"
+                        "Add_WPS_Client.htm"
+                        "base.gif"
+                        "dtree.css"
+                        "securityquestions.cgi"
+                        "unauth.cgi"
+                        "unauth.cgi-authentication"
+                        "securityquestions.cgi-authentication"
+                        "BRS-authentication"))))
+    ,#+(or )
+    (make-thread (lambda ()
                    (defvar runtimes
                      (mapcar
                       (lambda (my-tests)
@@ -335,35 +365,12 @@ Run this when the machine is otherwise no in use.
                           (loop :for i :below 1000 :do
                              (test (mutate (copy orig))))
                           (/ (- (get-internal-real-time) start)
-                             internal-time-units-per-second))
-                        (dotimes (n )))))
-                   '(("BRS-authentication"
-                      "securityquestions.cgi-authentication"
-                      "unauth.cgi-authentication")
-                     ("center_language.html"
-                      "BRS-authentication"
-                      "securityquestions.cgi-authentication"
-                      "unauth.cgi-authentication")
-                     ("advanced.js"
-                      "center_language.html"
-                      "base.gif"
-                      "securityquestions.cgi"
-                      "BRS-authentication"
-                      "securityquestions.cgi-authentication"
-                      "unauth.cgi-authentication")
-                     ("advanced.js"
-                      "logo.jpg"
-                      "center_language.html"
-                      "Add_WPS_Client.htm"
-                      "base.gif"
-                      "dtree.css"
-                      "securityquestions.cgi"
-                      "unauth.cgi"
-                      "unauth.cgi-authentication"
-                      "securityquestions.cgi-authentication"
-                      "BRS-authentication")))
-                 (store (mapcar #'list runtimes) "runtimes.store"))
-               :name "getter-of-runtimes")
+                             internal-time-units-per-second)))
+                      test-suites))
+                   (store (mapcar #'list runtimes) "runtimes.store"))
+                 :name "getter-of-runtimes")
+    
+    (mapcar #'list (mapcar #'length test-suites) (mapcar #'float runtimes)))
 #+end_src
 
 **** taken from actual runs (too noisy)
