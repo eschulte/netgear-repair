@@ -267,8 +267,8 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes [1/3]
-** TODO lazy regression testing
+* Notes [3/5]
+** DONE lazy regression testing
 What if we don't write any regression test?
 
 pseudocode
@@ -295,7 +295,8 @@ the first round?  No, not now.  Future work could incorporate
 information from the first round pick, maybe use it as fault
 localization information.
 
-** TODO evaluate lazy regression testing
+** TODO evaluate lazy regression testing [1/2]
+*** DONE Diffs and fitnesses
 #+begin_src lisp :colnames '(id evals full-diff min-diff full-fit min-fit)
   (mapcar #'list
           (loop :for i :below 10 :collect i)
@@ -320,7 +321,52 @@ localization information.
 |  8 |  2846 |        10 |        1 |       14 |      14 |
 |  9 | 25600 |       182 |        2 |       21 |      22 |
 
-*** Run Times of different Test Sizes
+*** TODO Run Times of different Test Sizes
+Run this when the machine is otherwise no in use.
+
+#+begin_src lisp
+  (make-thread (lambda ()
+                 (let ((test-suites))
+                   (defvar runtimes
+                     (mapcar
+                      (lambda (my-tests)
+                        (setf tests my-tests)
+                        (let ((start (get-internal-real-time)))
+                          (loop :for i :below 1000 :do
+                             (test (mutate (copy orig))))
+                          (/ (- (get-internal-real-time) start)
+                             internal-time-units-per-second))
+                        (dotimes (n )))))
+                   '(("BRS-authentication"
+                      "securityquestions.cgi-authentication"
+                      "unauth.cgi-authentication")
+                     ("center_language.html"
+                      "BRS-authentication"
+                      "securityquestions.cgi-authentication"
+                      "unauth.cgi-authentication")
+                     ("advanced.js"
+                      "center_language.html"
+                      "base.gif"
+                      "securityquestions.cgi"
+                      "BRS-authentication"
+                      "securityquestions.cgi-authentication"
+                      "unauth.cgi-authentication")
+                     ("advanced.js"
+                      "logo.jpg"
+                      "center_language.html"
+                      "Add_WPS_Client.htm"
+                      "base.gif"
+                      "dtree.css"
+                      "securityquestions.cgi"
+                      "unauth.cgi"
+                      "unauth.cgi-authentication"
+                      "securityquestions.cgi-authentication"
+                      "BRS-authentication")))
+                 (store (mapcar #'list runtimes) "runtimes.store"))
+               :name "getter-of-runtimes")
+#+end_src
+
+**** taken from actual runs (too noisy)
 file:bin/time-difference
 
 | checkpoints/interactive/1-0/ |  527.582 |
