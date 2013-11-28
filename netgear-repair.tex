@@ -40,23 +40,19 @@
 }
 \date{\today}
 \title{Automated Repair of Exploits in NETGEAR Router Binary}
-\hypersetup{
-  pdfkeywords={},
-  pdfsubject={},
-  pdfcreator={Emacs 24.3.1 (Org mode 8.2.3c)}}
+
 \begin{document}
 
 \maketitle
 \usetikzlibrary{arrows,decorations,decorations.pathreplacing,shapes}
 
 \begin{abstract}
-<<<<<<< .mine
 % WRW thinks the old Abstract put too much emphasis on Vigilante / Dawn
 % Song research. In the modern era, the question isn't whether or not to
 % release the exploit, but whether or not to release the patch (which can
 % be reverse-engineered to get the exploit, which is then used against
 % those who haven't applied the patch.)
-The speed with which researchers an vendors respond to security
+The speed with which researchers and vendors respond to security
 vulnerabilities is critical, especially after exploits have been made
 available. The situation is especially dire for end users who lack
 product source code and must typically fall back on techniques such as
@@ -92,6 +88,9 @@ functionality, and with a few user-created tests, FIXME-100\% do so.
 Security exploits pose significant monetary and social risks. By Symantec's
 count 5,291 vulnerabilities were reported in 2012
 alone~\cite{symantec2013threat}. Despite this, human developers take
+% ERIC: I don't have any good number for this.  It was looking for
+% this number that got me on the whole to-disclose-or-not line of
+% papers that led to the previous abstract.
 28-FIXME-ERIC days, on average, to address security-critical defects. Even
 when informed, developers do not always act immediately:  in one example,
 Oracle reportedly waited months after researchers privately reported a bug
@@ -113,7 +112,7 @@ patch~\cite{weimer06}.
 In recent years, automated methods of program repair have been shown
 capable of repairing defects in real software
 % FIXME: For security crowd, focus on ClearView and GenProg.
-(e.g.,~\cite{clearview,genprog-tse-security,par,nguyen2013semfix}).
+(e.g.,~\cite{clearview,genprog-tse-journal,par,nguyen2013semfix}).
 Methods of evolutionary program repair have been developed which are
 capable of repairing defects directly in x86 or ARM ELF files,
 requiring no access to program source code~\cite{schulte2013embedded}.  
@@ -136,7 +135,7 @@ In the remainder of this paper we review two recent exploits to the
 NETGEAR WNDR3700 (Section \ref{sec-2}); demonstrate the feasibility
 of running the NETGEAR firmware in a VM sandbox (Section \ref{sec-3-1});
 review our novel techniques of automated program repair (Sections
-\ref{sec-3-2} and \ref{sec-3-3}); and evaluate the effectiveness of this
+\ref{sec-3-2} and \ref{on-demand-regression}); and evaluate the effectiveness of this
 technique and the quality of the repairs it generates (Section
 \ref{sec-4}).
 
@@ -212,7 +211,7 @@ the exploit (Section~\ref{sec-3-1}).
 \item Apply evolutionary program repair techniques based on mutations to
 that stripped MIPS ELF binary (Section~\ref{sec-3-2}). 
 \item Lazily construct test cases, as needed, to improve the quality of
-unsatisfactory candidate repairs (Section~\ref{sec-3-3}). 
+unsatisfactory candidate repairs (Section~\ref{on-demand-regression}). 
 \end{enumerate} 
 
 The first step in repairing the \texttt{net-cgi} executable is extracting
@@ -259,15 +258,30 @@ directly from the command line.
 \subsection{Automated Program Repair and ELF Files}
 \label{sec-3-2}
 
-FIXME: We need one to two paragraphs here explaining and outlining how
-evolutionary program repair actually works. Representation/genome, population,
-mutation, crossover, fitness, selection, minimization. I know it has been
-previously described, but this community will not be familiar with it. In
-fact, showing the ``vanilla'' approach may make it easier to show how you
-are more awesome (mutate binaries, no need for fault localization, binary
-fitness function, etc.). 
+Evolutionary program repair
+\cite{forrest2009genetic,genprog-tse-journal,le2012representations,legoues2011systematicstudy}
+uses natural selection to search for or ``evolve'' modified versions
+of existing programs which differ from the original in that they do
+not exhibit specific undesired buggy behavior.  This process normally
+requires access to the source code of the original program which is
+modified or ``mutated'' by the evolutionary repair technique to
+generate program variants.  These variants are assigned a fitness by
+running them against the program's existing test suite, as well as an
+additional test which demonstrates the undesired behavior.
+
+The repair algorithm builds and maintains a population of these
+program variants.  This population evolves through repeated mutation
+and evaluation until a version of the original program is found which
+satisfies the regression test suite and no longer exhibits the
+undesired behavior.
+
+We present a modified evolutionary program repair algorithm which is
+suited to the unique needs of users attempting to repair faults in
+binary executables (Section \ref{mutate-mips}) without access to the
+any regression test suite (Section \ref{on-demand-regression}).
 
 \subsubsection{Challenge: Mutating Stripped Binaries}
+\label{mutate-mips}
 
 Executable programs for Unix and embedded system are commonly distributed
 as ELF (Executable and Linking Format)~\cite{tis1995tool} files. 
@@ -406,18 +420,29 @@ Figure~\ref{mutation-ops}.
 \end{figure}
 
 \subsection{On-Demand Regression Testing}
-\label{sec-3-3}
+\label{on-demand-regression}
 
-A critical challenge in automated program repair is assessing the validity
-of a candidate repair. FIXME-ERIC: say more here. 
+A critical challenge in automated program repair is assessing the
+validity of a candidate repair.  The mutations used by these
+techniques are random in that they do not take into account or
+preserve the semantics of the program and are thus as or more likely
+to create new bugs or exploits as they are to repair existing
+undesired behavior.
 
-In contrast to previous approaches, 
-our evolutionary program repair algorithm does
-not require a pre-existing regression test suite.  Instead, we  
-only assume that a demonstration of the exploit exists, and treat that as a
-single available test. 
-High level pseudocode for the repair algorithm is show in Listing
-\ref{lazy-algorithm}.
+In contrast to previous approaches, our evolutionary program repair
+algorithm does not require a pre-existing regression test suite.
+Instead, we only assume that a demonstration of the exploit exists,
+and treat that as a single available test.  By mutating programs
+without the net of a regression test suite our evolved repairs often
+introduce significant regressions.  Fortunately we find that a post
+evolution repair minimization process in which the difference between
+the evolved repair and the original program is minimized to as few
+edits as possible using Delta Debugging~\cite{delta} removes these
+regressions in the majority of cases (Section \ref{minimization}).  We
+trust to the user to identify regressions which are not eliminated
+through minimization in the interactive portion of our repair
+algorithm.  High level pseudocode for the repair algorithm is show in
+Listing \ref{lazy-algorithm}.
 
 Our approach is thus an interactive repair process in which the
 algorithm searches for a patch that 
@@ -454,7 +479,7 @@ lazy-regression-testing repair algorithm.}
 \end{figure}
 
 The \texttt{evolutionary\_subroutine} in Listing \ref{lazy-algorithm} has
-the same high level organization as previous work~\cite{FIXME},
+the same high level organization as previous work~\cite{genprog-tse-journal},
 but it uses a \emph{steady state}
 evolutionary computational algorithm~\cite{Luke2013Metaheuristics} for
 reduced memory usage and ease of parallelization of fitness evaluation.
@@ -495,7 +520,6 @@ steady state parallel evolutionary repair subroutine.}
 Note that every time the user rejects the
 solution returned by \texttt{evolutionary\_subroutine}, the evolved and
 minimized solution is discarded and a new population is generated by
-(FIXME: ``minimized'' is used before being defined here)
 again copying the original by the \texttt{evolutionary\_subroutine}.  Unlike
 most applications of EC, but as in nature, our EC of extant programs
 always starts from a point in the fitness landscape which is very
@@ -523,8 +547,13 @@ host script copies a variant of the \texttt{net-cgi} executable to the guest
 VM, and invokes the guest test script which runs \texttt{net-cgi} on the
 command line and reports a result of {\sc Pass}, {\sc Fail}, or 
 {\sc Error} for each test back to the host test script, which uses these
-values to calculate a scalar fitness for the variant. 
-FIXME: What's the difference between Fail and Error? 
+values to calculate a scalar fitness for the variant.  {\sc Pass}
+indicates that the program completed successfully and produced the correct
+result, {\sc Fail} indicates that the program completed successfully
+but produced an incorrect results, and {\sc Error} indicates that the
+program execution did not complete successfully due to early
+termination (e.g., because of a segfault) or indicated by a non-zero
+``errno'' exit value.
 
 We report the results of ten repair attempts, each following the high
 level algorithm shown in Listing \ref{lazy-algorithm} and using the
@@ -576,20 +605,24 @@ the candidate repair is presented to the user (line 11 of Listing
 \ref{lazy-algorithm}).
 
 The time taken to perform a fitness evaluation varies with the size of
-the regression suite.  Table \ref{test-speed} shows the average number of
-fitness evaluations performed in our setup per minute over a variety
-of regression test sizes.
+the regression suite.  Table \ref{test-speed} shows the time taken to
+perform 1000 fitness evaluations on a single virtual machine over a
+variety of regression test sizes.
 
 \begin{table}[htb]
 \centering
 \begin{tabular}{l|r}
-suite size & evals per minute w/32 cores \\
+suite size & Seconds for 1000 evaluations \\
 \hline
-0          & TODO                        \\
-1          & TODO                        \\
-5          & TODO                        \\
-10         & TODO                        \\
-\end{tabular}\caption{\label{test-speed}Using 32 virtual machines to evaluate fitness in parallel we are able to perform the following number of fitness evaluation per minute as a function of regression suite size.}
+3          & 3297                         \\
+4          & 3759                         \\
+7          & 5766                         \\
+11         & 7853                         \\
+\end{tabular}
+\caption{\label{test-speed}A single virtual machine is able to perform
+  1000 sequential fitness evaluations in the given number of seconds,
+  shown by the toal number of tests included in the fitness
+  function.}
 \end{table}
 
 \subsection{Analysis of Repairs}
@@ -597,10 +630,10 @@ suite size & evals per minute w/32 cores \\
 
 \subsubsection{Iterative Repair}
 \label{sec-4-2-1}
-The repairs required two distinct fixes to two different exploits in a
-single long evolutionary run.  This is an instance of ``iterative
-repair'' which has not previously been observed in the repair of
-real-world extant software.
+These repairs required two distinct fixes addressing two different
+exploits in a single evolutionary run.  This is an instance of
+``iterative repair'' which has not previously been observed in the
+repair of real-world extant software.
 
 \begin{figure}[htb]
   \centering
@@ -618,7 +651,7 @@ real-world extant software.
 \end{figure}
 
 \subsubsection{Minimization Impact}
-\label{sec-4-2-2}
+\label{minimization}
 
 In some cases the initial evolved repair was not satisfactory.  For
 example, evolved repairs sometimes worked when \texttt{net-cgi} was
@@ -633,20 +666,20 @@ during the repair process.
 \begin{table}[htb]
 \centering
 \begin{tabular}{rrrrrr}
-Run Id & Fit Evals & Full Diff & Min Diff & Full Fit & Min Fit \\
+Run  & Fit Evals & Full Diff & Min Diff & Full Fit & Min Fit \\
 \toprule
-0      & 90405     & 500       & 2        & 8        & 22      \\
-1      & 17231     & 134       & 3        & 22       & 22      \\
-2      & 26879     & 205       & 2        & 21       & 22      \\
-3      & 23764     & 199       & 2        & 19       & 22      \\
-4      & 47906     & 319       & 2        & 6        & 6       \\
-5      & 13102     & 95        & 2        & 16       & 22      \\
-6      & 76960     & 556       & 3        & 17       & 22      \\
-7      & 11831     & 79        & 3        & 20       & 22      \\
-8      & 2846      & 10        & 1        & 14       & 14      \\
-9      & 25600     & 182       & 2        & 21       & 22      \\
+0    & 90405     & 500       & 2        & 8        & 22      \\
+1    & 17231     & 134       & 3        & 22       & 22      \\
+2    & 26879     & 205       & 2        & 21       & 22      \\
+3    & 23764     & 199       & 2        & 19       & 22      \\
+4    & 47906     & 319       & 2        & 6        & 6       \\
+5    & 13102     & 95        & 2        & 16       & 22      \\
+6    & 76960     & 556       & 3        & 17       & 22      \\
+7    & 11831     & 79        & 3        & 20       & 22      \\
+8    & 2846      & 10        & 1        & 14       & 14      \\
+9    & 25600     & 182       & 2        & 21       & 22      \\
 \bottomrule
-mean   & 33652.4   & 227.9     & 2.2      & 16.4     & 19.6    \\
+mean & 33652.4   & 227.9     & 2.2      & 16.4     & 19.6    \\
 \end{tabular}
 \caption{\label{minimized-stats}Difference and functionality of
 evolved repair before and after minimization.  In these columns ``Full''
@@ -673,16 +706,13 @@ increase in regression test behavior found in the minimized repairs.
 \label{sec-5}
 \subsection{Security}
 \label{sec-5-1}
-There has been a significant effort to understand the impacts of
-disclosure of discovered exploits.  Researchers typically must decide
-between public disclosure (termed ``full disclosure'') or private
-disclosure to the vendor of the vulnerable software.  The former
-increases the number of attacks in the short term \cite{arora2006does},
-while the later risks the vendor ignoring the exploit extending the
-life of the exploit.
-
-FIXME: This is great related work, but this argument isn't really the
-central thrust of the paper. Compare to the introduction.
+% There has been a significant effort to understand the impacts of
+% disclosure of discovered exploits.  Researchers typically must decide
+% between public disclosure (termed ``full disclosure'') or private
+% disclosure to the vendor of the vulnerable software.  The former
+% increases the number of attacks in the short term \cite{arora2006does},
+% while the later risks the vendor ignoring the exploit extending the
+% life of the exploit.
 
 Even major software vendors commonly delay releasing patches to
 security exploits.  Microsoft waits until the second Tuesday of every
@@ -698,18 +728,17 @@ disclosure, and on any given date about 10 vulnerabilities and over 20
 vulnerabilities were public and un-patched for Microsoft and Apple
 respectively \cite{frei20080}.
 
-The question of when to report an exploit has been studied is not
-easily decidable in all cases \cite{arora2008optimal}.
+FIXME: more related security work.
 
 \subsection{EC}
 \label{sec-5-2}
 
-TODO: EC background
+FIXME: EC background
 
 \subsection{Automated Program Repair}
 \label{sec-5-3}
 
-TODO
+FIXME
 
 \begin{itemize}
 \item genprog
@@ -757,6 +786,9 @@ password reset
 \begin{itemize}
 \item self certifying patches
 \end{itemize}
+\item Use ``neutral'' mutations to mask the important aspects of a
+  patch to avoid patch reverse-engineering.  As this work demonstrates
+  there are often hundreds of extra mutations.
 \end{itemize}
 
 \section{Acknowledgments}
