@@ -305,19 +305,20 @@ information assumed to exist by previous repair techniques.
 
 \begin{figure}[htb]
   \centering
+  \adjustbox{width=0.4\textwidth}{
 \begin{tikzpicture}
   % ELF File
-  \node[draw, rectangle, minimum height=14em, minimum width=8em] (whole) at (0,0) {};
-  \node[minimum width=8em] (header) at (0,2.125) {ELF Header};
+  \node[draw, rectangle, minimum height=11.5em, minimum width=8em] (whole) at (0,0) {};
+  \node[minimum width=8em] (header) at (0,1.65) {ELF Header};
   \draw[thick] (header.south west) -- (header.south east);
   \node[minimum width=8em] (st) at (0,1) {Section Table};
-  \node[minimum width=8em] (body1) at (0,-0) {...};
-  \node[minimum width=8em] (body2) at (0,-0.5) {Section Data};
-  \node[minimum width=8em] (body3) at (0,-1) {...};
-  \node[minimum width=8em] (pt) at (0,-2) {Program Table};
+  \node[minimum width=8em] (body1) at (0,0.25) {...};
+  \node[minimum width=8em] (body2) at (0,-0.25) {Section Data};
+  \node[minimum width=8em] (body3) at (0,-0.75) {...};
+  \node[minimum width=8em] (pt) at (0,-1.5) {Program Table};
   % External Users
-  \node[draw, circle, fill=blue!20, minimum width=6em] (linker) at (-3,1) {Linker};
-  \node[draw, circle, fill=red!20, minimum width=6em]  (memory) at (3,-2) {Memory};
+  \node[draw, ellipse, fill=blue!20, minimum height=3em, minimum width=6em] (linker) at (-3,1) {Linker};
+  \node[draw, ellipse, fill=red!20, minimum height=3em, minimum width=6em]  (memory) at (3,-1.5) {Memory};
   % Arrows to Users
   \draw[->,thick] (st.west) to (linker.east);
   \draw[->,thick] (pt.east) to (memory.west);
@@ -330,6 +331,7 @@ information assumed to exist by previous repair techniques.
   \draw[->,thick,densely dotted,bend right=90] (body2.west) to (pt.west);
   \draw[->,thick,densely dotted,bend right=90] (body3.west) to (pt.west);
 \end{tikzpicture}
+}
 \caption{\label{elf}Sections and their uses in an Executable and
   Linking Format (ELF) file.}
 \end{figure}
