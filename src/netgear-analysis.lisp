@@ -49,3 +49,43 @@
 ;; <= (mapcar [#'length #'diff-windows
 ;;             {generate-seq-diff 'unified-diff (lines orig)} #'lines]
 ;;            1-minimized)
+
+
+;;; 2-fixes
+(defvar 2-fix-paths (list
+                     "checkpoints/interactive/2-0/17459-fixes.store"
+                     "checkpoints/interactive/2-1/78262-fixes.store")
+  "Paths to evolved fixes found using only the exploit tests.")
+
+(defvar 2-fix-evals
+  (mapcar (lambda (path)
+            (multiple-value-bind (matched-p matches)
+                (scan-to-strings "/([0-9]+)-fixes" path)
+              (parse-integer (aref matches 0))))
+          2-fix-paths))
+;; => (17459 78262)
+
+(defvar 2-evolved (restore "stuff/2-evolved.store")
+  "Un-minimized evolved fixes found using only the exploit tests.")
+;; <= (mapcar [#'lastcar #'restore] 2-fix-paths)
+
+(defvar 2-full-fitnesses '(16 22)
+  "Fitness of `2-evolved' using the full regression tests suite.")
+;; <= (let ((tests nil)) (mapcar #'test 2-evolved))
+
+(defvar 2-diff-sizes '(123 585)
+  "Number of unified diff windows of `2-evolved' against the original.")
+
+(defvar 2-minimized (restore "stuff/2-minimized.store")
+  "Minimized evolved fixes found using only the exploit tests.")
+;; <= (mapcar {delta-debug orig} 2-evolved)
+
+(defvar 2-full-min-fitnesses '(20 22)
+  "Fitness of `2-minimized' using the full regression tests suite.")
+;; <= (let ((tests nil)) (mapcar #'test 2-minimized))
+
+(defvar 2-min-dif-sizes '(4 2)
+  "Number of unified diff windows of `2-minimized' against the original.")
+;; <= (mapcar [#'length #'diff-windows
+;;             {generate-seq-diff 'unified-diff (lines orig)} #'lines]
+;;            2-minimized)
