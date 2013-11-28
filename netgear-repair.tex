@@ -137,7 +137,7 @@ of running the NETGEAR firmware in a VM sandbox (Section \ref{sec-3-1});
 review our novel techniques of automated program repair (Sections
 \ref{sec-3-2} and \ref{on-demand-regression}); and evaluate the effectiveness of this
 technique and the quality of the repairs it generates (Section
-\ref{sec-4}).
+\ref{repair-demonstration}).
 
 The novel contributions of this short paper are;
 \begin{itemize}
@@ -451,7 +451,7 @@ Whenever a candidate repair is produced that passes all available tests,
 the user evaluates its suitability. If the repair is accepted, the process
 terminates. Otherwise, the user supplies a new regression test that the repair
 fails (a witness to its unsuitability) and the process repeats. 
-In Section \ref{sec-4} we find that 80\% of our
+In Section \ref{repair-demonstration} we find that 80\% of our
 attempts to repair the NETGEAR WNDR3700 exploits did not require any
 user-written regression tests.
 
@@ -532,35 +532,50 @@ evolved solutions of previous iterations (which may well have evolved
 into fitness valleys as in run 8 Table \ref{minimized-stats}).
 
 \section{Repair Demonstration}
-\label{sec-4}
+\label{repair-demonstration}
+
+We first describe the methodology with which we applied our
+evolutionary repair technique to the NETGEAR WNDR3700 exploit (Section
+\ref{methodology}).  We then analyze the results of ten repair
+attempts (Section \ref{analysis}).
+
 \subsection{Methodology}
-\label{sec-4-1}
+\label{methodology}
 We demonstrate our technique by patching two NETGEAR WNDR3700
 exploits.  All repairs were performed on a server-class machine with
 32 physical Intel Xeon 2.60GHz cores, Hyper-Threading and 120 GB of
-Memory.  To perform fitness evaluations we use 32 QEMU virtual
-machines, each running Debian Linux with the NETGEAR router firmware
-environment available inside of a \texttt{chroot}.
+Memory.  In this section we first describe the test harness with which
+program variants are assigned a fitness (Section
+\ref{fitness-evaluation}), then we provide the parameters with which
+we applied our on-demand evolutionary program repair algorithm
+(Section \ref{sec:parameters}).
+
+\subsubsection{Fitness Evaluation}
+\label{fitness-evaluation}
+To perform fitness evaluations we use 32 QEMU virtual machines, each
+running Debian Linux with the NETGEAR router firmware environment
+available inside of a \texttt{chroot}.  The repair algorithm itself
+uses 32 threads for parallel fitness evaluation.  Each thread is
+paired with a single QEMU VM on which it tests fitness.
 
 The test framework includes both a host and a guest test script.  The
-host script copies a variant of the \texttt{net-cgi} executable to the guest
-VM, and invokes the guest test script which runs \texttt{net-cgi} on the
-command line and reports a result of {\sc Pass}, {\sc Fail}, or 
-{\sc Error} for each test back to the host test script, which uses these
-values to calculate a scalar fitness for the variant.  {\sc Pass}
-indicates that the program completed successfully and produced the correct
-result, {\sc Fail} indicates that the program completed successfully
-but produced an incorrect results, and {\sc Error} indicates that the
-program execution did not complete successfully due to early
-termination (e.g., because of a segfault) or indicated by a non-zero
-``errno'' exit value.
+host script runs on the server performing repair and a guest script
+which runs in a MIPS virtual machine.  The host script copies a
+variant of the \texttt{net-cgi} executable to the guest VM where the
+guest test script runs \texttt{net-cgi} on the command line and
+reports a result of {\sc Pass}, {\sc Fail}, or {\sc Error} for each
+test.  These values are then used to calculate the variant's scalar
+fitness.
 
-We report the results of ten repair attempts, each following the high
-level algorithm shown in Listing \ref{lazy-algorithm} and using the
-following EC parameters. 
+{\sc Pass} indicates that the program completed successfully and
+produced the correct result, {\sc Fail} indicates that the program
+completed successfully but produced an incorrect results, and {\sc
+  Error} indicates that the program execution did not complete
+successfully due to early termination (e.g., because of a segfault) or
+indicated by a non-zero ``errno'' exit value.
 
 \subsubsection{Repair Parameters}
-\label{sec-4-1-1}
+\label{sec:parameters}
 Repair was run using the parameters shown in Table \ref{parameters}.  The
 maximum population size was 512 individuals, selection is performed
 using a tournament size of two.  When the population overflows the
@@ -595,15 +610,18 @@ by the use of a steady state EC algorithm, and the increased
 computational demand of the greater number of fitness evaluations is
 offset by parallelization of fitness evaluation.
 
-\subsubsection{Repair Runtime}
-\label{sec-4-1-2}
-The repair algorithm itself uses 32 threads for parallel fitness
-evaluation.  Each thread is paired with a single QEMU VM on which it
-tests fitness.  When any thread finds a repair the inner repair loop
-(\texttt{evolutionary\_subroutine}) of the algorithm terminates globally and
-the candidate repair is presented to the user (line 11 of Listing
-\ref{lazy-algorithm}).
+\subsection{Analysis of Repairs}
+\label{analysis}
 
+We provide information on the typical time required to perform repair
+(Section \ref{runtime}).  We then review the impact of the
+minimization process (Section \ref{minimization}) both with respect to
+the size of the repair in terms of byte difference from the original
+and in terms of the fitness improvement.  Finally we demonstrate the
+iterative nature of our repairs in (Section \ref{iterative-repair}).
+
+\subsubsection{Repair Runtime}
+\label{runtime}
 The time taken to perform a fitness evaluation varies with the size of
 the regression suite.  Table \ref{test-speed} shows the time taken to
 perform 1000 fitness evaluations on a single virtual machine over a
@@ -625,30 +643,10 @@ suite size & Seconds for 1000 evaluations \\
   function.}
 \end{table}
 
-\subsection{Analysis of Repairs}
-\label{sec-4-2}
-
-\subsubsection{Iterative Repair}
-\label{sec-4-2-1}
-These repairs required two distinct fixes addressing two different
-exploits in a single evolutionary run.  This is an instance of
-``iterative repair'' which has not previously been observed in the
-repair of real-world extant software.
-
-\begin{figure}[htb]
-  \centering
-  \includegraphics[bb=0 0 355 248,width=0.46\textwidth]{fitness-improvement.pdf}
-  % \input{fitness-improvement.tex}
-  \caption{Mean fitness as a function of the number of fitness
-    evaluations.  Collected over 10 runs using only the two exploits
-    to access variant fitness.  A fitness of 3 indicates that all
-    three tests are failed but do not throw an error.  A fitness value
-    of 6 passes all three tests.  One exploit is exercised by two
-    tests, so typically a run fixes either the 1-test or 2-test
-    exploit first, then fixes the second later.  These two different
-    repair scenarios are clearly visible in the graph.}
-  \label{fit-by-time}
-\end{figure}
+In 8 of the 10 attempted repairs only the three exploit tests were
+used with no regression tests run.  This corresponds to the first line
+of Table \ref{test-speed}.  In these cases the repair process took
+86.6 minutes on average.
 
 \subsubsection{Minimization Impact}
 \label{minimization}
@@ -690,17 +688,38 @@ labeled ``Fit'' report the fitness measured with a full regression test
 suite including the exploit tests with a maximum fitness of 22.}
 \end{table}
 
-\subsubsection{Repair Size}
-\label{sec-4-2-3}
-As shown in Table \ref{minimized-stats}, the initial evolved repair differed
-from the original at over 200 locations on average in the ELF program
-data, while the minimized repairs differed at only 1--3 locations on
-average.  This great discrepancy is due to the accumulation of candidate edits
-in non-tested portions of the program data.  Since these portions of
-the genome were not tested, there was no evolutionary pressure to purge
-harmful edits.  The elimination of these accumulated edits is the main
-purpose of our minimization step, and is the reason for the consistent
-increase in regression test behavior found in the minimized repairs.
+As shown in Table \ref{minimized-stats}, the initial evolved repair
+differed from the original at over 200 locations on average in the ELF
+program data, while the minimized repairs differed at only 1--3
+locations on average.  This great discrepancy is due to the
+accumulation of candidate edits in non-tested portions of the program
+data.  Since these portions of the genome were not tested, there was
+no evolutionary pressure to purge harmful edits.  The elimination of
+these accumulated edits is the main purpose of our minimization step,
+and is the reason for the consistent increase in regression test
+behavior found in the minimized repairs.
+
+\subsubsection{Iterative Repair}
+\label{iterative-repair}
+These repairs required two distinct fixes addressing two different
+exploits in a single evolutionary run.  This is an instance of
+``iterative repair'' which has not previously been observed in the
+repair of real-world extant software.
+
+\begin{figure}[htb]
+  \centering
+  \includegraphics[bb=0 0 355 248,width=0.46\textwidth]{fitness-improvement.pdf}
+  % \input{fitness-improvement.tex}
+  \caption{Mean fitness as a function of the number of fitness
+    evaluations.  Collected over 10 runs using only the two exploits
+    to access variant fitness.  A fitness of 3 indicates that all
+    three tests are failed but do not throw an error.  A fitness value
+    of 6 passes all three tests.  One exploit is exercised by two
+    tests, so typically a run fixes either the 1-test or 2-test
+    exploit first, then fixes the second later.  These two different
+    repair scenarios are clearly visible in the graph.}
+  \label{fit-by-time}
+\end{figure}
 
 \section{Related Work}
 \label{sec-5}
