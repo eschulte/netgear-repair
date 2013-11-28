@@ -267,7 +267,8 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes [4/5]
+* Notes [4/6]
+** TODO writing
 ** DONE lazy regression testing
 What if we don't write any regression test?
 
@@ -396,6 +397,21 @@ file:bin/time-difference
 |------------------------------+---------|
 |                              | 217.749 |
 #+TBLFM: @4$2=vmean(@1..@-1)
+
+**** totals from actual runs
+
+#+RESULTS:
+| checkpoints/interactive/1-0/     |    10258 |
+| checkpoints/interactive/1-2/     |     4278 |
+| checkpoints/interactive/1-3/     |     4102 |
+| checkpoints/interactive/1-5/     |     2141 |
+| checkpoints/interactive/1-6/     |    12540 |
+| checkpoints/interactive/1-7/     |     2496 |
+| checkpoints/interactive/1-9/     |     2152 |
+| checkpoints/interactive/1-extra/ |     3616 |
+|----------------------------------+----------|
+|                                  | 86.63125 |
+#+TBLFM: @9$2=vmean(@1..@-1)/60
 
 ** CANCELED different quality regression test suites
 Quality of tests
