@@ -53,27 +53,31 @@
 % be reverse-engineered to get the exploit, which is then used against
 % those who haven't applied the patch.)
 The speed with which researchers and vendors respond to security
-vulnerabilities is critical, especially after exploits have been made
-available. The situation is especially dire for end users who lack
-product source code and must typically fall back on techniques such as
-signature generation and packet filtering, rather than addressing the root
-cause. We propose an alternative in which newly-discovered exploits drive
-an automated repair technique capable of patching vulnerabilities with no
-access to source code or special information from the software vendor.
+vulnerabilities is critical, especially after exploits have been discovered.
+The situation is especially dire for end users who lack
+product source code and typically must wait for a patch to be released
+by the vendor, or in some cases using
+%must typically fall back on techniques such as
+signature generation and packet filtering, rather than addressing the
+root cause. We propose an alternative in which newly discovered
+exploits drive an automated repair technique capable of patching
+vulnerabilities even without access to source code or special
+information from the software vendor.
 
-We propose an evolutionary automated software repair technique focused on
-the special requirements of security repairs to binaries.  We adapt 
-existing approaches to work on stripped ELF files, remove previous 
-requirements for fault localization information, and we propose a
-repair algorithm that can work without a pre-existing regression test
-suite. 
+Using an evolutionary automated software repair approach, we focus on
+the special requirements of security repairs to binaries.  Extensions
+to earlier work include: adapting the method to handle stripped ELF
+files, operating without fault localization information, and devising
+a repair algorithm that can work without a pre-existing regression
+test suite.
 
 We demonstrate this approach by patching recently discovered exploits
-in version 4 of NETGEAR's WNDR3700 wireless router \emph{before} NETGEAR
-publicly addressed the exploits. To the authors' knowledge, NETGEAR has not
-patched these exploits at the time of submission. We find that even without
-any regression tests, 80\% of repairs of our example exploit retain program
-functionality, and with a few user-created tests, FIXME-100\% do so. 
+in version 4 of NETGEAR's WNDR3700 wireless router \emph{before}
+NETGEAR publicly addressed the exploits. To the authors' knowledge,
+NETGEAR had not patched these exploits at the time of submission.
+Even without any regression tests to guide the search, we find that 80\% of
+repairs of the example exploits retain program functionality.  When 
+a few user-created tests of required functionality are incorporated, FIXME-100\% do so.
 % We discuss the feasibility and utility of this technique for the security
 % community.
 
@@ -85,51 +89,57 @@ functionality, and with a few user-created tests, FIXME-100\% do so.
 % making, since we'll lose. The setup for your experiments is: the exploit
 % is already available, the company is slow, what can end-users do to
 % protect themselves? 
-Security exploits pose significant monetary and social risks. By Symantec's
+Security exploits pose significant economic and social risks. By Symantec's
 count 5,291 vulnerabilities were reported in 2012
 alone~\cite{symantec2013threat}. Despite this, human developers take
 % ERIC: I don't have any good number for this.  It was looking for
 % this number that got me on the whole to-disclose-or-not line of
 % papers that led to the previous abstract.
 28-FIXME-ERIC days, on average, to address security-critical defects. Even
-when informed, developers do not always act immediately:  in one example,
+when informed, developers do not always act immediately:  In one example,
 Oracle reportedly waited months after researchers privately reported a bug
 in Java while thousands of users were attacked before releasing a
-fix~\cite{greenberg2012oracle}.  Compounding this, a survey of 2,000
-human-written operating system fixes found that 14--24\% were
-incorrect~\cite{fixes-become-bugs}: the official patch may be late, wrong,
+patch~\cite{greenberg2012oracle}.  Compounding this, a survey of 2,000
+human-written operating system repairs found that 14--24\% were
+incorrect~\cite{fixes-become-bugs}---the official patch may be late, wrong,
 or both.  
 
 We propose a new option in which reproducible exploits are used to drive an
 automatic repair technique. This technique operates even when developer
-source code and test suites are not available, and is thus more highly
-applicable. A locally-produced patch may be used for internal protection,
+source code and test suites are not available, and is thus more immediately
+applicable. A user-produced patch may be installed for internal protection,
 redistributed with the exploit (reporting an exploit with a patch in hand
 has been shown to reduce the total number of attacks~\cite{arora2006does}),
-or sent to the software vendor to speed the development of an official
+or sent to the software vendor to reduce development time for the official
 patch~\cite{weimer06}.
 
-In recent years, automated methods of program repair have been shown
-capable of repairing defects in real software
+In recent years, a variety of automated methods for program repair have 
+successfully repaired defects in real software
 % FIXME: For security crowd, focus on ClearView and GenProg.
 (e.g.,~\cite{clearview,genprog-tse-journal,par,nguyen2013semfix}).
-Methods of evolutionary program repair have been developed which are
-capable of repairing defects directly in x86 or ARM ELF files,
-requiring no access to program source code~\cite{schulte2013embedded}.  
-We propose a new evolutionary program repair technique adapted to
-the non-vendor-level repair of security vulnerabilities: neither source
-code nor test suites nor any special information or cooperation from the
-vendor are available. 
+Automated repair methods based on evolutionary computation have also
+repaired defects directly in x86 and ARM ELF files, without access to
+program source code~\cite{schulte2013embedded}.  This prior work,
+however, relies on a regression test suite to define the required
+functionality, or informal specification, of the program under repair.
+Here we consider a setting in which neither source code nor test
+suites are available, and there is no special information or
+cooperation from the vendor.  
 
-We demonstrate the feasibility of our technique by patching security
-vulnerabilities in the widely popular NETGEAR WNDR3700 wireless router
-before NETGEAR publicly addressed the exploits.  Although previous
-evolutionary program repair techniques explicitly require access to a
-regression test suite, we explore the feasibility of performing repair
-without any such test suite and find that for our example exploit,
-regression test suites are most often not necessary. In addition, we find
-that the complexity of security vulnerabilities requires iterative
-applications of repair actions within a single evolutionary run. 
+%We propose a new evolutionary program repair technique adapted to
+%the non-vendor-level repair of security vulnerabilities: neither source
+%code nor test suites nor any 
+
+We demonstrate the feasibility of our automated repair technique by
+patching multiple security vulnerabilities in the widely popular NETGEAR
+WNDR3700 wireless router before NETGEAR publicly addressed the
+exploits.  Although previous evolutionary program repair techniques
+explicitly require access to a regression test suite, we explore the
+feasibility of performing repair without any such test suite and find
+that for our example exploit, regression test suites are most often
+not necessary. In addition, we find that the complexity of security
+vulnerabilities requires iterative applications of repair actions
+within a single evolutionary run.
 
 In the remainder of this paper we review two recent exploits to the
 NETGEAR WNDR3700 (Section \ref{sec-2}); demonstrate the feasibility
@@ -139,26 +149,26 @@ review our novel techniques of automated program repair (Sections
 technique and the quality of the repairs it generates (Section
 \ref{repair-demonstration}).
 
-The novel contributions of this short paper are;
+The main  contributions of this short paper are;
 \begin{itemize}
-\item a novel automated repair technique suitable for non-vendor repairs to
+\item A novel automated repair technique suitable for non-vendor repairs to
 security vulnerabilities (not requiring source code, test cases, or fault
 localization), and 
-\item an application our approach to a real-world un-patched
+\item An application of the approach to a real-world unpatched
 security exploit, resulting in
-\item the first demonstration of multiple iterative repairs in a single
-evolutionary run.
+\item The first demonstration of multiple iterative repairs in a single
+run of the evolutionary repair algorithm.
 \end{itemize}
 
 In the pursuit of reproducible
 research~\cite{buckheit1995wavelab,mesirov2010accessible} and to encourage
 others to patch
 future discovered exploits, we have released a companion open source
-repository.\footnote{\url{https://github.com/eschulte/netgear-repair}}
+repository.\footnote{\url{https://github.com/eschulte/netgear-repair}
 This repository contains the instructions, source
 code, and tooling needed to extract, execute and repair the binary
 NETGEAR router image vulnerabilities, as well as the data used for the
-analyses and figures in this document.
+analyses and figures reported  in this paper.
 \iffalse
 Additionally, the analysis performed in this document and all
 supporting figures may be automatically regenerated from new
@@ -166,24 +176,25 @@ experimental data using the Org-mode reproducible research framework
 \cite{schulte2012reproducible-research}.
 \fi
 
-We hope the ability to automatically patch vulnerable closed source
-applications without dependence upon the software vendor encourages
-users to patch vulnerable systems and researchers to release patches
+By demonstrating a method for automatically patching vulnerable closed source
+applications without waiting for software vendors to respond, we hope to encourage
+users to patch important vulnerabilities quickly and researchers to
+release patches simultaneously
 with exploit announcements.
 
 \section{Description of Exploits}
 \label{sec-2}
-In this work we repair two exploits in version 4 of the NETGEAR WNDR3700
-wireless router. The popularity of this router means that vulnerable
-systems of widespread. For example, the
+We describe repairs of two current exploits in version 4 of the NETGEAR WNDR3700
+wireless router. The popularity of this router implies that vulnerable
+systems are widespread in the absence of a published patch. For example, the
 ``shodan''\footnote{\url{http://www.shodanhq.com/search?q=wndr3700v4+http}}
-device search engine alone returns hundreds of vulnerable publicly
-accessible WNDR3700 routers at the time of submission. 
+device search engine alone returned hundreds of vulnerable publicly
+accessible WNDR3700 routers at the time of writing.
 Both exploits exist in the router's internal web server in a binary
 executable named \texttt{net-cgi}, and both are related to how
 \texttt{net-cgi} handles authentication~\cite{zcutlip}.
 
-The vendor-deployed binary is insecure in that: 
+The vendor-deployed binary is insecure in at least two ways: 
 \begin{enumerate}
 \item Any URI starting with the string ``{\tt BRS}'' bypasses authentication.
 
@@ -196,9 +207,10 @@ The vendor-deployed binary is insecure in that:
 
 Many administrative pages start with the ``{\tt BRS}'' string, providing
 attackers with access to personal information such as 's
+% FIXME-ERIC: what does 's mean above?
 passwords, and by accessing the page
 \texttt{http://router/BRS\_02\_genieHelp.html} attackers can
-completely disable authentication in a manner which is permanent
+disable authentication completely and permanently
 across reboots.
 
 \section{Repair Technique}
@@ -209,46 +221,48 @@ Our repair technique for this vulnerability consists of three stages:
 \item Extract the binary executable from the firmware and reproduce
 the exploit (Section~\ref{sec-3-1}).
 \item Apply evolutionary program repair techniques based on mutations to
-that stripped MIPS ELF binary (Section~\ref{sec-3-2}). 
-\item Lazily construct test cases, as needed, to improve the quality of
+the stripped MIPS ELF binary (Section~\ref{sec-3-2}). 
+\item Construct test cases lazily, as needed, to improve the quality of
 unsatisfactory candidate repairs (Section~\ref{on-demand-regression}). 
 \end{enumerate} 
 
-The first step in repairing the \texttt{net-cgi} executable is extracting
+The first step in repairing the \texttt{net-cgi} executable is to extract
 it and the router file system from the firmware image distributed by
 NETGEAR.  Using the extracted filesystem and executable we construct a test
-harness used exercise the exploits in \texttt{net-cgi}.  This test harness
+harness that can exercise the exploits in \texttt{net-cgi}.  This test harness
 is used by the repair algorithm to evaluate candidate repairs and to
 identify when repairs to the exploits have been found.
 
 \subsection{Firmware Extraction and Virtualization}
 \label{sec-3-1}
-NETGEAR distributes firmware holding a full system image for the
-WNDR3700 router which include the router file system holding the
-vulnerable \texttt{net-cgi} executable. Our prototype repair tool
-extracted the file system using the 
+NETGEAR distributes firmware with a full system image for the
+WNDR3700 router which includes the router file system that has the
+vulnerable \texttt{net-cgi} executable. 
+The file system was extracted using the 
 \texttt{binwalk}\footnote{\url{http://binwalk.org}} firmware extraction
-tool. Such tools scan the binary data in the raw monolothic firmware file,
+tool, which scans the binary data in the raw monolothic firmware file,
 searching for signatures
-identifying the types of embedded data sections.  The \texttt{binwalk} tool
-includes rules for identifying and extracting common embedded data
-types, including the {\tt squashfs}\cite{lougher2006squashfs} which
+identifying embedded data sections,
+%The \texttt{binwalk} tool
+%includes rules for identifying and extracting common embedded data
+%types, 
+including {\tt squashfs}\cite{lougher2006squashfs} which
 holds the router's file system.
 
-The router runs on a big-endian MIPS architecture, and thus safely
-reproducing the exploit and evaluating candidate repairs requires emulation
-on most desktop systems. Our prototype implementation uses the QEMU system
-emulator~\cite{bellard2005qemu} to emulate this architecture in a
-lightweight manner; a Debian Linux operating system is run in emulation.
-The extracted router file system is copied into the emulated MIPS Linux
-system.  A number of special directories (e.g., \texttt{/proc/},
-\texttt{/dev/} etc.) are mounted inside the extracted file system and bound
-to the corresponding directories on the virtual machine.  At this point,
-commands may be executed in an environment which closely approximates the
-execution environment of the NETGEAR router using the \texttt{chroot}
-command to confine executable access to within the extracted NETGEAR file
-system. Additional minor adjustments are described in full in the
-reproduction information.
+The router runs on a big-endian MIPS architecture, requiring emulation
+on most desktop system to safely reproduce the exploit and evaluate
+candidate repairs. We used the QEMU system
+emulator~\cite{bellard2005qemu} to emulate the MIPS architecture in a
+lightweight manner with Debian Linux also run in
+emulation.  The extracted router file system is copied into the
+emulated MIPS Linux system.  A number of special directories (e.g.,
+\texttt{/proc/}, \texttt{/dev/} etc.) are mounted inside the extracted
+file system and bound to the corresponding directories on the virtual
+machine.  At this point, commands can be executed in an environment
+that closely approximates the execution environment of the NETGEAR
+router by using the \texttt{chroot} command to confine executable access
+to within the extracted NETGEAR file system. Additional minor
+adjustments are described in \url{https://github.com/eschulte/netgear-repair}.
 
 At this point the NETGERA router may be run in virtualization.  In
 particular, the web interface of the router may be accessed either using an
