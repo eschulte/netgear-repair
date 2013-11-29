@@ -267,7 +267,7 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes [4/6]
+* Notes [4/7]
 ** TODO writing
 ** DONE lazy regression testing
 What if we don't write any regression test?
@@ -296,7 +296,7 @@ the first round?  No, not now.  Future work could incorporate
 information from the first round pick, maybe use it as fault
 localization information.
 
-** TODO evaluate lazy regression testing [2/2]
+** TODO evaluate lazy regression testing [2/3]
 *** DONE Diffs and fitnesses
 #+begin_src lisp :colnames '(id evals full-diff min-diff full-fit min-fit)
   (mapcar #'list
@@ -321,7 +321,6 @@ localization information.
 |  7 | 11831 |        79 |        3 |       20 |      22 |
 |  8 |  2846 |        10 |        1 |       14 |      14 |
 |  9 | 25600 |       182 |        2 |       21 |      22 |
-
 *** DONE Run Times of different Test Sizes
 #+RESULTS: runtime-by-suite-size
 |  3 | 3297.119 |
@@ -412,6 +411,47 @@ file:bin/time-difference
 |----------------------------------+----------|
 |                                  | 86.63125 |
 #+TBLFM: @9$2=vmean(@1..@-1)/60
+
+*** TODO Coverage and Runtime with Minimized Edits
+- label with size of suite and number of samples
+- horizontal lines for minimized edit locations
+
+#+begin_src gnuplot :results silent
+  set title "Test Suite Coverage by Runtime with Minimized Edit Locations"
+  set ylabel "Offset in Process Memory Address Range"
+  set xlabel "Test Suite Runtime (Sec.)"
+  set yrange [0:441276]
+  set xrange [3:8]
+  set key outside right
+  # label traces
+  set label "3 tests\n330 traces" at 3.297, 400000
+  set label "3 tests\n399 traces" at 3.758, 400000
+  set label "3 tests\n518 traces" at 5.766, 400000
+  set label "3 tests\n596 traces" at 7.853, 400000
+  plot "results/suite-coverage/coverage-by-runtime.txt" title "Execution Traces", \
+       325719 lt 2 title "\nMinimized Patch\nLocation", \
+       329309 lt 2 notitle, \
+       33186 lt 2 notitle, \
+       33187 lt 2 notitle, \
+       33188 lt 2 notitle, \
+       33189 lt 2 notitle, \
+       33190 lt 2 notitle, \
+       33191 lt 2 notitle, \
+       332188 lt 2 notitle, \
+       332588 lt 2 notitle, \
+       17274 lt 2 notitle, \
+       329308 lt 2 notitle, \
+       17610 lt 2 notitle, \
+       17608 lt 2 notitle, \
+       426575 lt 2 notitle, \
+       83238 lt 2 notitle, \
+       292601 lt 2 notitle, \
+       32519 lt 2 notitle, \
+       83389 lt 2 notitle, \
+       426593 lt 2 notitle, \
+       30303 lt 2 notitle, \
+       426574 lt 2 notitle
+#+end_src
 
 ** CANCELED different quality regression test suites
 Quality of tests

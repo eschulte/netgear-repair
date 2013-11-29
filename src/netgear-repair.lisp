@@ -104,7 +104,8 @@
                                   (aref genome (+ genome-offset sec-index))))))
                       samples)
                 (incf genome-offset (size sec))))
-            loadable))))
+            loadable)))
+  elf)
 
 (defun use-annotation ()
   "This tells the mutation operators how to use annotations to bias

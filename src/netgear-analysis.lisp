@@ -2,8 +2,18 @@
 
 ;; Copyright (C) 2013  Eric Schulte
 
+;;; Code:
 (in-package :netgear-repair)
 
+(defun index-where (pred sequence)
+  (loop :for el :in sequence :as i :from 0 :when (funcall pred el) :collect i))
+
+(defun differences (seq1 seq2)
+  (loop :for a :in seq1 :for b :in seq2 :as i :from 0
+     :unless (equalp a b) :collect (list i a b)))
+
+
+;;; 1-fixes
 (defvar 1-fix-paths (list
                      "checkpoints/interactive/1-0/90405-fixes.store"
                      "checkpoints/interactive/1-1/17231-fixes.store"
@@ -89,3 +99,63 @@
 ;; <= (mapcar [#'length #'diff-windows
 ;;             {generate-seq-diff 'unified-diff (lines orig)} #'lines]
 ;;            2-minimized)
+
+
+;;; Test suite coverage and timing
+(defvar test-suites '(("BRS-authentication"
+                       "securityquestions.cgi-authentication"
+                       "unauth.cgi-authentication")
+                      ("center_language.html"
+                       "BRS-authentication"
+                       "securityquestions.cgi-authentication"
+                       "unauth.cgi-authentication")
+                      ("advanced.js"
+                       "center_language.html"
+                       "base.gif"
+                       "securityquestions.cgi"
+                       "BRS-authentication"
+                       "securityquestions.cgi-authentication"
+                       "unauth.cgi-authentication")
+                      ("advanced.js"
+                       "logo.jpg"
+                       "center_language.html"
+                       "Add_WPS_Client.htm"
+                       "base.gif"
+                       "dtree.css"
+                       "securityquestions.cgi"
+                       "unauth.cgi"
+                       "unauth.cgi-authentication"
+                       "securityquestions.cgi-authentication"
+                       "BRS-authentication"))
+  "Test suites of varying size.")
+
+(defvar runtimes '(3297119/1000 3758629/1000 5766221/1000 981568/125)
+  #+(or )
+  (mapcar
+   (lambda (my-tests)
+     (setf tests my-tests)
+     (let ((start (get-internal-real-time)))
+       (loop :for i :below 1000 :do
+          (test (mutate (copy orig))))
+       (/ (- (get-internal-real-time) start)
+          internal-time-units-per-second)))
+   test-suites)
+  "Runtime for each test suite.")
+
+(defvar annotated
+  (mapcar
+   (lambda (samples) (annotate (copy orig) samples))
+   (mapcar
+    [#'read-sample-file {format nil "results/suite-coverage/tests-~d"} #'length]
+    test-suites))
+  "Copies of the original elf file annotated with each test suite samples.")
+
+(defvar coverages (mapcar [{index-where {aget :trace}} {coerce _ 'list} #'genome] annotated)
+  "Locations of trace data for each test suite.")
+
+(with-open-file (out "results/suite-coverage/coverage-by-runtime.txt"
+                     :direction :output)
+  (mapc {format out "~{~{~a~^ ~}~^~%~}~%"}
+        (mapcar (lambda (runtime coverage)
+                  (mapcar {list (float (/ runtime 1000))} coverage))
+                runtimes coverages)))
