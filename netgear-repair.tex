@@ -275,10 +275,18 @@ and evaluation until a version of the original program is found which
 satisfies the regression test suite and no longer exhibits the
 undesired behavior.
 
+To improve efficiency, the repair algorithm collects execution traces
+during program execution.  This data serves as \emph{fault
+  localization} and the repair algorithm uses these traces to target
+mutation operations to those statements which lie on the execution
+trace.
+
 We present a modified evolutionary program repair algorithm which is
 suited to the unique needs of users attempting to repair faults in
 binary executables (Section \ref{mutate-mips}) without access to the
-any regression test suite (Section \ref{on-demand-regression}).
+any regression test suite (Section \ref{on-demand-regression}) and
+without the fault localization optimization (Section
+\ref{no-fault-localization}).
 
 \subsubsection{Challenge: Mutating Stripped Binaries}
 \label{mutate-mips}
@@ -600,12 +608,12 @@ crossover-rate      & $\frac{2}{3}$ \\
 These parameters differ significantly from those used in previous EC
 repair algorithms
 (e.g.,~\cite{forrest2009genetic,legoues2011systematicstudy,le2012representations})
-in that we
-use larger populations (of 512 instead of 40 individuals), running for
-many more fitness evaluations ($\leq$100,000 instead of $\leq$400).  The
-parameters used in this paper are closer to traditional EC
-parameters given the size of the software genome, and allow our
-technique to overcome the lack of any fault localization information.
+in that we use larger populations (of 512 instead of 40 individuals),
+running for many more fitness evaluations ($\leq$100,000 instead of
+$\leq$400).  The parameters used in this paper are closer to
+traditional EC parameters given the size of the software genome, and
+allow our technique to overcome the lack of any fault localization
+information.
 
 The increased memory required by the larger population size is offset
 by the use of a steady state EC algorithm, and the increased
@@ -655,24 +663,27 @@ virtual machines for parallelized fitness evaluation.
 \subsubsection{No Fault Localization}
 \label{no-fault-localization}
 
-This repair process differs from previous evolutionary repair
-processes in that it does not use any form of fault localization.  The
-reason for this decision is visible in Figure \ref{ts-cov-rt-w-min};
-namely the fact that many of the useful minimized edits are not
-co-located with trace information.  If fault localization had been
-used the only those statements near execute trace points would be
-mutated by the evolutionary process.  None of the repairs found in
-this work could have succeeded without mutation of a portion of the
-program removed from the trace data.
+In addition to adding an extra and sometimes burdensome step to the
+application of evolutionary program repair, the use of fault
+localization has the more serious problem of sometimes
+over-constraining the mutation operations eliminating the possibility
+of finding valid repairs.
 
-The edits removed from the weighted path appear to be modifying
-non-executable program data.  Previous techniques of evolutionary
-program repair which confine edit operations to execution traces are
-likely unable to repair some programs for this reason.
-% FIXME Wes: Can you confirm?  Another way to state this is that
-%            regular genprog will never mutate program data (e.g., a
-%            struct) and thus can not perform repair which requires
-%            such alterations.
+One of the NETGEAR exploits falls into the later case in which fault
+localization prevents the repair process from succeeding.  As shown in
+Figure \ref{ts-cov-rt-w-min}; many of the places where successful
+repairs changed the program were no located on the trace information.
+In fact, only 2 of the 22 program locations modified by repairs found
+in this work were within 3 instructions of the execution traces.
+
+Previous techniques of evolutionary program repair which confine edit
+operations to execution traces are likely unable to repair some
+programs for this reason.
+% FIXME Wes:
+% Do you agree with this statement?  Another way to state this is that
+% regular genprog will never mutate some relevant portions of the
+% program program, e.g., data such as structs which can not be labeled
+% using execution traces.
 
 \subsubsection{Minimization Impact}
 \label{minimization}
