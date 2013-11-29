@@ -612,9 +612,9 @@ by a non-zero ``errno'' exit value.
 
 \subsubsection{Repair Parameters}
 \label{sec:parameters}
-The repair algorithm used the parameters shown in Table \ref{parameters}.  The
-maximum population size was 512 individuals, selection is performed
-using a tournament size of two.  
+Repair used the following parameters.  The maximum population
+size was 512 individuals, selection is performed using a tournament
+size of two.
 %FIXME-ERIC: Add a footnote saying what tournament size of two means.
 % eg: When the fitness of all variants (individuals) in the population has been
 % evaluated, the fitness values are used to select one individual for 
@@ -628,18 +628,6 @@ maximum population size, an individual is selected for eviction using
 a negative tournament of size two.  Newly selected individuals are
 crossed over two-thirds of the time.
 %FIXME-ERIC: The table needs to have the number of generations in it.
-
-\begin{table}[htb]
-\centering
-\begin{tabular}{lr}
-parameter           & value         \\
-\hline
-max-population-size & 512           \\
-tournament-size     & 2             \\
-crossover-rate      & $\frac{2}{3}$ \\
-\end{tabular}\caption{\label{parameters}The parameters used to evolve repairs to the NETGEAR WNDR3700 exploits.}
-
-\end{table}
 
 These parameters differ significantly from those used in previous
 evolutionary computation (EC)
