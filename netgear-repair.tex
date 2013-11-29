@@ -659,10 +659,16 @@ regression test suite until the entire regression test suite is used
 \begin{figure}[htb]
   \centering
   \includegraphics[width=0.46\textwidth]{ts-cov-and-runtime-w-min.pdf}  
-  \caption{Test suite coverage shown by runtime.  The location of
-    minimized edits in successful repairs are shown as well.  Every
-    successful edit included a repair which was not located on the
-    test suite trace.}
+  \caption{Test suite coverage and runtime with locations of minimized
+    edits.  Four test suites are shown ranging from 3 tests (exploit
+    tests only) to 11 tests (all exploit and regression tests).  The
+    coverage of each suite is shown as the byte offsets of the samples
+    collected during the execution of the suite which are plotted
+    vertically.  The horizontal position of each suite's plot shows
+    the runtime of the suite in seconds.  The location of every edit
+    in a minimized successful repair is plotted as a horizontal line.
+    Only 2 of the 22 minimized edit locations are within 3 bytes of a
+    sample from any suite. }
   \label{ts-cov-rt-w-min}
 \end{figure}
 
