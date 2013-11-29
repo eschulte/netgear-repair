@@ -166,7 +166,7 @@ In the pursuit of reproducible
 research~\cite{buckheit1995wavelab,mesirov2010accessible} and to encourage
 others to patch
 future discovered exploits, we have released a companion open source
-repository.\footnote{\url{https://github.com/eschulte/netgear-repair}
+repository.\footnote{\url{https://github.com/eschulte/netgear-repair}}
 This repository contains the instructions, source
 code, and tooling needed to extract, execute and repair the binary
 NETGEAR router image vulnerabilities, as well as the data used for the
@@ -200,18 +200,17 @@ The vendor-deployed binary is insecure in at least two ways:
 \begin{enumerate}
 \item Any URI starting with the string ``{\tt BRS}'' bypasses authentication.
 
-\item Any URI including the substring ``{\tt unauth.cgi}'' or
-  ``{\tt securityquestions.cgi}'' bypass authentication. This applies
-  even to requests of the form 
-  \texttt{http://router/page.html?foo=unauth.cgi}, meaning that 
-  the vulnerability effectively applies to all internal webpages. 
+\item Any URI including the substring ``\path{unauth.cgi}'' or\\
+  ``\path{securityquestions.cgi}'' bypass authentication. This applies
+  even to requests of the form
+  \url{http://router/page.html?foo=unauth.cgi}, meaning that the
+  vulnerability effectively applies to all internal webpages.
 \end{enumerate}
 
 Many administrative pages start with the ``{\tt BRS}'' string, providing
-attackers with access to personal information such as 's
-% FIXME-ERIC: what does 's mean above?
+attackers with access to personal information such as user's
 passwords, and by accessing the page
-\texttt{http://router/BRS\_02\_genieHelp.html} attackers can
+\url{http://router/BRS_02_genieHelp.html} attackers can
 disable authentication completely and permanently
 across reboots.
 
@@ -258,13 +257,13 @@ emulator~\cite{bellard2005qemu} to emulate the MIPS architecture in a
 lightweight manner with Debian Linux also run in
 emulation.  The extracted router file system is copied into the
 emulated MIPS Linux system.  A number of special directories (e.g.,
-\texttt{/proc/}, \texttt{/dev/} etc.) are mounted inside the extracted
+\path{/proc/}, \path{/dev/} etc.) are mounted inside the extracted
 file system and bound to the corresponding directories on the virtual
 machine.  At this point, commands can be executed in an environment
 that closely approximates the execution environment of the NETGEAR
 router by using the \texttt{chroot} command to confine executable access
 to within the extracted NETGEAR file system. Additional minor
-adjustments are described in \url{https://github.com/eschulte/netgear-repair}.
+adjustments are described in \url{http://eschulte.github.io/netgear-repair/INSTRUCTIONS.html}.
 
 At this point the NETGERA router can be run under virtualization.  In
 particular, the router's web interface can be accessed either using an
