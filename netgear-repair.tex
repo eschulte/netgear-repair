@@ -625,25 +625,21 @@ iterative nature of our repairs in (Section \ref{iterative-repair}).
 \subsubsection{Repair Runtime}
 \label{runtime}
 The time taken to perform a fitness evaluation varies with the size of
-the regression suite.  Table \ref{test-speed} shows the time taken to
-perform 1000 fitness evaluations on a single virtual machine over a
-variety of regression test sizes.
+the regression suite.  Figure \ref{ts-cov-rt-w-min} shows the time
+taken to perform fitness evaluation over a variety of regression test
+sizes.  The ``3 test'' suite includes only the vulnerability tests and
+all larger suites includes increasing portions of the regression test
+suite.
 
-\begin{table}[htb]
-\centering
-\begin{tabular}{l|r}
-suite size & Seconds for 1000 evaluations \\
-\hline
-3          & 3297                         \\
-4          & 3759                         \\
-7          & 5766                         \\
-11         & 7853                         \\
-\end{tabular}
-\caption{\label{test-speed}A single virtual machine is able to perform
-  1000 sequential fitness evaluations in the given number of seconds,
-  shown by the toal number of tests included in the fitness
-  function.}
-\end{table}
+\begin{figure}[htb]
+  \centering
+  \includegraphics[width=0.46\textwidth]{ts-cov-and-runtime-w-min.pdf}  
+  \caption{Test suite coverage shown by runtime.  The location of
+    minimized edits in successful repairs are shown as well.  Every
+    successful edit included a repair which was not located on the
+    test suite trace.}
+  \label{ts-cov-rt-w-min}
+\end{figure}
 
 In 8 of the 10 attempted repairs only the three exploit tests were
 used with no regression tests run.  This corresponds to the first line
@@ -708,20 +704,20 @@ exploits in a single evolutionary run.  This is an instance of
 ``iterative repair'' which has not previously been observed in the
 repair of real-world extant software.
 
-\begin{figure}[htb]
-  \centering
-  \includegraphics[bb=0 0 355 248,width=0.46\textwidth]{fitness-improvement.pdf}
-  % \input{fitness-improvement.tex}
-  \caption{Mean fitness as a function of the number of fitness
-    evaluations.  Collected over 10 runs using only the two exploits
-    to access variant fitness.  A fitness of 3 indicates that all
-    three tests are failed but do not throw an error.  A fitness value
-    of 6 passes all three tests.  One exploit is exercised by two
-    tests, so typically a run fixes either the 1-test or 2-test
-    exploit first, then fixes the second later.  These two different
-    repair scenarios are clearly visible in the graph.}
-  \label{fit-by-time}
-\end{figure}
+% \begin{figure}[htb]
+%   \centering
+%   \includegraphics[bb=0 0 355 248,width=0.46\textwidth]{fitness-improvement.pdf}
+%   % \input{fitness-improvement.tex}
+%   \caption{Mean fitness as a function of the number of fitness
+%     evaluations.  Collected over 10 runs using only the two exploits
+%     to access variant fitness.  A fitness of 3 indicates that all
+%     three tests are failed but do not throw an error.  A fitness value
+%     of 6 passes all three tests.  One exploit is exercised by two
+%     tests, so typically a run fixes either the 1-test or 2-test
+%     exploit first, then fixes the second later.  These two different
+%     repair scenarios are clearly visible in the graph.}
+%   \label{fit-by-time}
+% \end{figure}
 
 \section{Related Work}
 \label{sec-5}
