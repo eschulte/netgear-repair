@@ -264,43 +264,53 @@ router by using the \texttt{chroot} command to confine executable access
 to within the extracted NETGEAR file system. Additional minor
 adjustments are described in \url{https://github.com/eschulte/netgear-repair}.
 
-At this point the NETGERA router may be run in virtualization.  In
-particular, the web interface of the router may be accessed either using an
-external web browser or the \texttt{net-cgi} executable may be called
+At this point the NETGERA router can be run under virtualization.  In
+particular, the router's web interface can be accessed either using an
+external web browser or the \texttt{net-cgi} executable can be called
 directly from the command line.
 
 \subsection{Automated Program Repair and ELF Files}
 \label{sec-3-2}
 
-Evolutionary program repair
+We use evolutionary computation methods to
 \cite{forrest2009genetic,genprog-tse-journal,le2012representations,legoues2011systematicstudy}
-uses natural selection to search for or ``evolve'' modified versions
-of existing programs which differ from the original in that they do
-not exhibit specific undesired buggy behavior.  This process normally
-requires access to the source code of the original program which is
-modified or ``mutated'' by the evolutionary repair technique to
-generate program variants.  These variants are assigned a fitness by
-running them against the program's existing test suite, as well as an
-additional test which demonstrates the undesired behavior.
-
-The repair algorithm builds and maintains a population of these
-program variants.  This population evolves through repeated mutation
-and evaluation until a version of the original program is found which
-satisfies the regression test suite and no longer exhibits the
+search for small changes to existing programs that eliminate the
+specific undesired buggy behavior.  This process typically has access
+to the source code of the original program, which is first transformed
+into an abstract syntax tree and then iteratively modified using
+random \emph{mutations} and \emph{crossovers} to generate program
+variants.  Each variant is evaluated in a process called fitness
+evaluation by running it against the program's existing regression
+test suite and at least one additional test that demonstrates the
 undesired behavior.
 
-To improve efficiency, the repair algorithm collects execution traces
-during program execution.  This data serves as \emph{fault
-  localization} and the repair algorithm uses these traces to target
-mutation operations to those statements which lie on the execution
-trace.
+The repair algorithm constructs a population of these
+program variants, each with one or more random mutations.  
+%FIXME-ERIC: Say what the typical population size is for the netgear runs.
+This population evolves through an iterated process of mutation and
+evaluation until a version of the original program is found that
+repairs the bug.  That is, the repair must satisfy the regression test
+suite and avoid the buggy behavior.
 
-We present a modified evolutionary program repair algorithm which is
-suited to the unique needs of users attempting to repair faults in
-binary executables (Section \ref{mutate-mips}) without access to the
-any regression test suite (Section \ref{on-demand-regression}) and
-without the fault localization optimization (Section
-\ref{no-fault-localization}).
+%To improve efficiency, the repair algorithm collects execution traces
+%during program execution.  This data serves as \emph{fault
+%  localization} and the repair algorithm uses these traces to target
+%mutation operations to those statements which lie on the execution
+%trace.
+% FIXME-ERIC: Why are we mentioning this since we don't use it.  How
+% about the following?
+In earlier versions of the algorithm, execution traces were collected
+during program execution and used as a form of \emph{fault
+  localization} to bias random mutations towards the parts of the
+program most likely to contain the bug.
+%FIXE-ERIC: Why did you decide not to use fault localization.  One
+%sentence to explain that decision.
+
+This basic repair algorithm was modified in several ways to address
+the unique scenario of a user attempting to repair a faulty binary
+executable (Section \ref{mutate-mips}), without access to a regression
+test suite (Section \ref{on-demand-regression}), and without the fault
+localization optimization (Section \ref{no-fault-localization}).
 
 \subsubsection{Challenge: Mutating Stripped Binaries}
 \label{mutate-mips}
@@ -314,16 +324,8 @@ ELF file are the ELF header, the section table and the program table
 (see Figure \ref{elf}).  The ELF header points to the section table and the
 program table, the section table holds information on the layout of
 sections in the ELF file on disk, and the program table holds
-information on how to copy section from disk into memory for program
+information on how to copy sections from disk into memory for program
 execution.
-
-Our proposed approach to repairing stripped MIPS ELF files is an extension
-of previous work on the evolutionary repair of unstripped Intel and ARM
-files~\cite{schulte2013embedded}. 
-Mutation operations are used to modify the
-execution behavior of the ELF file.  In this case the \texttt{net-cgi} file
-is stripped a minimal ELF file which does not include much of the
-information assumed to exist by previous repair techniques.
 
 \begin{figure}[htb]
   \centering
@@ -358,32 +360,42 @@ information assumed to exist by previous repair techniques.
   Linking Format (ELF) file.}
 \end{figure}
 
-While the majority of ELF files include all three of these elements,
-only the ELF Header is guaranteed to exist in all cases.  In
-executable ELF files the program table is required, and in linkable
-files the section table is required.
+% FIXME-ERIC: It would be good to say one place, clearly, what
+% "stripped" means here.
+Our approach to repairing stripped MIPS ELF files extends
+previous work on the automated repair of unstripped Intel and ARM
+files~\cite{schulte2013embedded}. 
+Mutation and crossover operations are used to modify the
+execution behavior of the ELF file.  In this case, however, the \texttt{net-cgi} file
+does not include information on which
+the earlier work relied.
+ Although the majority of ELF files include all three of the elements
+shown in Fig. \ref{elf}, only the ELF Header is guaranteed to exist in
+all cases.  In executable ELF files, the program table is also required, and
+similarly, in linkable files the section table is required.
 
-Previous work required a section table and a section
-name string table, which were used to find the \texttt{.text} section of the
-ELF file where program code is normally stored.  The data in the
-\texttt{.text} section was then coerced into a genome, a linear array of
-assembly instructions which was modified by the mutation operations.
-Our extension of this technique does not require a section table.
-Instead, we build the genome by concatenating the data of every section
-in the program table which has a ``loadable'' type.  These are the
-sections whose data are loaded into memory during program execution.
+Previous work used the section table and section name string table to
+locate the \texttt{.text} section of the ELF file where program code
+is normally stored.  The data in the \texttt{.text} section were then
+coerced into a linear array of assembly instructions (the
+\emph{genome}) on which the mutation operations were defined.  Our
+extension removes this dependence by concatenating the data of every
+section in the program table that has a ``loadable'' type to produce
+the genome.  These are the sections whose data are loaded into memory
+during program execution.
 
 Mutation operations must change program data without corrupting the
 structure of the file or breaking the many addresses hard coded into
 the program data itself (e.g., as destinations for conditional jumps). 
 In general, it is impossible to distinguish
-between an integer literal and an address in program data.  For this
-reason, we propose mutation operations designed to preserve operand absolute
-sizes and offsets within of the ELF program data.  This is made
-easier because every argumented assembly instruction in the MIPS RISC 
-architecture is one word long~\cite{hennessy1982mips}.  Our mutation and
+between an integer literal and an address in program data, so
+the mutation operations are designed to preserve operand absolute
+sizes and offsets within the ELF program data.  This requirement is
+easily met because every argumented assembly instruction in the MIPS RISC 
+architecture is one word long~\cite{hennessy1982mips}.  The mutation and
 crossover operations used to modify stripped MIPS ELF files are shown in
 Figure~\ref{mutation-ops}.
+%FIXME_ERIC: Need a sentence here about crossover.
 
 \tikzstyle{asmrow} = [rectangle, draw, minimum width=2em, minimum height=1em]
 \begin{figure}[htb]
@@ -446,33 +458,32 @@ Figure~\ref{mutation-ops}.
 \subsection{On-Demand Regression Testing}
 \label{on-demand-regression}
 
-A critical challenge in automated program repair is assessing the
-validity of a candidate repair.  The mutations used by these
-techniques are random in that they do not take into account or
-preserve the semantics of the program and are thus as or more likely
-to create new bugs or exploits as they are to repair existing
-undesired behavior.
+Our approach to automated program repair relies on the ability to
+assess the validity of any candidate repair.  The mutations are random
+in the sense that they do not take into account or preserve the
+semantics of the program.  They are more likely to create new bugs
+or exploits as they are to repair undesired behavior, and the method
+requires an evaluation scheme to distinguish between them.
 
-In contrast to previous approaches, our evolutionary program repair
-algorithm does not require a pre-existing regression test suite.
-Instead, we only assume that a demonstration of the exploit exists,
-and treat that as a single available test.  By mutating programs
-without the net of a regression test suite our evolved repairs often
-introduce significant regressions.  Fortunately we find that a post
-evolution repair minimization process in which the difference between
-the evolved repair and the original program is minimized to as few
-edits as possible using Delta Debugging~\cite{delta} removes these
-regressions in the majority of cases (Section \ref{minimization}).  We
-trust to the user to identify regressions which are not eliminated
-through minimization in the interactive portion of our repair
-algorithm.  High level pseudocode for the repair algorithm is show in
-Listing \ref{lazy-algorithm}.
+Instead of relying on a pre-existing regression test suite, we assume
+only that a demonstration of the exploit provides a single available
+test.  By mutating programs without the safety net of a regression
+test suite, the evolved ``repairs'' often introduce significant
+regressions.  However, by applying a minimization process after the
+primary repair is identified, these regressions are removed in the
+majority of cases (Section \ref{minimization}).  The minimization
+reduces the the difference between the evolved repair and the original
+program to as few edits as possible using Delta
+Debugging~\cite{delta}.  The interactive phase of the repair algorithm
+asks the user to identify any regressions that remain after the Delta
+Debugging step.  High level pseudocode for the repair algorithm is
+show in Listing \ref{lazy-algorithm}.
 
-Our approach is thus an interactive repair process in which the
+Our method is thus an interactive repair process in which the
 algorithm searches for a patch that 
-passes every available test (starting with only the exploit). 
-Whenever a candidate repair is produced that passes all available tests,
-the user evaluates its suitability. If the repair is accepted, the process
+passes every available test (starting with only the exploit), and then
+minimizes it using Delta Debugging.  In a third step,
+the user evaluates its suitability.  If the repair is accepted, the process
 terminates. Otherwise, the user supplies a new regression test that the repair
 fails (a witness to its unsuitability) and the process repeats. 
 In Section \ref{repair-demonstration} we find that 80\% of our
@@ -558,8 +569,8 @@ into fitness valleys as in run 8 Table \ref{minimized-stats}).
 \section{Repair Demonstration}
 \label{repair-demonstration}
 
-We first describe the methodology with which we applied our
-evolutionary repair technique to the NETGEAR WNDR3700 exploit (Section
+We first describe the experimental setup we used to test the
+repair technique on the NETGEAR WNDR3700 exploit (Section
 \ref{methodology}).  We then analyze the results of ten repair
 attempts (Section \ref{analysis}).
 
@@ -568,44 +579,53 @@ attempts (Section \ref{analysis}).
 We demonstrate our technique by patching two NETGEAR WNDR3700
 exploits.  All repairs were performed on a server-class machine with
 32 physical Intel Xeon 2.60GHz cores, Hyper-Threading and 120 GB of
-Memory.  In this section we first describe the test harness with which
-program variants are assigned a fitness (Section
-\ref{fitness-evaluation}), then we provide the parameters with which
-we applied our on-demand evolutionary program repair algorithm
+Memory.  We first describe the test harness used to assess the fitness
+of each program variant (Section
+\ref{fitness-evaluation}), then we give the parameters used in the experiments
 (Section \ref{sec:parameters}).
 
 \subsubsection{Fitness Evaluation}
 \label{fitness-evaluation}
-To perform fitness evaluations we use 32 QEMU virtual machines, each
+We used 32 QEMU virtual machines, each
 running Debian Linux with the NETGEAR router firmware environment
 available inside of a \texttt{chroot}.  The repair algorithm itself
 uses 32 threads for parallel fitness evaluation.  Each thread is
 paired with a single QEMU VM on which it tests fitness.
 
 The test framework includes both a host and a guest test script.  The
-host script runs on the server performing repair and a guest script
-which runs in a MIPS virtual machine.  The host script copies a
+host script runs on the server performing repair and the guest script
+runs in a MIPS virtual machine.  The host script copies a
 variant of the \texttt{net-cgi} executable to the guest VM where the
-guest test script runs \texttt{net-cgi} on the command line and
+guest test script executes \texttt{net-cgi} the command line and
 reports a result of {\sc Pass}, {\sc Fail}, or {\sc Error} for each
 test.  These values are then used to calculate the variant's scalar
 fitness.
 
 {\sc Pass} indicates that the program completed successfully and
 produced the correct result, {\sc Fail} indicates that the program
-completed successfully but produced an incorrect results, and {\sc
+completed successfully but produced an incorrect result, and {\sc
   Error} indicates that the program execution did not complete
 successfully due to early termination (e.g., because of a segfault) or
-indicated by a non-zero ``errno'' exit value.
+by a non-zero ``errno'' exit value.
 
 \subsubsection{Repair Parameters}
 \label{sec:parameters}
-Repair was run using the parameters shown in Table \ref{parameters}.  The
+The repair algorithm used the parameters shown in Table \ref{parameters}.  The
 maximum population size was 512 individuals, selection is performed
-using a tournament size of two.  When the population overflows the
+using a tournament size of two.  
+%FIXME-ERIC: Add a footnote saying what tournament size of two means.
+% eg: When the fitness of all variants (individuals) in the population has been
+% evaluated, the fitness values are used to select one individual for 
+% subsequent modifications in the next generation.  We use \emph{tournament
+% selection} where each tournament chooses a subset of two (the
+% tournament size) randomly from the population and the individual
+% with higher fitness wins the tournament and is copied into the next
+% generation, replacing a RANDOMLY(?) chosen individual. 
+When the population overflows the
 maximum population size, an individual is selected for eviction using
 a negative tournament of size two.  Newly selected individuals are
 crossed over two-thirds of the time.
+%FIXME-ERIC: The table needs to have the number of generations in it.
 
 \begin{table}[htb]
 \centering
@@ -619,41 +639,43 @@ crossover-rate      & $\frac{2}{3}$ \\
 
 \end{table}
 
-These parameters differ significantly from those used in previous EC
+These parameters differ significantly from those used in previous
+evolutionary computation (EC)
 repair algorithms
-(e.g.,~\cite{forrest2009genetic,legoues2011systematicstudy,le2012representations})
-in that we use larger populations (of 512 instead of 40 individuals),
+(e.g.,~\cite{forrest2009genetic,legoues2011systematicstudy,le2012representations}).
+Specifically, we use larger populations (512 instead of 40 individuals),
 running for many more fitness evaluations ($\leq$100,000 instead of
-$\leq$400).  The parameters used in this paper are closer to
-traditional EC parameters given the size of the software genome, and
-allow our technique to overcome the lack of any fault localization
+$\leq$400).  However, the parameters used here are in line with
+those used in other EC parameters given the size of the NETGEAR cgi
+module, and they
+allow our technique to succeed withouth the help of fault localization
 information.
 
 The increased memory required by the larger population size is offset
-by the use of a steady state EC algorithm, and the increased
+by the use of a steady-state EC algorithm, and the increased
+% ERIC: Need a citation for the steady-state algo.
 computational demand of the greater number of fitness evaluations is
 offset by parallelization of fitness evaluation.
 
 \subsection{Analysis of Repairs}
 \label{analysis}
 
-We provide information on the typical time required to perform repair
-(Section \ref{runtime}).  We provide empirical support for our
-decision not to use fault localization in our repair procedure
-(Section \ref{no-fault-localization}).  We then review the impact of
-the minimization process (Section \ref{minimization}) both with
-respect to the size of the repair in terms of byte difference from the
+We report results for the time typically taken to generate a repair
+(Section \ref{runtime}), the effect of eliminating fault localization
+(Section \ref{no-fault-localization}), and the impact of the
+minimization process (Section \ref{minimization}), both with respect
+to the size of the repair in terms of byte difference from the
 original and in terms of the fitness improvement.  Finally we
-demonstrate the iterative nature of our repairs in (Section
-\ref{iterative-repair}).
+demonstrate how multiple repairs can be discovered iteratively by the
+repair process (Section \ref{iterative-repair}).
 
 \subsubsection{Repair Runtime}
 \label{runtime}
-The time taken to perform a fitness evaluation varies with the size of
-the regression suite.  Figure \ref{ts-cov-rt-w-min} shows the time
-taken to perform fitness evaluation over a variety of regression test
-sizes.  The ``3 test'' suite includes only the vulnerability tests and
-all larger suites includes increasing portions of the regression test
+The time spent on fitness evaluation (Fig. \ref{ts-cov-rt-w-min}) varies with the size of
+the regression test suite, which ranges from only the vulnerability test ('3 test')
+and to 
+%FIXME-ERIC: Say what the highest number was.
+ increasing portions of the regression test
 suite.
 
 \begin{figure}[htb]
