@@ -60,6 +60,18 @@
 ;;             {generate-seq-diff 'unified-diff (lines orig)} #'lines]
 ;;            1-minimized)
 
+(defvar successful-minimized-edit-locations
+  '(325719 329309 33186 33187 33188 33189 33190 33191 332188 332588 17274 329308
+    17610 17608 426575 83238 292601 32519 83389 426593 30303 426574)
+  "Locations of edits in successful minimized repairs.")
+;; <= (remove-duplicates
+;;       (mapcan [{mapcar #'car} {differences (lines orig)} #'lines]
+;;               (mapcar #'car
+;;                       (remove-if-not [{= 22} #'second]
+;;                                      (mapcar #'list
+;;                                              1-minimized
+;;                                              1-full-min-fitnesses)))))
+
 
 ;;; 2-fixes
 (defvar 2-fix-paths (list
@@ -150,7 +162,8 @@
     test-suites))
   "Copies of the original elf file annotated with each test suite samples.")
 
-(defvar coverages (mapcar [{index-where {aget :trace}} {coerce _ 'list} #'genome] annotated)
+(defvar coverages
+  (mapcar [{index-where {aget :trace}} {coerce _ 'list} #'genome] annotated)
   "Locations of trace data for each test suite.")
 
 (with-open-file (out "results/suite-coverage/coverage-by-runtime.txt"

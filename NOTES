@@ -267,7 +267,7 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes [4/7]
+* Notes [6/8]
 ** TODO writing
 ** DONE lazy regression testing
 What if we don't write any regression test?
@@ -296,8 +296,9 @@ the first round?  No, not now.  Future work could incorporate
 information from the first round pick, maybe use it as fault
 localization information.
 
-** TODO evaluate lazy regression testing [2/3]
+** TODO evaluate lazy regression testing [4/4]
 *** DONE Diffs and fitnesses
+#+name: full-min-tbl
 #+begin_src lisp :colnames '(id evals full-diff min-diff full-fit min-fit)
   (mapcar #'list
           (loop :for i :below 10 :collect i)
@@ -308,7 +309,7 @@ localization information.
           1-full-min-fitnesses)
 #+end_src
 
-#+RESULTS:
+#+RESULTS: full-min-tbl
 | id | evals | full-diff | min-diff | full-fit | min-fit |
 |----+-------+-----------+----------+----------+---------|
 |  0 | 90405 |       500 |        2 |        8 |      22 |
@@ -321,6 +322,12 @@ localization information.
 |  7 | 11831 |        79 |        3 |       20 |      22 |
 |  8 |  2846 |        10 |        1 |       14 |      14 |
 |  9 | 25600 |       182 |        2 |       21 |      22 |
+
+**** mean executions per success
+#+begin_src sh :var TBL=full-min-tbl
+echo "$TBL"|grep 22|cut -f2|mean|tail -1
+#+end_src
+
 *** DONE Run Times of different Test Sizes
 #+RESULTS: runtime-by-suite-size
 |  3 | 3297.119 |
@@ -411,47 +418,81 @@ file:bin/time-difference
 |----------------------------------+----------|
 |                                  | 86.63125 |
 #+TBLFM: @9$2=vmean(@1..@-1)/60
-
-*** TODO Coverage and Runtime with Minimized Edits
+*** DONE Coverage and Runtime with Minimized Edits
 - label with size of suite and number of samples
 - horizontal lines for minimized edit locations
 
-#+begin_src gnuplot :results silent
+#+begin_src gnuplot :file "stuff/ts-cov-and-runtime-w-min.tex"
+  set term tikz
   set title "Test Suite Coverage by Runtime with Minimized Edit Locations"
   set ylabel "Offset in Process Memory Address Range"
   set xlabel "Test Suite Runtime (Sec.)"
   set yrange [0:441276]
   set xrange [3:8]
-  set key outside right
+  set key above
   # label traces
   set label "3 tests\n330 traces" at 3.297, 400000
-  set label "3 tests\n399 traces" at 3.758, 400000
-  set label "3 tests\n518 traces" at 5.766, 400000
-  set label "3 tests\n596 traces" at 7.853, 400000
+  set label "4 tests\n399 traces" at 4.758, 400000
+  set label "7 tests\n518 traces" at 5.766, 400000
+  set label "11 tests\n596 traces" at 6.853, 400000
+  set arrow from 3.297,375000 to 3.297,350000
+  set arrow from 4.758,375000 to 3.758,350000
+  set arrow from 5.766,375000 to 5.766,350000
+  set arrow from 6.853,375000 to 7.853,350000
   plot "results/suite-coverage/coverage-by-runtime.txt" title "Execution Traces", \
-       325719 lt 2 title "\nMinimized Patch\nLocation", \
+       325719 lt 2 title "\nMinimized Patch Location", \
        329309 lt 2 notitle, \
-       33186 lt 2 notitle, \
-       33187 lt 2 notitle, \
-       33188 lt 2 notitle, \
-       33189 lt 2 notitle, \
-       33190 lt 2 notitle, \
-       33191 lt 2 notitle, \
+       33186  lt 2 notitle, \
+       33187  lt 2 notitle, \
+       33188  lt 2 notitle, \
+       33189  lt 2 notitle, \
+       33190  lt 2 notitle, \
+       33191  lt 2 notitle, \
        332188 lt 2 notitle, \
        332588 lt 2 notitle, \
-       17274 lt 2 notitle, \
+       17274  lt 2 notitle, \
        329308 lt 2 notitle, \
-       17610 lt 2 notitle, \
-       17608 lt 2 notitle, \
+       17610  lt 2 notitle, \
+       17608  lt 2 notitle, \
        426575 lt 2 notitle, \
-       83238 lt 2 notitle, \
+       83238  lt 2 notitle, \
        292601 lt 2 notitle, \
-       32519 lt 2 notitle, \
-       83389 lt 2 notitle, \
+       32519  lt 2 notitle, \
+       83389  lt 2 notitle, \
        426593 lt 2 notitle, \
-       30303 lt 2 notitle, \
+       30303  lt 2 notitle, \
        426574 lt 2 notitle
 #+end_src
+
+#+RESULTS:
+[[file:stuff/ts-cov-and-runtime-w-min.tex]]
+
+Print gnuplot code to show locations of minimized edits.
+#+begin_src lisp
+  (format t "~{     ~d lt 2 notitle~^, \\~%~}~%"
+          (remove-duplicates
+           (mapcan [{mapcar #'car} {differences (lines orig)} #'lines]
+                   (mapcar #'car
+                           (remove-if-not [{= 22} #'second]
+                                          (mapcar #'list
+                                                  1-minimized
+                                                  1-full-min-fitnesses))))))
+#+end_src
+
+*** DONE co-location of minimized edits with the fault localization
+#+begin_src lisp
+  (defun expander (n)
+    (list (- n 3) (- n 2) (- n 1) n (+ n 3) (+ n 2) (+ n 1)))
+  
+  (/ (length (set-difference
+              successful-minimized-edit-locations
+              (mapcan #'expander (reduce #'union coverages))))
+     (length successful-minimized-edit-locations))
+  
+#+end_src
+
+#+RESULTS:
+: 10/11
 
 ** CANCELED different quality regression test suites
 Quality of tests
