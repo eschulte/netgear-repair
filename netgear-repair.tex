@@ -616,11 +616,14 @@ offset by parallelization of fitness evaluation.
 \label{analysis}
 
 We provide information on the typical time required to perform repair
-(Section \ref{runtime}).  We then review the impact of the
-minimization process (Section \ref{minimization}) both with respect to
-the size of the repair in terms of byte difference from the original
-and in terms of the fitness improvement.  Finally we demonstrate the
-iterative nature of our repairs in (Section \ref{iterative-repair}).
+(Section \ref{runtime}).  We provide empirical support for our
+decision not to use fault localization in our repair procedure
+(Section \ref{no-fault-localization}).  We then review the impact of
+the minimization process (Section \ref{minimization}) both with
+respect to the size of the repair in terms of byte difference from the
+original and in terms of the fitness improvement.  Finally we
+demonstrate the iterative nature of our repairs in (Section
+\ref{iterative-repair}).
 
 \subsubsection{Repair Runtime}
 \label{runtime}
@@ -642,9 +645,34 @@ suite.
 \end{figure}
 
 In 8 of the 10 attempted repairs only the three exploit tests were
-used with no regression tests run.  This corresponds to the first line
-of Table \ref{test-speed}.  In these cases the repair process took
-86.6 minutes on average.
+used with no regression tests run.  This corresponds to the first
+group of traces labeled ``3 tests'' in Figure \ref{ts-cov-rt-w-min}.
+
+In these cases the repair process averaged ~36,000 total fitness
+evaluations taking on average 86.6 minutes to find a repair using 32
+virtual machines for parallelized fitness evaluation.
+
+\subsubsection{No Fault Localization}
+\label{no-fault-localization}
+
+This repair process differs from previous evolutionary repair
+processes in that it does not use any form of fault localization.  The
+reason for this decision is visible in Figure \ref{ts-cov-rt-w-min};
+namely the fact that many of the useful minimized edits are not
+co-located with trace information.  If fault localization had been
+used the only those statements near execute trace points would be
+mutated by the evolutionary process.  None of the repairs found in
+this work could have succeeded without mutation of a portion of the
+program removed from the trace data.
+
+The edits removed from the weighted path appear to be modifying
+non-executable program data.  Previous techniques of evolutionary
+program repair which confine edit operations to execution traces are
+likely unable to repair some programs for this reason.
+% FIXME Wes: Can you confirm?  Another way to state this is that
+%            regular genprog will never mutate program data (e.g., a
+%            struct) and thus can not perform repair which requires
+%            such alterations.
 
 \subsubsection{Minimization Impact}
 \label{minimization}
