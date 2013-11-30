@@ -77,7 +77,7 @@
 (defvar 2-fix-paths (list
                      "checkpoints/interactive/2-0/17459-fixes.store"
                      "checkpoints/interactive/2-1/78262-fixes.store")
-  "Paths to evolved fixes found using only the exploit tests.")
+  "Paths to evolved fixes found using the exploit tests and one other.")
 
 (defvar 2-fix-evals
   (mapcar (lambda (path)
@@ -111,6 +111,47 @@
 ;; <= (mapcar [#'length #'diff-windows
 ;;             {generate-seq-diff 'unified-diff (lines orig)} #'lines]
 ;;            2-minimized)
+
+
+;;; 5-fixes
+(defvar 5-fix-paths (list
+                     "checkpoints/interactive/5-0/14872-fixes.store"
+                     "checkpoints/interactive/5-1/121012-fixes.store"
+                     "checkpoints/interactive/5-2/15822-fixes.store")
+  "Paths to evolved fixes found using the exploit tests and two others.")
+
+(defvar 5-fix-evals
+  (mapcar (lambda (path)
+            (multiple-value-bind (matched-p matches)
+                (scan-to-strings "/([0-9]+)-fixes" path)
+              (parse-integer (aref matches 0))))
+          5-fix-paths))
+;; => (14872 121012 15822)
+
+(defvar 5-evolved (restore "stuff/5-evolved.store")
+  "Un-minimized evolved fixes found using only the exploit tests.")
+;; <= (mapcar [#'lastcar #'restore] 5-fix-paths)
+
+(defvar 5-full-fitnesses '(16 22)
+  "Fitness of `5-evolved' using the full regression tests suite.")
+;; <= (let ((tests nil)) (mapcar #'test 5-evolved))
+
+(defvar 5-diff-sizes '(123 585)
+  "Number of unified diff windows of `5-evolved' against the original.")
+
+(defvar 5-minimized (restore "stuff/5-minimized.store")
+  "Minimized evolved fixes found using only the exploit tests.")
+;; <= (mapcar {delta-debug orig} 5-evolved)
+
+(defvar 5-full-min-fitnesses '(20 22)
+  "Fitness of `5-minimized' using the full regression tests suite.")
+;; <= (let ((tests nil)) (mapcar #'test 5-minimized))
+
+(defvar 5-min-dif-sizes '(4 2)
+  "Number of unified diff windows of `5-minimized' against the original.")
+;; <= (mapcar [#'length #'diff-windows
+;;             {generate-seq-diff 'unified-diff (lines orig)} #'lines]
+;;            5-minimized)
 
 
 ;;; Test suite coverage and timing

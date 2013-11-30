@@ -431,12 +431,12 @@ file:bin/time-difference
   set xrange [3:8]
   set key above
   # label traces
-  set label "3 tests\n330 traces" at 3.297, 400000
-  set label "4 tests\n399 traces" at 4.758, 400000
-  set label "7 tests\n518 traces" at 5.766, 400000
-  set label "11 tests\n596 traces" at 6.853, 400000
+  set label "3 tests\n330 samples" at 3.297, 400000
+  set label "4 tests\n399 samples" at 4.458, 400000
+  set label "7 tests\n518 samples" at 5.766, 400000
+  set label "11 tests\n596 samples" at 6.853, 400000
   set arrow from 3.297,375000 to 3.297,350000
-  set arrow from 4.758,375000 to 3.758,350000
+  set arrow from 4.458,375000 to 3.758,350000
   set arrow from 5.766,375000 to 5.766,350000
   set arrow from 6.853,375000 to 7.853,350000
   plot "results/suite-coverage/coverage-by-runtime.txt" title "Execution Traces", \
