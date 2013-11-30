@@ -653,17 +653,20 @@ repair process (Section \ref{iterative-repair}).
 The time spent on fitness evaluation (Fig. \ref{ts-cov-rt-w-min})
 varies with the size of the regression test suite, which ranges from
 only the vulnerability test ('3 tests') to increasing portions of the
-regression test suite until the entire regression test suite is used
+user-generated regression test suite until the entire regression test suite is used
 ('11 tests').
+
+%FIXME-ERIC: Beofre you get to the caption, I think you need to define
+%"coverage."   Also state clearly what the point you think the figure makes.
 
 \begin{figure}[htb]
   \centering
   \includegraphics[width=0.46\textwidth]{ts-cov-and-runtime-w-min.pdf}  
   \caption{Test suite coverage and runtime with locations of minimized
     edits.  Four test suites are shown ranging from 3 tests (exploit
-    tests only) to 11 tests (all exploit and regression tests).  The
+    tests only) to 11 tests (all exploit and author-generated regression tests).  The
     coverage of each suite is shown as the byte offsets of the samples
-    collected during the execution of the suite which are plotted
+    collected during the execution of the tests, which are plotted
     vertically.  The horizontal position of each suite's plot shows
     the runtime of the suite in seconds.  The location of every edit
     in a minimized successful repair is plotted as a horizontal line.
@@ -672,33 +675,33 @@ regression test suite until the entire regression test suite is used
   \label{ts-cov-rt-w-min}
 \end{figure}
 
-In 8 of the 10 attempted repairs only the three exploit tests were
-used with no regression tests run.  This corresponds to the first
-group of traces labeled ``3 tests'' in Figure \ref{ts-cov-rt-w-min}.
+In 8 of the 10 attempted repairs the three exploit tests alone were
+sufficient, and the third phase of user-generated tests was not required.  This corresponds to the first
+group of traces labeled ``3 tests'' in Fig. \ref{ts-cov-rt-w-min}.
 
-In these cases the repair process averaged ~36,000 total fitness
-evaluations taking on average 86.6 minutes to find a repair using 32
+In these cases the repair process took an average of ~36,000 total fitness
+evaluations requiring on average 86.6 minutes to find a repair using 32
 virtual machines for parallelized fitness evaluation.
 
 \subsubsection{No Fault Localization}
 \label{no-fault-localization}
 
 In addition to adding an extra and sometimes burdensome step to the
-application of evolutionary program repair, the use of fault
-localization has the more serious problem of sometimes
-over-constraining the mutation operations eliminating the possibility
-of finding valid repairs.
+repair process, the use of fault localization has the more serious
+problem of sometimes over-constraining the search operators (mutation
+and crossover), preventing the discovery of valid repairs.
+%FIXME-ERIC: cite our most recent ASPLOS paper here.
 
-One of the NETGEAR exploits falls into the later case in which fault
+One of the NETGEAR exploits exemplifies this problem, where fault
 localization prevents the repair process from succeeding.  As shown in
-Figure \ref{ts-cov-rt-w-min}; many of the places where successful
-repairs changed the program were no located on the trace information.
-In fact, only 2 of the 22 program locations modified by repairs found
-in this work were within 3 instructions of the execution traces.
-
-Previous techniques of evolutionary program repair which confine edit
-operations to execution traces are likely unable to repair some
-programs for this reason.
+Figure \ref{ts-cov-rt-w-min}, many of the program locations where successful
+repairs made edits were not included in the trace information.
+In fact, only 2 of the 22 program locations modified by successful repairs 
+were within 3 instructions of the execution traces.  Although
+surprising, this result suggests that 
+previous evolutionary program repair techniques, which confine edit
+operations to execution traces, are likely unable to repair the NETGEAR
+bugs.
 % FIXME Wes:
 % Do you agree with this statement?  Another way to state this is that
 % regular genprog will never mutate some relevant portions of the
@@ -708,14 +711,15 @@ programs for this reason.
 \subsubsection{Minimization Impact}
 \label{minimization}
 
-In some cases the initial evolved repair was not satisfactory.  For
-example, evolved repairs sometimes worked when \texttt{net-cgi} was
+In some cases the initial suggested repair, known as the
+\emph{primary} repair, was not satisfactory.  For
+example, suggested repairs sometimes worked when \texttt{net-cgi} was
 called directly on the command line but not through the embedded
 $\mu$HTTPd webserver,\footnote{\url{http://wiki.openwrt.org/doc/uci/uhttpd}}
-or the evolved file failed to serve pages not used in the
-exploit test.  As shown in Table \ref{minimized-stats}, however, in most
-cases the minimized version of the evolved executable was satisfactory
-and passed all hand-written regression tests available, even those not used
+or the repaired file failed to serve pages not used in the
+exploit test.  However, Table \ref{minimized-stats} shows that in most
+cases the minimized version of the repair was satisfactory,
+successfully passing all hand-written regression tests, even those not used
 during the repair process. 
 
 \begin{table}[htb]
@@ -750,18 +754,20 @@ differed from the original at over 200 locations on average in the ELF
 program data, while the minimized repairs differed at only 1--3
 locations on average.  This great discrepancy is due to the
 accumulation of candidate edits in non-tested portions of the program
-data.  Since these portions of the genome were not tested, there was
-no evolutionary pressure to purge harmful edits.  The elimination of
-these accumulated edits is the main purpose of our minimization step,
-and is the reason for the consistent increase in regression test
-behavior found in the minimized repairs.
+data.  Since these portions of the program were not tested explicitly, there was
+no evolutionary pressure to purge the harmful edits.  
+Delta Debugging eliminates these harmful edits.
+%and is the reason for the consistent increase in regression test
+%behavior found in the minimized repairs.
 
 \subsubsection{Iterative Repair}
 \label{iterative-repair}
-These repairs required two distinct fixes addressing two different
+The NETGEAR  repairs required two distinct modifications, addressing two different
 exploits in a single evolutionary run.  This is an instance of
-``iterative repair'' which has not previously been observed in the
-repair of real-world extant software.
+``iterative repair,'' which has not previously been demonstrated 
+real-world extant software.
+%FIXME-ERIC: need a citation to iterative repair, probably one of our
+%earlier papers that discusses it in future work.
 
 % \begin{figure}[htb]
 %   \centering
@@ -790,6 +796,9 @@ repair of real-world extant software.
 % while the later risks the vendor ignoring the exploit extending the
 % life of the exploit.
 
+%FIXME-ERic: LEAD HERE WITH a paragraph on router bugs and patching,
+%even if you don't have statistics.
+
 Even major software vendors commonly delay releasing patches to
 security exploits.  Microsoft waits until the second Tuesday of every
 month (known as ``Patch Tuesday'') to release security patches
@@ -806,7 +815,7 @@ respectively \cite{frei20080}.
 
 FIXME: more related security work.
 
-\subsection{EC}
+\subsection{Evolutionary Computation}
 \label{sec-5-2}
 
 FIXME: EC background
@@ -827,6 +836,10 @@ FIXME
 This technique demonstrates the ability of end users to fix software
 exploits in closed source software without any special information or
 aid from the software vendor.
+
+%FIXME-ERIC: We need more here.  I'd suggest putting a paragraph here
+%about trend towards software-defined networks and what that might
+%mean for router bugs and our ability to fix them.
 
 \subsection{Threats to Validity}
 \label{sec-6-1}
