@@ -650,14 +650,17 @@ repair process (Section \ref{iterative-repair}).
 
 \subsubsection{Repair Runtime}
 \label{runtime}
-The time spent on fitness evaluation (Fig. \ref{ts-cov-rt-w-min})
-varies with the size of the regression test suite, which ranges from
-only the vulnerability test ('3 tests') to increasing portions of the
-user-generated regression test suite until the entire regression test suite is used
-('11 tests').
-
-%FIXME-ERIC: Beofre you get to the caption, I think you need to define
-%"coverage."   Also state clearly what the point you think the figure makes.
+Both the quality or ``coverage'' (number of bytes of program data
+exercised by a test suite) and the time spent on fitness evaluation
+(Fig. \ref{ts-cov-rt-w-min}) varies with the size of the regression
+test suite, which ranges from only the vulnerability test ('3 tests')
+to increasing portions of the user-generated regression test suite
+until the entire regression test suite is used ('11 tests').  For
+\texttt{net-cgi}, the additional coverage of the larger test suites is
+not sufficient to justify the increased running time or the time
+required to compose the regression tests.  We believe this is true of
+many programs which implement a single main use case and corresponding
+path of execution.
 
 \begin{figure}[htb]
   \centering
@@ -689,8 +692,8 @@ virtual machines for parallelized fitness evaluation.
 In addition to adding an extra and sometimes burdensome step to the
 repair process, the use of fault localization has the more serious
 problem of sometimes over-constraining the search operators (mutation
-and crossover), preventing the discovery of valid repairs.
-%FIXME-ERIC: cite our most recent ASPLOS paper here.
+and crossover) \cite{schulte2013optimization}, preventing the
+discovery of valid repairs.
 
 One of the NETGEAR exploits exemplifies this problem, where fault
 localization prevents the repair process from succeeding.  As shown in
@@ -768,6 +771,10 @@ exploits in a single evolutionary run.  This is an instance of
 real-world extant software.
 %FIXME-ERIC: need a citation to iterative repair, probably one of our
 %earlier papers that discusses it in future work.
+%
+% ERIC: I couldn't find any mention of this in the future work of the
+% early Gecco or ICSE papers (or the TSE journal paper).  Do you have
+% a specific paper in mind?
 
 % \begin{figure}[htb]
 %   \centering
