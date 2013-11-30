@@ -820,8 +820,6 @@ disclosure, and on any given date about 10 vulnerabilities and over 20
 vulnerabilities were public and un-patched for Microsoft and Apple
 respectively \cite{frei20080}.
 
-FIXME: more related security work.
-
 \subsection{Evolutionary Computation}
 \label{sec-5-2}
 
@@ -843,13 +841,18 @@ and binary ELF files~\cite{schulte2013embedded}.
 \subsection{Automated Program Repair}
 \label{sec-5-3}
 
-FIXME
+These Evolutionary techniques of automated program repair have been
+demonstrated capable of fixing security bugs including remote heap
+buffer overflow used to inject code or overwrite variables, denial of
+service attacks, local stack and integer overflows, and format string
+vulnerabilities~\cite{genprog-tse-journal}.
 
-\begin{itemize}
-\item genprog
-\item clearview
-\item semfix
-\end{itemize}
+The clearview system~\cite{clearview} is able to automatically patch
+errors in running binaries.  Instead of using evolutionary search this
+system learns invariants of running executables, and reacts to attacks
+or bugs which invalidate these invariants by applying automatically
+generated invariant-preserving patches.  In evaluation, this system
+successfully thwarted 7 of 10 attacks by a hostile red team.
 
 \section{Discussion}
 \label{sec-6}
@@ -863,7 +866,7 @@ aid from the software vendor.
 
 \subsection{Threats to Validity}
 \label{sec-6-1}
-This initial work is based upon a single exploit repair so it is
+This initial work is based upon repair in a single executable so it is
 possible that the results indicating the effectiveness of repair
 without any regression test suite will not generalize.  However, the
 authors do not believe that these results are based on any property
