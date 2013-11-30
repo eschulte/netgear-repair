@@ -792,9 +792,7 @@ real-world extant software.
 % \end{figure}
 
 \section{Related Work}
-\label{sec-5}
 \subsection{Security}
-\label{sec-5-1}
 % There has been a significant effort to understand the impacts of
 % disclosure of discovered exploits.  Researchers typically must decide
 % between public disclosure (termed ``full disclosure'') or private
@@ -821,8 +819,6 @@ vulnerabilities were public and un-patched for Microsoft and Apple
 respectively \cite{frei20080}.
 
 \subsection{Evolutionary Computation}
-\label{sec-5-2}
-
 Evolutionary computation (EC) refers to the use of natural selection
 as a search heuristic~\cite{holland1992adaptation,koza1992genetic}.
 The application of EC techniques to the evolution of program code is
@@ -839,8 +835,6 @@ extant programs at both the level of source code and of assembly code
 and binary ELF files~\cite{schulte2013embedded}.
 
 \subsection{Automated Program Repair}
-\label{sec-5-3}
-
 These Evolutionary techniques of automated program repair have been
 demonstrated capable of fixing security bugs including remote heap
 buffer overflow used to inject code or overwrite variables, denial of
@@ -855,7 +849,6 @@ generated invariant-preserving patches.  In evaluation, this system
 successfully thwarted 7 of 10 attacks by a hostile red team.
 
 \section{Discussion}
-\label{sec-6}
 This technique demonstrates the ability of end users to fix software
 exploits in closed source software without any special information or
 aid from the software vendor.
@@ -865,7 +858,6 @@ aid from the software vendor.
 %mean for router bugs and our ability to fix them.
 
 \subsection{Threats to Validity}
-\label{sec-6-1}
 This initial work is based upon repair in a single executable so it is
 possible that the results indicating the effectiveness of repair
 without any regression test suite will not generalize.  However, the
@@ -879,24 +871,35 @@ find that the functionality of software mutants differs by only about 60\%
 between software tested with an empty regression test suites and software
 tested with the best obtainable quality regression test suites.
 
-\subsection{Next Steps}
-\label{sec-6-2}
+\subsection{Future Work}
+% operation directly on a binary image?
+
+This technique could be combined with an automated testing or exploit
+generation technique such as fuzz testing~\cite{miller1990empirical}
+to automatically ``harden'' closed source applications.  Such a
+process would not only allow end users to proactively protect their
+devices from a wide range of easily generated attacks, but would also
+disrupt the large mono-culture common to commercial firmware.
+
+More simply this technique should be easily adapted by users to
+disable or break undesirable or insecure functionality (e.g., password
+reset) in closed-source applications.
+
+As demonstrated in previous work on automated repair in embedded
+systems~\cite{schulte2013embedded}, this technique could be
+distributed across multiple un-trusted peers who could distribute
+self-certifying patches~\cite{vigilante}.
+
+Whenever a patch is distributed there is the possibility that
+malicious individuals may reverse-engineer an exploit from the patch
+text~\cite{brumley2008automatic}.  As shown in Table
+\ref{minimized-stats} this technique is capable of generating patches
+in which many changes are not relevant to the repaired exploit.  An
+alternate version of this technique in which a regression test
+\emph{is} used and no minimization is performed may be useful to
+generate obfuscated patches for distribution of exploit repairs.
 
 \begin{itemize}
-\item operation directly on a binary image
-\begin{itemize}
-\item would require better virtualization
-\item would require better fault localization
-\end{itemize}
-\item proactive hardening
-\begin{itemize}
-\item shutting off (read:breaking) insecure functionality such as
-password reset
-\item combination with a fuzz tester in a closed exploit/repair loop
-\end{itemize}
-\item distributed diversity
-\begin{itemize}
-\item self certifying patches
 \end{itemize}
 \item Use ``neutral'' mutations to mask the important aspects of a
   patch to avoid patch reverse-engineering.  As this work demonstrates
