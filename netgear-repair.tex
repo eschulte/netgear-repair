@@ -7,12 +7,12 @@
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{listings}
-\usepackage{subcaption}
-\captionsetup{compatibility=false}
+%\usepackage{subcaption}
+%\captionsetup{compatibility=false}
 \usepackage{hyperref}
 \usepackage{adjustbox}
 \usepackage{tikz}
-\usepackage{gnuplot-lua-tikz}
+%\usepackage{gnuplot-lua-tikz}
 \usepackage{adjustbox}
 \usepackage{fp}
 
@@ -87,6 +87,39 @@ When a few user-created tests of required functionality are incorporated, 100\% 
 
 \section{Introduction}
 \label{sec-1}
+
+y % A paragraph on router bugs and patching
+From a bug in CISCO's IOS which on February 16th caused outages in
+nearly every country worldwide~\cite{biggest-router-bug}, to bugs in
+home routers like that repaired here or a very similar recent D-Link
+bug~\cite{d-link} router bugs can have wide ranging consequences, and
+in such cases speedy recovery (even with degraded performance) is
+critical.
+
+Even major software vendors commonly delay releasing patches to
+security exploits.  Microsoft waits until the second Tuesday of every
+month (known as ``Patch Tuesday'') to release security patches
+\cite{lemos2003microsoft}, leading malicious users to release new
+exploits on the second Wednesday of every month (known as ``Exploit
+Wednesday'') to maximize the time before a patch is released.
+
+In a study of high and medium risk vulnerabilities in Microsoft and
+Apple products between 2002 and 2008, about 10\% of
+vulnerabilities were found not to be patched within 150 days of
+disclosure, and on any given date about 10 vulnerabilities and over 20
+vulnerabilities were public and un-patched for Microsoft and Apple
+respectively \cite{frei20080}.
+
+%\subsection{Security}
+% There has been a significant effort to understand the impacts of
+% disclosure of discovered exploits.  Researchers typically must decide
+% between public disclosure (termed ``full disclosure'') or private
+% disclosure to the vendor of the vulnerable software.  The former
+% increases the number of attacks in the short term \cite{arora2006does},
+% while the later risks the vendor ignoring the exploit extending the
+% life of the exploit.
+
+
 % WRW really thinks that "full disclosure" is not the fight we want to be
 % making, since we'll lose. The setup for your experiments is: the exploit
 % is already available, the company is slow, what can end-users do to
@@ -790,145 +823,119 @@ real-world extant software.
 % \end{figure}
 
 \section{Related Work}
-\subsection{Security}
-% There has been a significant effort to understand the impacts of
-% disclosure of discovered exploits.  Researchers typically must decide
-% between public disclosure (termed ``full disclosure'') or private
-% disclosure to the vendor of the vulnerable software.  The former
-% increases the number of attacks in the short term \cite{arora2006does},
-% while the later risks the vendor ignoring the exploit extending the
-% life of the exploit.
 
-% A paragraph on router bugs and patching
-From a bug in CISCO's IOS which on February 16th caused outages in
-nearly every country worldwide~\cite{biggest-router-bug}, to bugs in
-home routers like that repaired here or a very similar recent D-Link
-bug~\cite{d-link} router bugs can have wide ranging consequences, and
-in such cases speedy recovery (even with degraded performance) is
-critical.
-
-Even major software vendors commonly delay releasing patches to
-security exploits.  Microsoft waits until the second Tuesday of every
-month (known as ``Patch Tuesday'') to release security patches
-\cite{lemos2003microsoft}, leading malicious users to release new
-exploits on the second Wednesday of every month (known as ``Exploit
-Wednesday'') to maximize the time before a patch is released.
-
-In a study of high and medium risk vulnerabilities in Microsoft and
-Apple products between 2002 and 2008, about 10\% of
-vulnerabilities were found not to be patched within 150 days of
-disclosure, and on any given date about 10 vulnerabilities and over 20
-vulnerabilities were public and un-patched for Microsoft and Apple
-respectively \cite{frei20080}.
-
-\subsection{Evolutionary Computation}
+%\subsection{Evolutionary Computation}
 Evolutionary computation (EC) refers to the use of natural selection
 as a search heuristic~\cite{holland1992adaptation,koza1992genetic}.
-The application of EC techniques to the evolution of program code is
-referred to as ``Genetic Programming'' \cite{poli2008field} and has
-been shown capable of attaining human-competitive
-results~\cite{koza2000automatic}.
+%The application of EC techniques to the evolution of program code is
+%referred to as ``Genetic Programming'' \cite{poli2008field} and has
+%been shown capable of attaining human-competitive
+%results~\cite{koza2000automatic}.
+EC techniques have been developed to operate 
+%While GP techniques traditionally operate over simplified, purpose
+%built programming languages, it has previously 
+%been applied 
+directly on machine code~\cite{kuhling2002brute}, and more recently
+they have been applied to the problem of software source-code
+repair~\cite{weimer2009automatically,genprog-tse-journa},
+optimization~\cite{sitthi2011genetic,schulte2013optimization}, and to
+repairing assembly code and binary ELF
+files~\cite{schulte2013embedded}.  In each of the repair scenarios,
+however, the technique relies on a robust set of regression tests to
+preserve required functionality.
 
-While GP techniques traditionally operate over simplified, purpose
-built programming languages, it has previously been applied directly
-to machine code~\cite{kuhling2002brute}.  More recently GP techniques
-have been applied to the repair~\cite{weimer2009automatically} and
-optimization~\cite{sitthi2011genetic,schulte2013optimization} or
-extant programs at both the level of source code and of assembly code
-and binary ELF files~\cite{schulte2013embedded}.
+%\subsection{Automated Repair of Binary Code}
+%These Evolutionary techniques of automated program repair have been
+%demonstrated capable of fixing security bugs including remote heap
+%buffer overflow used to inject code or overwrite variables, denial of
+%service attacks, local stack and integer overflows, and format string
+%vulnerabilities~\cite{l}.
 
-\subsection{Automated Program Repair}
-These Evolutionary techniques of automated program repair have been
-demonstrated capable of fixing security bugs including remote heap
-buffer overflow used to inject code or overwrite variables, denial of
-service attacks, local stack and integer overflows, and format string
-vulnerabilities~\cite{genprog-tse-journal}.
-
-The clearview system~\cite{clearview} is able to automatically patch
-errors in running binaries.  Instead of using evolutionary search this
-system learns invariants of running executables, and reacts to attacks
-or bugs which invalidate these invariants by applying automatically
-generated invariant-preserving patches.  In evaluation, this system
-successfully thwarted 7 of 10 attacks by a hostile red team.
+In addition to the EC methods mentioned above, Clearview~\cite{clearview}
+automatically patches errors in running binaries by learning
+invariants of running executables, and then reacting to attacks or
+bugs that invalidate the invariants by applying predefined patches.
+%In evaluation, this system successfully
+%thwarted 7 of 10 attacks by a hostile red team.
 
 \section{Discussion}
-This technique demonstrates the ability of end users to fix software
-exploits in closed source software without any special information or
-aid from the software vendor.
 
 %FIXME-ERIC: We need more here.  I'd suggest putting a paragraph here
 %about trend towards software-defined networks and what that might
 %mean for router bugs and our ability to fix them.
 
-With the advent of software defined networking (SDN) network and
-dedicated network debuggers~\cite{handigol2012debugger}, network bugs
-should become increasingly reproducible and easily testable.  Thus the
-potential for application of this technique to quickly patch important
-network bugs should rise with the tide of SDN.
+%\subsection{Threats to Validity}
+The results presented here open up the possibility that end users
+could repair software exploits in closed source software without any
+special information or aid from the software vendor.
 
-\subsection{Threats to Validity}
-This initial work is based upon repair in a single executable so it is
-possible that the results indicating the effectiveness of repair
-without any regression test suite will not generalize.  However, the
-authors do not believe that these results are based on any property
-unique to the NETGEAR exploits. Rather, we believe that the ability of
-the evolutionary repair algorithm to find functional repairs without
-the use of any regression test suite is due to both the beneficial
-impact of minimization, and to the natural mutational robustness of
-software. Specifically, Schulte \emph{et al.}~\cite{schulte2013software} 
-find that the functionality of software mutants differs by only about 60\%
-between software tested with an empty regression test suites and software
-tested with the best obtainable quality regression test suites.
+This initial repaired a single executable, and it is possible that the
+success in the absence of regression test suite will not generalize.
+However, our results do not appear to be based on any property unique
+to the NETGEAR exploits.  We conjecture that our success at finding
+functional repairs in this setting is due to the beneficial impact of
+minimization and to a property of software known as \\emph{mutational
+  robustness}~\cite{schulte2013software}.  Across a wide variety of
+software, this work found that the functionality of software mutants
+differs by only about 60\% between software tested with an empty
+regression test suites and software tested with the best obtainable
+quality regression test suites.
 
-\subsection{Future Work}
+Software defined networking (SDN) and dedicated network
+debuggers~\cite{handigol2012debugger} point to a future in which
+network bugs are more easily reproduced and tested.  In this
+environment, there will likely be increasing opportunity for techniques
+like the one presented here to quickly patch important network bugs.
+
+%\subsection{Future Work}
 % operation directly on a binary image?
 
-This technique could be combined with an automated testing or exploit
-generation technique such as fuzz testing~\cite{miller1990empirical}
+In future, our technique could be combined with an automated testing or exploit
+generation technique, such as fuzz testing~\cite{miller1990empirical},
 to automatically ``harden'' closed source applications.  Such a
-process would not only allow end users to proactively protect their
-devices from a wide range of easily generated attacks, but would also
-disrupt the large mono-culture common to commercial firmware.
+process would allow end users to proactively protect their
+devices from a wide range of easily generated attacks and it could 
+potentially be used to disrupt the large mono-culture of commercial firmware.
+%FIXME-ERIC: need a citation for large monoculutre/diversity
+The technique could be adapted by users to disable or break
+undesirable or insecure functionality (e.g., password reset) in
+closed-source applications.  And, it could be distributed across
+multiple untrusted peers and used to distribute self-certifying
+patches~\cite{costa2008vigilante,schulte2013embedded}.
 
-More simply this technique should be easily adapted by users to
-disable or break undesirable or insecure functionality (e.g., password
-reset) in closed-source applications.
+%As demonstrated in previous work on automated repair in embedded
+%systems,
 
-As demonstrated in previous work on automated repair in embedded
-systems~\cite{schulte2013embedded}, this technique could be
-distributed across multiple un-trusted peers who could distribute
-self-certifying patches~\cite{costa2008vigilante}.
-
-Whenever a patch is distributed there is the possibility that
-malicious individuals may reverse-engineer an exploit from the patch
+Whenever a patch is distributed there a risk of someone
+reverse-engineering an exploit from the patch
 text~\cite{brumley2008automatic}.  As shown in Table
-\ref{minimized-stats} this technique is capable of generating patches
-in which many changes are not relevant to the repaired exploit.  An
-alternate version of this technique in which a regression test
-\emph{is} used and no minimization is performed may be useful to
-generate obfuscated patches for distribution of exploit repairs.
+\ref{minimized-stats} our technique sometimes generates patches that
+are not directly relevant to the repaired exploit.  It may be possible
+to avoid this risk by generating obfuscated patches in cases where a
+regression test suite \emph{is} available minimization is not
+performed.
 
 \section{Conclusion}
 
-We introduce a technique of repairing vulnerabilities in binary
-executables which does not require access to source code, a
-pre-existing regression test.  This technique allows end users to
-repair software without cooperation from the software vendor.  We
-demonstrate this technique by repairing two security vulnerabilities
-in the popular NETGEAR WNDR3700 router.  At the time of publication
-these vulnerabilities exist in many actively used devices and had not
-been addressed by NETGEAR.
+We describe a method that enables end users to repair networking
+software without cooperation from the software vendor.  We demonstrate
+the method by repairing two security vulnerabilities in the popular
+NETGEAR WNDR3700 router, vulnerabilities that currently exist in many
+actively used devices and have not been addressed by NETGEAR.  Our
+method does not require access to source code or a pre-existing
+regression test suite.
 
 \section{Acknowledgments}
 \label{sec-7}
-Foremost we'd like to thank Zachary Cutlip who analyzed and announced
-the NETGEAR exploits, and who helped us to reproduce the exploits
-locally.  Without his help this work would not have been possible.  We
-would also like to thank Mark Harman for discussion of program repair
-without a regression test suite, and Stephen Harding for initially
-formulating the interactive lazy regression repair algorithm.
-
-Also, GRANTS GRANTS GRANTS.
+We thank Zachary Cutlip, who analyzed and announced
+the NETGEAR exploits and helped us reproduce the exploits
+locally;
+%Without his help this work would not have been possible.  We
+Mark Harman, for discussions of automated program repair without a
+regression test suite; and Stephen Harding for suggesting the
+interactive lazy regression repair algorithm.  The authors gratefully
+acknowledge the partical support of NSF (SHF-0905236),
+DARPA (P-1070-113237), and the Santa Fe Institute.
 
 \bibliographystyle{plain}
 \bibliography{netgear-repair}
