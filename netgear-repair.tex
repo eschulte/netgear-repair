@@ -116,10 +116,8 @@ has been shown to reduce the total number of attacks~\cite{arora2006does}),
 or sent to the software vendor to reduce development time for the official
 patch~\cite{weimer06}.
 
-In recent years, a variety of automated methods for program repair have 
-successfully repaired defects in real software
-% FIXME-Wes: What is "par"?  You mentioned it during your visit as
-%            well, but I can't find the citation.
+In recent years, a variety of automated methods for program repair
+have successfully repaired defects in real software
 (e.g.,~\cite{clearview,genprog-tse-journal,par,nguyen2013semfix}).
 Automated repair methods based on evolutionary computation have also
 repaired defects directly in x86 and ARM ELF files, without access to
@@ -128,7 +126,7 @@ however, relies on a regression test suite to define the required
 functionality, or informal specification, of the program under repair.
 Here we consider a setting in which neither source code nor test
 suites are available, and there is no special information or
-cooperation from the vendor.  
+cooperation from the vendor.
 
 %We propose a new evolutionary program repair technique adapted to
 %the non-vendor-level repair of security vulnerabilities: neither source
@@ -772,7 +770,7 @@ real-world extant software.
 %FIXME-ERIC: need a citation to iterative repair, probably one of our
 %earlier papers that discusses it in future work.
 %
-% ERIC: I couldn't find any mention of this in the future work of the
+% FIXME-STEPH: I couldn't find any mention of this in the future work of the
 % early Gecco or ICSE papers (or the TSE journal paper).  Do you have
 % a specific paper in mind?
 
@@ -801,8 +799,13 @@ real-world extant software.
 % while the later risks the vendor ignoring the exploit extending the
 % life of the exploit.
 
-%FIXME-ERic: LEAD HERE WITH a paragraph on router bugs and patching,
-%even if you don't have statistics.
+% A paragraph on router bugs and patching
+From a bug in CISCO's IOS which on February 16th caused outages in
+nearly every country worldwide~\cite{biggest-router-bug}, to bugs in
+home routers like that repaired here or a very similar recent D-Link
+bug~\cite{d-link} router bugs can have wide ranging consequences, and
+in such cases speedy recovery (even with degraded performance) is
+critical.
 
 Even major software vendors commonly delay releasing patches to
 security exploits.  Microsoft waits until the second Tuesday of every
@@ -856,6 +859,12 @@ aid from the software vendor.
 %FIXME-ERIC: We need more here.  I'd suggest putting a paragraph here
 %about trend towards software-defined networks and what that might
 %mean for router bugs and our ability to fix them.
+
+With the advent of software defined networking (SDN) network and
+dedicated network debuggers~\cite{handigol2012debugger}, network bugs
+should become increasingly reproducible and easily testable.  Thus the
+potential for application of this technique to quickly patch important
+network bugs should rise with the tide of SDN.
 
 \subsection{Threats to Validity}
 This initial work is based upon repair in a single executable so it is
