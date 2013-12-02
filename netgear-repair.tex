@@ -41,6 +41,41 @@
 \date{\today}
 \title{Repairing Security Vulnerabilities \\in the NETGEAR Router Binary}
 
+\numberofauthors{3}
+\author{
+% You can go ahead and credit any number of authors here,
+% e.g. one 'row of three' or two rows (consisting of one row of three
+% and a second row of one, two or three).
+%
+% The command \alignauthor (no curly braces needed) should
+% precede each author name, affiliation/snail-mail address and
+% e-mail address. Additionally, tag each line of
+% affiliation/address with \affaddr, and tag the
+% e-mail address with \email.
+%
+% 1st. author
+\alignauthor
+Eric Schulte\\
+       \affaddr{Department of Computer Science}\\
+       \affaddr{University of New Mexico}\\
+       \affaddr{Albuquerque, NM 87131-0001}\\
+       \email{eschulte@cs.unm.edu}
+% 2nd. author
+\alignauthor
+Westley Weimer\\
+       \affaddr{Department of Computer Science}\\
+       \affaddr{University of Virginia}\\
+       \affaddr{Charlottesville, VA 22904-4740}\\
+       \email{weimer@cs.virginia.edu}
+% 3rd. author
+\alignauthor
+Stephanie Forrest\\
+       \affaddr{Department of Computer Science}\\
+       \affaddr{University of New Mexico}\\
+       \affaddr{Albuquerque, NM 87131-0001}\\
+       \email{forrest@cs.unm.edu}
+}
+
 \begin{document}
 
 \maketitle
@@ -224,11 +259,11 @@ vulnerabilities quickly and researchers to release patches
 simultaneously with exploit announcements.
 
 The remainder of the paper reviews two recent exploits of NETGEAR
-WNDR3700 (Section \ref{sec-2}); demonstrates the feasibility of
+WNDR3700 (Section \ref{sec-2}); demonstrates % the feasibility of
 running the NETGEAR firmware in a VM sandbox (Section \ref{sec-3-1});
 describes the automated program repair technique (Sections
 \ref{sec-3-2} and \ref{on-demand-regression}); evaluates effectiveness
-and quality of repairs (\ref{repair-demonstration}); summarizes
+and quality of repairs (Section \ref{repair-demonstration}); summarizes
 related work (Section \ref{sec:related-work}; and discusses
 implications and limitations (Section \ref{sec:discussion}).
 
@@ -337,7 +372,7 @@ least one additional test that demonstrates the undesired behavior.
 The repair algorithm constructs a population of 512 program variants,
 each with one or more random mutations.  This population is evolved
 through an iterated process of evaluation, selection, mutation, and
-crossover (pseudo-code and Fig \ref{mutation-ops}) until a version of
+crossover (pseudo-code and Figure \ref{mutation-ops}) until a version of
 the original program is found that repairs the bug.  'Repair' in this
 context is defined to mean that it avoids the buggy behavior and does
 not break required functionality.  In earlier versions of the
@@ -402,7 +437,7 @@ execution.
 \end{figure}
 
 \noindent Although the majority of ELF files
-include all three of the elements shown in Fig. \ref{elf}, only the
+include all three of the elements shown in Figure \ref{elf}, only the
 ELF Header is guaranteed to exist in all cases.  In executable ELF
 files, the program table is also required, and similarly, in linkable
 files the section table is required.
@@ -498,7 +533,7 @@ MIPS ELF files are shown in Figure~\ref{mutation-ops}.
 \subsection{On-Demand Regression Testing}
 \label{on-demand-regression}
 
-Our approach program repair relies on the ability to
+Our approach to program repair relies on the ability to
 assess the validity of any candidate repair.  The mutations are random
 in the sense that they do not take into account or preserve the
 semantics of the program.  They are more likely to create new bugs
@@ -535,7 +570,7 @@ user-written regression tests.
 \small
 \item[{\textbf{Input: }} {Vulnerable Program, $\mathsf{original}$ : $ELF$}]
 \item[{\textbf{Input: }} {Exploit Tests, $\mathsf{exploits}$ : $[ELF \rightarrow Fitness]$}]
-\item[{\textbf{Input: }} {Interactive Check, $\mathsf{good-enough}$ : $ELF \rightarrow [ELF \rightarrow Fitness]$}]
+\item[{\textbf{Input: }} {Interactive Check, $\mathsf{goodEnough}$ : $ELF \rightarrow [ELF \rightarrow Fitness]$}]
 \item[{\textbf{Output: }} {Patched version of Program}] 
   \STATE {\bf let} $new \leftarrow \mathsf{null}$ 
   \STATE {\bf let} $fitness \leftarrow \mathsf{null}$ 
@@ -543,7 +578,7 @@ user-written regression tests.
   \REPEAT {
     \STATE {\bf let} $\mathsf{full} \leftarrow \mathsf{evolutionarySubroutine}(\mathsf{original}, \mathsf{suite})$
     \STATE $new \leftarrow \mathsf{minimize()}$
-    \STATE {\bf let} $newRegressionTests \leftarrow \mathsf{good-enough}(\mathsf{new})$ 
+    \STATE {\bf let} $newRegressionTests \leftarrow \mathsf{goodEnough}(\mathsf{new})$ 
     \STATE $\mathsf{suite} \leftarrow \mathsf{suite} ++ \mathsf{newRegressionTests}$
   }
   \UNTIL { $length(\mathsf{newRegressionTests}) \equiv 0$ }
@@ -621,17 +656,17 @@ attempts (Section \ref{analysis}).
 \label{methodology}
 %We demonstrate our technique by patching two NETGEAR WNDR3700
 %exploits.  
-All repairs were performed on a server-class machine with
-32 physical Intel Xeon 2.60GHz cores, Hyper-Threading and 120 GB of
-Memory. We used a test harness to assess the fitness
-of each program variant (Section
-\ref{fitness-evaluation}). Section \ref{sec:parameters} gives the parameters used in the experiments.
+All repairs were performed on a server-class machine with 32 physical
+Intel Xeon 2.60GHz cores, Hyper-Threading and 120 GB of Memory. We
+used a test harness to assess the fitness of each program variant
+(Section \ref{fitness-evaluation}) and report parameters used in the
+experiments (Section \ref{sec:parameters}).
 
 \subsubsection{Fitness Evaluation}
 \label{fitness-evaluation}
 We used 32 QEMU virtual machines, each
 running Debian Linux with the NETGEAR router firmware environment
-available inside of a \texttt{chroot}.  The repair algorithm itself
+available inside of a \texttt{chroot}.  The repair algorithm
 uses 32 threads for parallel fitness evaluation.  Each thread is
 paired with a single QEMU VM on which it tests fitness.
 
@@ -673,8 +708,8 @@ repair algorithms
 Specifically, we use larger populations (512 instead of 40 individuals),
 running for many more fitness evaluations ($\leq$100,000 instead of
 $\leq$400).  However, the parameters used here are in line with
-those used in other EC publications given the size of the NETGEAR cgi
-module, and they
+those used in other EC publications given the size of the \texttt{net-cgi}
+binary, and they
 help compensate for the lack of fault localization
 information.
 
@@ -730,14 +765,20 @@ repair process (Section \ref{iterative-repair}).
     execution traces: The location of every edit in a minimized
     successful repair is plotted as a horizontal line.  Only 2 of the
     22 minimized edit locations are within 3 bytes of a sample from
-    any test suite execution. }
+    any test suite execution.  Each vertical column shows points of
+    execution traces from one test suite.  Test suites shown from left
+    to right are 3 tests (exploit tests only), 4, 7, and 11 tests (all
+    exploit and author-generated regression tests), with 330, 399,
+    518, and 596 sampled execution locations respectively.}
   \label{ts-cov-rt-w-min}
 \end{figure}
 
-In 8 of the 10 runs of the algorithm (with random restarts), the three exploit tests alone were
-sufficient to generate a satisfactory repair, and the third phase of
-user-generated tests was not required.  
-%FIXME-ERIC: How did you determine that it was satisfactory?
+In 8 of the 10 runs of the algorithm (with random restarts), the three
+exploit tests alone were sufficient to generate a satisfactory repair
+(determined using a withheld regression test suite hand-written by the
+authors\footnote{\url{https://github.com/eschulte/netgear-repair/blob/master/bin/test-cgi}}),
+and the third phase of user-generated tests was not required.
+%FIXED-ERIC: How did you determine that it was satisfactory?
 %This corresponds to the first
 %group of traces labeled ``3 tests'' in Fig. \ref{ts-cov-rt-w-min}.
 
@@ -828,8 +869,8 @@ Delta Debugging eliminates these harmful edits.
 \label{iterative-repair}
 The NETGEAR  repairs required two distinct modifications, addressing two different
 exploits in a single evolutionary run.  This is an instance of
-``iterative repair,'' which has not previously been demonstrated 
-real-world extant software.
+``iterative repair,'' which has not previously been demonstrated in
+real-world software.
 %FIXME-ERIC: Maybe a sentence or two here indicating how this worked.
 %You ran the GA once, fixed one exploit, then had to run it again to
 %fix the second.  They, you tested that the second repair did not
@@ -873,11 +914,11 @@ EC techniques have been developed to operate
 %been applied 
 directly on machine code~\cite{kuhling2002brute}, and more recently
 they have been applied to the problem of software source-code
-repair~\cite{weimer2009automatically,genprog-tse-journa},
+repair~\cite{weimer2009automatically,genprog-tse-journal},
 optimization~\cite{sitthi2011genetic,schulte2013optimization}, and to
 repairing assembly code and binary ELF
 files~\cite{schulte2013embedded}.  In each of the repair scenarios,
-however, the technique relies on a robust set of regression tests to
+however, the technique relies on regression tests to
 preserve required functionality.
 
 %\subsection{Automated Repair of Binary Code}
@@ -897,13 +938,13 @@ bugs that invalidate the invariants by applying predefined patches.
 \section{Discussion}
 \label{sec:discussion}
 
-%FIXME-ERIC: We need more here.  I'd suggest putting a paragraph here
-%about trend towards software-defined networks and what that might
-%mean for router bugs and our ability to fix them.
+% FIXED-ERIC: (below) We need more here.  I'd suggest putting a
+% paragraph here about trend towards software-defined networks and
+% what that might mean for router bugs and our ability to fix them.
 
 %\subsection{Threats to Validity}
 The results presented here open up the possibility that end users
-could repair software exploits in closed source software without any
+could repair software exploits in closed source software without
 special information or aid from the software vendor.  
 
 There are several caveats associated with this initial work.
@@ -913,7 +954,7 @@ generalize.  However, our results do not appear to be based on any
 property unique to the NETGEAR exploits.  We conjecture that our
 success at finding functional repairs in this setting is due to the
 beneficial impact of minimization and to a property of software known
-as \\emph{mutational robustness}~\cite{schulte2013software}.  Across a
+as \emph{mutational robustness}~\cite{schulte2013software}.  Across a
 wide variety of software, this work found that the functionality of
 software mutants differs by only about 60\% between software tested
 with an empty regression test suites and software tested with the best
@@ -924,7 +965,9 @@ vulnerabilities are serious wherever they occur, an important
 area for future work is to explore repairs of other types of router
 bugs, importantly concurrency bugs.  Finally, we demonstrated the
 repair running in a virtualized environment and not natively in the
-router.  
+router.  Although we did not test our repairs
+on physical NETGEAR WNDR3700 hardware, we are confident that our
+repairs would have the same effect on hardware as they do in emulation.
 %FIXME-ERIC: Add one sentence about how confident you are that your
 %repair would work running natively, but don't lie.  Send it to me as
 %a separate email if you want me to double check what you say.
@@ -932,7 +975,7 @@ router.
 Software defined networking (SDN) and dedicated network
 debuggers~\cite{handigol2012debugger} point to a future in which
 network bugs are more easily reproduced and tested.  In this
-environment, there will likely be increasing opportunity for techniques
+case, there will likely be increasing opportunity for techniques
 like the one presented here to quickly patch important network bugs.
 
 %\subsection{Future Work}
@@ -945,8 +988,8 @@ generation technique, such as fuzz testing~\cite{miller1990empirical},
 to automatically ``harden'' closed source applications.  Such a
 process would allow end users to proactively protect their
 devices from a wide range of easily generated attacks and it could 
-potentially be used to disrupt the large mono-culture of commercial firmware.
-%FIXME-ERIC: need a citation for large monoculutre/diversity
+potentially be used to disrupt the large mono-culture of commercial
+firmware~\cite{ieee-sp-09}.
 The technique could be adapted by users to disable or break
 undesirable or insecure functionality (e.g., password reset) in
 closed-source applications.  And, it could be distributed across
