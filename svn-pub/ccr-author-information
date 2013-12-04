@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="/sites/default/files/garland_favicon.png" type="image/x-icon" />
+    <title>CCR Author Information | acm sigcomm</title>
+    <link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/cck/theme/content-module.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/ckeditor/ckeditor.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/date/date.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/date/date_popup/themes/datepicker.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/date/date_popup/themes/jquery.timeentry.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/drupal-6.25/modules/node/node.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/drupal-6.25/modules/system/defaults.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/drupal-6.25/modules/system/system.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/drupal-6.25/modules/system/system-menus.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/drupal-6.25/modules/user/user.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/misc/farbtastic/farbtastic.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/calendar/calendar.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/views/css/views.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/default/files/color/garland-b9c15121/style.css?V" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/garland/nspring.css?V" />
+<link type="text/css" rel="stylesheet" media="print" href="/sites/all/themes/garland/print.css?V" />
+    <script type="text/javascript" src="/misc/jquery.js?V"></script>
+<script type="text/javascript" src="/misc/drupal.js?V"></script>
+<script type="text/javascript" src="/sites/all/modules/google_analytics/googleanalytics.js?V"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, { "basePath": "/", "googleanalytics": { "trackOutgoing": 1, "trackMailto": 1, "trackDownload": 1, "trackDownloadExtensions": "7z|aac|arc|arj|asf|asx|avi|bin|csv|doc|exe|flv|gif|gz|gzip|hqx|jar|jpe?g|js|mp(2|3|4|e?g)|mov(ie)?|msi|msp|pdf|phps|png|ppt|qtm?|ra(m|r)?|sea|sit|tar|tgz|torrent|txt|wav|wma|wmv|wpd|xls|xml|z|zip" } });
+//--><!]]>
+</script>
+    <!--[if lt IE 7]>
+      <link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/garland/fix-ie.css" />    <![endif]-->
+  </head>
+  <body class="sidebar-left">
+
+<!-- Layout -->
+  <div id="header-region" class="clear-block"></div>
+
+    <div id="wrapper">
+    <div id="container" class="clear-block">
+
+      <div id="header">
+        <div id="logo-floater">
+        <h1><a href="/" title="acm sigcomm"><img src="/sites/default/files/garland_logo.png" alt="acm sigcomm" id="logo" /><span>acm sigcomm</span></a></h1>        </div>
+
+                  <ul class="links primary-links"><li class="menu-495 first"><a href="/about" title="About">About</a></li>
+<li class="menu-517"><a href="/awards" title="Awards">Awards</a></li>
+<li class="menu-531"><a href="/join" title="Become a Member of SIGCOMM">Join</a></li>
+<li class="menu-596"><a href="/news">News</a></li>
+<li class="menu-479"><a href="/events" title="SIGCOMM-Sponsored Events">Events</a></li>
+<li class="menu-481 last"><a href="/publications" title="SIGCOMM Publications">Publications</a></li>
+</ul>                <div style="clear: right;"></div>
+        <div class="ns-role-heading"><span class="ns-role-heading-header">Information for:</span>
+                  <ul class="links secondary-links"><li class="menu-493 active-trail first"><a href="/for-authors" title="Information for Authors">Authors</a></li>
+<li class="menu-600"><a href="/for-educators" title="Resources For Educators">Educators</a></li>
+<li class="menu-478"><a href="/resources" title="Resources for researchers">Researchers</a></li>
+<li class="menu-599"><a href="/for-conference-attendees" title="For Conference Attendees">Conference Attendees</a></li>
+<li class="menu-396 last"><a href="/for-organizers" title="Information for Conference Organizers">Conference Organizers</a></li>
+</ul>                </div>
+
+      </div> <!-- /header -->
+
+              <div id="sidebar-left" class="sidebar">
+          <!-- <div class="block block-theme"><form action="/for-authors/ccr-author-information"  accept-charset="UTF-8" method="post" id="search-theme-form">
+<div><div id="search" class="container-inline">
+  <div class="form-item" id="edit-search-theme-form-1-wrapper">
+ <input type="text" maxlength="128" name="search_theme_form" id="edit-search-theme-form-1" size="15" value="Search" class="form-text NormalTextBox txtSearch" onfocus="if (this.value == &#039;Search&#039;) {this.value = &#039;&#039;;}" onblur="if (this.value == &#039;&#039;) {this.value = &#039;Search&#039;;}" />
+</div>
+<input type="image" name="op" value="Search" id="edit-submit-1"  class="form-submit" src="/sites/all/themes/garland/images/search.jpg" />
+<input type="hidden" name="form_build_id" id="form-c1a628a6bd2891138157d3cd64973065" value="form-c1a628a6bd2891138157d3cd64973065"  />
+<input type="hidden" name="form_id" id="edit-search-theme-form" value="search_theme_form"  />
+</div>
+
+</div></form>
+</div> --> 
+          <div id="block-block-3" class="clear-block block block-block">
+
+
+  <div class="content"><p>
+	<a href="http://www.sigcomm.org/publications/computer-communication-review"><img alt="" height="57" src="http://www.sigcomm.org/sites/default/files/ccr-75x375-sketch.png" width="167" /></a></p>
+<p>
+	<a href="http://conferences.sigcomm.org/sigcomm/2014/" target="_blank"><img alt="" height="87" src="http://conferences.sigcomm.org/sigcomm/2014/images/logo.png" width="162" /></a></p>
+<p>
+	<a href="http://conferences.sigcomm.org/sigcomm/2013/" target="_blank"><img alt="" height="64" src="http://conferences.sigcomm.org/sigcomm/2013/images/main-logo.png" width="163" /></a></p>
+</div>
+</div>
+<div id="block-block-2" class="clear-block block block-block">
+
+
+  <div class="content"><p>
+	<a class="twitter-timeline" data-widget-id="357925757030391808" href="https://twitter.com/ACMSIGCOMM">Tweets by @ACMSIGCOMM</a></p>
+</div>
+</div>
+<div id="block-user-0" class="clear-block block block-user">
+
+  <h2>User login</h2>
+
+  <div class="content"><form action="/for-authors/ccr-author-information?destination=node%2F272"  accept-charset="UTF-8" method="post" id="user-login-form">
+<div><div class="form-item" id="edit-name-wrapper">
+ <label for="edit-name">Username: <span class="form-required" title="This field is required.">*</span></label>
+ <input type="text" maxlength="60" name="name" id="edit-name" size="15" value="" class="form-text required" />
+</div>
+<div class="form-item" id="edit-pass-wrapper">
+ <label for="edit-pass">Password: <span class="form-required" title="This field is required.">*</span></label>
+ <input type="password" name="pass" id="edit-pass"  maxlength="60"  size="15"  class="form-text required" />
+</div>
+<input type="submit" name="op" id="edit-submit" value="Log in"  class="form-submit" />
+<div class="item-list"><ul><li class="first last"><a href="/user/password" title="Request new password via e-mail.">Request new password</a></li>
+</ul></div><input type="hidden" name="form_build_id" id="form-4a8b282f230aedaf4c70ca8f5858b729" value="form-4a8b282f230aedaf4c70ca8f5858b729"  />
+<input type="hidden" name="form_id" id="edit-user-login-block" value="user_login_block"  />
+
+</div></form>
+</div>
+</div>
+        </div>
+      
+      <div id="center"><div id="squeeze"><div class="right-corner"><div class="left-corner">
+          <div class="breadcrumb"><a href="/">Home</a> › <a href="/for-authors" title="Information for Authors">Authors</a></div>          <div class="searchcrumb"><form action="/for-authors/ccr-author-information"  accept-charset="UTF-8" method="post" id="search-theme-form">
+<div><div id="search" class="container-inline">
+  <div class="form-item" id="edit-search-theme-form-1-wrapper">
+ <input type="text" maxlength="128" name="search_theme_form" id="edit-search-theme-form-1" size="15" value="Search" class="form-text NormalTextBox txtSearch" onfocus="if (this.value == &#039;Search&#039;) {this.value = &#039;&#039;;}" onblur="if (this.value == &#039;&#039;) {this.value = &#039;Search&#039;;}" />
+</div>
+<input type="image" name="op" value="Search" id="edit-submit-1"  class="form-submit" src="/sites/all/themes/garland/images/search.jpg" />
+<input type="hidden" name="form_build_id" id="form-c1a628a6bd2891138157d3cd64973065" value="form-c1a628a6bd2891138157d3cd64973065"  />
+<input type="hidden" name="form_id" id="edit-search-theme-form" value="search_theme_form"  />
+</div>
+
+</div></form>
+</div>                              <h2>CCR Author Information</h2>                                                  <div class="clear-block">
+            <div id="node-272" class="node">
+
+
+
+  
+  <div class="content clear-block">
+    <p>
+	Information for authors of papers appearing in Computer Communication Review: types of submissions accepted, the review process, implicit submission deadlines, public reviews, and manuscript specifications.</p>
+<p></p>
+<h2>
+	Scope</h2>
+<p>
+	Computer Communication Review (CCR) is a publication of the ACM Special Interest Group on Data Communication (SIGCOMM) and publishes articles on topics within the SIG&#39;s field of interest. Technical papers accepted to CCR typically report on practical advances or the practical applications of theoretical advances.&nbsp;CCR serves as a forum for interesting and novel ideas at an early stage in their development. The focus is on timely dissemination of new ideas that may help trigger additional investigations. While the innovation and timeliness are the major criteria for its acceptance, technical robustness and readability will also be considered in the review process. We particularly encourage papers with early evaluation or feasibility studies.&nbsp;</p>
+<p>
+	Papers accepted for publication are printed in the CCR print edition and are also made available on-line through <a href="http://ccr.sigcomm.org/online/">CCR Online</a> and through the <a href="http://portal.acm.org/browse_dl.cfm?linked=1&amp;part=newsletter&amp;idx=J101&amp;coll=portal&amp;dl=ACM&amp;CFID=48579656&amp;CFTOKEN=2497629">ACM Digital Library</a>.</p>
+<p>
+	&nbsp;</p>
+<h2>
+	Submission types</h2>
+<p>
+	CCR accepts two types of submissions: technical papers and editorial notes. Technical papers are carefully prepared presentations of technical material within the field. If these extend previously published work, the additional contribution should be clearly identified. Paper selection is highly selective with acceptance rates comparable to ACM SIGCOMM conference, i.e., under 15%.</p>
+<p>
+	Editorial notes are typically shorter and less formal presentations on topics of broad interest to the research community. They are not peer-reviewed. The scope for editorial contributions spans topics such as interviews of research scientists and industry leaders, editorials, conference reports, summary standards, NSF or European Commission user manuals, arguments on a research topic, outrageous opinion columns, timely tutorials, What&#39;s Worth Reading, and similar material. Letters from readers are also welcome. Authors considering submission of an editorial contribution are welcome to contact the Editor for feedback about its appropriateness, if desired. Prospective authors should follow the guidelines described <a href="../publish/ccr-author-information">here</a>.</p>
+<h2>
+	Copyright</h2>
+<p>
+	CCR allows authors to retain copyright of their submitted work. This is to encourage early submission of work to the community. Specifically, by submitting your article for distribution in this Special Interest Group publication, you hereby grant to ACM the following non-exclusive, perpetual, worldwide rights:</p>
+<ul>
+<li>
+		to publish in print on condition of acceptance by the editor</li>
+<li>
+		to digitize and post your article in the electronic version of this publication</li>
+<li>
+		to include the article in the ACM Digital Library and in any Digital Library related services</li>
+<li>
+		to allow users to make a personal copy of the article for noncommercial, educational or research purposes</li>
+</ul>
+<p>
+	However, as a contributing author, you retain copyright to your article and ACM will refer requests for republication directly to you.</p>
+<p>
+	&nbsp;</p>
+<p>
+	Publication of a paper in CCR does not preclude the later acceptance of a related paper to any workshop, conference, journal or magazine. Our expectation is that enhanced versions of the work would be submitted to other venues as appropriate. Prospective authors are cautioned that some venues are likely to require that the work be enhanced to a significant degree before being considered for acceptance.</p>
+<p>
+	<i>Note that articles submitted to CCR should not be extension of previously published work, unless there is a new contribution in the paper. </i>Articles not describing ongoing work or not containing new contribution do not match the objective of CCR.</p>
+<h2>
+	Double-submission and Plagiarism</h2>
+<p>
+	Articles submitted to CCR must not be submitted elsewhere, in accordance with <a href="http://www.acm.org/pubs/sim_submissions.html">ACM&#39;s double submission policy</a>. We would also like to draw the attention of prospective authors to <a href="http://www.acm.org/publications/policies/plagiarism_policy">ACM&#39;s policy on plagiarism and self-plagiarism.</a></p>
+<h2>
+	Implicit Deadlines</h2>
+<p>
+	Although CCR accepts submissions all year around, there are four implicit deadlines: December 1, March 1, June 1, and September 1. Papers submitted just before the deadline will experience a eight-to-ten week review process.</p>
+<ul type="disc">
+<li>
+		Paper submitted between the 2<sup>nd</sup> of December and the <b>1st of March</b> will be considered for the <b>July issue</b>.</li>
+<li>
+		Paper submitted between the 2<sup>nd</sup> of March and the <b>1st of June</b> will be considered for the <b>October issue</b>.</li>
+<li>
+		Paper submitted between the 2<sup>nd</sup> of June and the <b>1<sup>st</sup> of September</b> will be considered for the <b>January issue</b>.</li>
+<li>
+		Paper submitted between the 2<sup>nd</sup> of September and the <b>1<sup>st</sup> of December</b> will be considered for the <b>April issue</b>.</li>
+</ul>
+<p>
+	Authors will be required to send their camera ready paper two weeks after notification (details below).</p>
+<p>
+	Please contact the CCR Editor for editorial submissions, which should be submitted no later than eight weeks before the publication date. For example, editorial submissions for the January issue must be submitted no later than November 1 (which is two months after the technical paper submission deadline).</p>
+<p>
+	&nbsp;</p>
+<h2>
+	Review process</h2>
+<p>
+	The review process is carried out under the responsibility of the editorial board.&nbsp; All CCR technical submissions will be reviewed by up to three reviewers. The target turn-around time for the review cycle is approximately ten weeks from the submission deadline, so that accepted papers are published in the issue of CCR following their submission deadline. Editorial contributions will be reviewed by the Editor.</p>
+<p>
+	Most papers will be either accepted or rejected. However, when the review process suggests significant revisions, papers may be revised and resubmitted to the next issue. Authors are allowed to appeal editorial decisions. In such instances, they can submit a rebuttal of up to 300 words to the area editor in charge of the paper or to the Editor. The Editor will make every effort possible to ensure a fair handling of any such request as well as a prompt resolution and final editorial decision.</p>
+<p>
+	Accepted papers will be accompanied by a public review written by the paper&#39;s assigned Area Editor. The public review provides insight (based on the reviews and possibly an independent third party comment) of motivations for accepting the paper - pointing out the contributions and interesting aspects of the paper, mentioning perceived shortcomings, identifying broader issues raised by the work, etc. Authors of accepted papers will have the option to comment on the public review in a subsequent CCR issue. To exercise this option, authors should submit a comment of up to 500 words to the Editor.</p>
+<h2>
+	Instructions for submission</h2>
+<p>
+	Submissions<i> </i>should conform to the following specifications:</p>
+<ol start="1" type="1">
+<li>
+		<b>Submissions are limited to 6 (six) two-column-formatted pages</b>. Exceptions to the page-length rule may be permitted by the Editor if the circumstances so demand.</li>
+<li>
+		Submissions must be in PDF<i> </i>format. Submissions in other formats may be rejected.</li>
+<li>
+		Manuscripts should be single spaced (except for papers containing a great deal of mathematical notation; these should be prepared with as little additional line spacing as possible).&nbsp;</li>
+<li>
+		Please use a common font and do not include printer specific commands.</li>
+<li>
+		If you are using Latex, please use <a href="http://ccr.sigcomm.org/sigcomm-alternate.cls">ACM Sigcomm CCR template SIGCOMM Alternate Style class file</a>. In this style, the text width is about 16 cm (6.25 inches) and text length of about 23 cm (9 inches), with all margins (left, right, head and foot) of 2.5 cm (1 inch). Font size should be 9pt. If you are not using Latex, formatting information can be found <a href="http://www.acm.org/sigs/publications/proceedings-templates">here</a>.</li>
+<li>
+		Papers should be formatted using US Letter.</li>
+<li>
+		Please do not include a copyright block on the front page.</li>
+<li>
+		The title of the paper, name(s) of author(s), affiliation(s) and e-mail address(es) should appear at the top of the first page.</li>
+<li>
+		A short abstract of approximately 100 words should follow the title, names, and affiliations.</li>
+<li>
+		Please do <em>not</em> use graphs, charts, or figures that depend on color to be legible.</li>
+<li>
+		Files larger than 4 MB (uncompressed pdf) will not be accepted.</li>
+<li>
+		Authors are responsible for checking that their paper prints and reads in black and white on a standard printer.</li>
+</ol>
+<p>
+	Submit your file using the <a href="http://blizzard.cs.uwaterloo.ca/ccr/"> online system. </a></p>
+<p>
+	<strong>If your submission is a revision, please create a new submission, and add a comment identifying the previous paper ID.</strong></p>
+<h2>
+	If your paper is accepted for publication...</h2>
+<p>
+	Congratulations!</p>
+<p>
+	Once accepted for publication, four steps remain before the paper actually appears in print.</p>
+<p>
+	<b>First</b>, the authors submit, using the online system, a PDF copy of their paper revised according to the recommendations made by the reviewers. Authors must explain how they have addressed the reviewers&#39; comments. The revised paper is sent to the appropriate Area Edtor, who will confirm that the revised paper adequately addresses the reviewer&#39;s comments. When this approval is granted, the paper is ready for publication.</p>
+<p>
+	<b>Second</b>, the authors prepare a camera-ready version of the paper. This version of the paper should comply with SIGCOMM-alternate (Option 2) cls file you can find <a href="http://ccr.sigcomm.org/sigcomm-alternate.cls">here</a>. You can also find a Microsoft Word template <a href="http://www.acm.org/sigs/publications/proceedings-templates"> here </a>. Note that in this format:</p>
+<ol start="1" type="1">
+<li>
+		No header or footer information (page numbers, names, report numbers, etc.) should appear on the pages.</li>
+<li>
+		The title of the paper, name(s) of author(s), affiliation(s) and e-mail address(es) should appear at the top of the first page.</li>
+<li>
+		A short abstract of approximately 100 words should follow the title, names, and affiliations.</li>
+<li>
+		The paper should be formatted for US Letter format. More information can be found <a href="http://acm.org/sigs/pubs/proceed/sigfaq.htm#a14">here</a>.</li>
+<li>
+		If your paper is an editorial note (i.e., has not been peer-reviewed), you must add a note stating: &quot;This article is an editorial note submitted to CCR. It has NOT been peer reviewed. The author takes full responsibility for this article&#39;s technical content.&quot; immediately below the author affiliation. If you are using Latex, you can use the following incantation:</li>
+</ol>
+<p>
+	&nbsp; &nbsp; &nbsp; &nbsp; &nbsp;\documentclass{sigcomm-alternate}</p>
+<dl>
+<dt>
+		&nbsp;</dt>
+<dd>
+<p>
+			\begin{document}<br />
+			\title{Deep Thoughts}<br />
+			\numberofauthors{1}<br />
+			\author{\alignauthor I.M. Great\\<br />
+			\affaddr{Top Notch Inc.}\\<br />
+			\email{great@topnotch.com}\\<br />
+			\vspace{11pt} {\normalsize This article is an editorial note submitted to CCR. It has NOT been peer reviewed. The author takes full responsibility for this article&#39;s technical content. Comments can be posted through CCR Online.\\<br />
+			}}</p>
+<p>
+			&nbsp;</p>
+</dd>
+</dl>
+<p>
+	For more than one author, use the following:</p>
+<p>
+	\documentclass{sigcomm-alternate}</p>
+<dl>
+<dt>
+		&nbsp;</dt>
+<dd>
+<p>
+			\begin{document}<br />
+			\title{Deep Thoughts}<br />
+			\numberofauthors{1}<br />
+			\author{<br />
+			\begin{tabular*}{0.6\textwidth}%<br />
+			{@{\extracolsep{\fill}}cc}<br />
+			Kentaro Toyama &amp; Muneeb Ali\\<br />
+			\affaddr{Microsoft Research India} &amp; \affaddr{Princeton University}\\<br />
+			\email{kentoy@microsoft.com} &amp; \email{muneeb@princeton.edu}<br />
+			\end{tabular*}\\<br />
+			\begin{tabular}{c}<br />
+			\end{tabular}\\<br />
+			\begin{tabular}{c}<br />
+			{\normalsize This article is an editorial note submitted to CCR. It has NOT been peer reviewed.}\\<br />
+			{\normalsize The authors take full responsibility for this article&#39;s<br />
+			technical content. Comments can be posted through CCR Online.}<br />
+			\end{tabular}<br />
+			}</p>
+<p>			}}</p>
+</dd>
+</dl>
+<p>
+	<a href="http://ccr.sigcomm.org/online/files/p5-carpenter.pdf">Here</a> is an example of a paper in the final PDF format (ignore the footer information - this will be added by the publisher).</p>
+<p>	<b>Third</b>, the author uploads the camera-ready version of the paper to <b>Sheridan Printing&#39;s </b>web site when contacted by the publisher&#39;s representative.</p>
+<p>	<b>Fourth</b>, a Sheridan Printing representative contacts authors to obtain the source files (Latex or Word) and correct any formatting errors, such as widows and orphans.</p>
+<p>	Please send any suggestions for improving these instructions to the Editor.</p>
+<p>	&nbsp;</p>
+  </div>
+
+  <div class="clear-block">
+    <div class="meta">
+        </div>
+
+      </div>
+
+</div>
+          </div>
+                    <div id="footer"><div id="block-block-1" class="clear-block block block-block">
+
+
+  <div class="content"><p><a href="/contact">Contact us</a> to send feedback about this page.</p>
+</div>
+</div>
+</div>
+      </div></div></div></div> <!-- /.left-corner, /.right-corner, /#squeeze, /#center -->
+
+      
+    </div> <!-- /container -->
+  </div>
+<!-- /layout -->
+
+  <script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var _gaq = _gaq || [];_gaq.push(["_setAccount", "UA-42763972-1"]);_gaq.push(["_trackPageview"]);(function() {var ga = document.createElement("script");ga.type = "text/javascript";ga.async = true;ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ga, s);})();
+//--><!]]>
+</script>
+  </body>
+</html>

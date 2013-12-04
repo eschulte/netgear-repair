@@ -1,0 +1,176 @@
+\begin{thebibliography}{10}
+
+\bibitem{arora2006does}
+A. Arora, A. Nandkumar, and R Telang.
+\newblock Does information security attack frequency increase with
+  vulnerability disclosure? an empirical analysis.
+\newblock {\em Information Systems Frontiers}, 8(5):350--362, 2006.
+
+\bibitem{bellard2005qemu}
+F. Bellard.
+\newblock Qemu, a fast and portable dynamic translator.
+\newblock In {\em USENIX Annual Technical Conf., FREENIX Track}, pages
+  41--46, 2005.
+
+\bibitem{brumley2008automatic}
+D. Brumley, P. Poosankam, D. Song, and J. Zheng.
+\newblock Automatic patch-based exploit generation is possible: Techniques and
+  implications.
+\newblock In {\em Security and Privacy, 2008. IEEE Symposium on},
+  pages 143--157. IEEE, 2008.
+
+\bibitem{buckheit1995wavelab}
+J.~B Buckheit and D.~L Donoho.
+\newblock {\em Wavelab and reproducible research}.
+\newblock Springer, 1995.
+
+\bibitem{tis1995tool}
+TIS Committee et~al.
+\newblock Tool interface standard (tis) executable and linking format (elf)
+  specification version 1.2.
+\newblock {\em TIS Committee}, 1995.
+
+\bibitem{zcutlip}
+Z. Cutlip.
+\newblock Complete, persistent compromise of netgear wireless routers, October
+  2013.
+\newblock
+  http://shadow-file.blogspot.com/2013/10/complete-persistent-compromise-of.html.
+
+\bibitem{d-link}
+D. Fisher.
+\newblock D-link planning to patch router backdoor bug, October 2013.
+\newblock
+  http://threatpost.com/d-link-planning-to-patch-router-backdoor-bug/102581.
+
+\bibitem{forrest2009genetic}
+S. Forrest, T. Nguyen, W. Weimer, and C. Le~Goues.
+\newblock A genetic programming approach to automated soft. repair.
+\newblock In {\em GECCO 2009}, pages 947--954. ACM, 2009.
+
+\bibitem{frei20080}
+S. Frei, B. Tellenbach, and B. Plattner.
+\newblock 0-day patch exposing vendors (in) security performance.
+\newblock {\em BlackHat Europe, Amsterdam, NL}, 2008.
+
+\bibitem{legoues2011systematicstudy}
+C. {Le Goues}, M. Dewey-Vogt, S. Forrest, and W. Weimer.
+\newblock A systematic study of automated program repairs: Fixing 55 out of 105
+  bugs for \$8 each.
+\newblock In {\em Soft. Eng., 2012. ICSE 2012.} IEEE, 2011.
+
+\bibitem{handigol2012debugger}
+N. Handigol, B. Heller, V. Jeyakumar, D. Mazi{\`e}res, and
+  N. McKeown.
+\newblock Where is the debugger for my soft.-defined network?
+\newblock In {\em Proc. of the first workshop on Hot topics in soft.
+  defined networks}, pages 55--60. ACM, 2012.
+
+\bibitem{hennessy1982mips}
+J. Hennessy, N. Jouppi, S. Przybylski, C. Rowen, T.
+  Gross, F. Baskett, and J. Gill.
+\newblock Mips: A microprocessor architecture.
+\newblock {\em ACM SIGMICRO Newsletter}, 1982.
+
+\bibitem{holland1992adaptation}
+J. Holland.
+\newblock {\em Adaptation in natural and artificial systems: an introductory
+  analysis with applications to biology, control, and artificial intelligence}.
+\newblock The MIT press, 1992.
+
+\bibitem{par}
+D. Kim, J. Nam, J. Song, and S. Kim.
+\newblock Automatic patch generation learned from human-written patches.
+\newblock In {\em Soft. Eng., 2013. ICSE 2013.}, pages 802--811. IEEE, 2013.
+
+\bibitem{koza1992genetic}
+J. Koza.
+\newblock Genetic programming: On the programming of computers by means of
+  natural selection.
+\newblock MIT press, 1992.
+
+\bibitem{kuhling2002brute}
+F.~K{\"u}hling, K.~Wolff, and P.~Nordin.
+\newblock A brute-force approac to automatic induction of machine code on cisc
+  architectures.
+\newblock {\em Genetic Programming}, pages 288--297, 2002.
+
+\bibitem{genprog-tse-journal}
+C. {Le Goues}, T. Nguyen, S. Forrest, and W. Weimer.
+\newblock {GenProg}: A generic method for automated soft. repair.
+\newblock {\em Trans.s on Soft. Eng.}, 38(1):54--72, 2012.
+
+\bibitem{le2012representations}
+C. Le~Goues, W. Weimer, and S. Forrest.
+\newblock Representations and operators for improving evolutionary soft.
+  repair.
+\newblock In {\em GECCO 2012}, pages 959--966. ACM, 2012.
+
+\bibitem{lougher2006squashfs}
+P~Lougher and R~Lougher.
+\newblock Squashfs-a squashed read-only filesystem for linux, 2006.
+
+\bibitem{Luke2013Metaheuristics}
+S. Luke.
+\newblock {\em Essentials of Metaheuristics}.
+\newblock Lulu, second edition, 2013.
+\newblock http://cs.gmu.edu/$\sim$sean/book/metaheuristics/.
+
+\bibitem{mesirov2010accessible}
+J. Mesirov.
+\newblock Accessible reproducible research.
+\newblock {\em Science}, 327(5964):415--416, 2010.
+
+\bibitem{nguyen2013semfix}
+H. Nguyen, D. Qi, A. Roychoudhury, and S. Chandra.
+\newblock Semfix: Program repair via semantic analysis.
+\newblock In {\em Soft. Eng., 2013. ICSE 2013.}, pages 772--781. IEEE, 2013.
+
+\bibitem{clearview}
+J. Perkins, S. Kim, S. Larsen, S. Amarasinghe, J. Bachrach,
+  M. Carbin, C. Pacheco, F. Sherwood, S. Sidiroglou, G.
+  Sullivan, et~al.
+\newblock Automatically patching errors in deployed soft..
+\newblock In {\em Proc. of the ACM SIGOPS 22nd symposium on Operating
+  systems principles}, pages 87--102. ACM, 2009.
+
+\bibitem{schulte2013embedded}
+E. Schulte, J. DiLorenzo, W. Weimer, and S. Forrest.
+\newblock Automated repair of binary and assembly programs for cooperating
+  embedded devices.
+\newblock In {\em ASPLOS 2013}. ACM,
+  2013.
+
+\bibitem{schulte2013optimization}
+E. Schulte, J. Dorn, S. Harding, S. Forrest, and W. Weimer.
+\newblock Post-compiler soft. optimization for reducing energy.
+\newblock In {\em ASPLOS 2014}. ACM,
+  2014.
+
+\bibitem{schulte2013software}
+E. Schulte, Z. Fry, E. Fast, W. Weimer, and S. Forrest.
+\newblock Soft. mutational robustness.
+\newblock {\em Genetic Programming and Evolvable Machines}, pages 1--32, 2013.
+
+\bibitem{sitthi2011genetic}
+P. Sitthi-Amorn, N. Modly, W. Weimer, and J. Lawrence.
+\newblock Genetic programming for shader simplification.
+\newblock {\em ACM Trans.s on Graphics (TOG)}, 30(6):152, 2011.
+
+\bibitem{weimer06}
+W. Weimer.
+\newblock Patches as better bug reports.
+\newblock In {\em Generative Programming and Component Eng.}, pages
+  181--190, 2006.
+
+\bibitem{delta}
+A. Zeller.
+\newblock Yesterday, my program worked. {Today}, it does not. {Why?}
+\newblock In {\em Foundations of Soft. Eng.}, 1999.
+
+\bibitem{biggest-router-bug}
+E. Zmijewski.
+\newblock Reckless driving on the internet, February 2009.
+\newblock http://www.renesys.com/2009/02/the-flap-heard-around-the-world/.
+
+\end{thebibliography}
