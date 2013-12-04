@@ -1,32 +1,36 @@
-SHELL=bash
-EMACS:=emacs
-PAPER=netgear-repair
+# Set this to the basename of the .tex file
+# This will also be the name of the generated .dvi, .ps and .pdf files
+PAPER = netgear-repair
 
-# Path to the Org-mode repository, obtainable with
-#     git clone git://orgmode.org/org-mode.git
-ORGPATH:=~/src/org-mode
-STARTUP+=(progn (add-to-list (quote load-path) "$(ORGPATH)/lisp/")
-STARTUP+=(add-to-list (quote load-path) "$(ORGPATH)/contrib/lisp/"))
+# Set this to the other source files that should be counted as 
+# dependencies
+OTHERSOURCES := netgear-repair.bib
 
-BATCH_EMACS=$(EMACS) --batch --debug-init --eval '$(STARTUP)' --load init.el
+all: $(PAPER).pdf
 
-%.tex: %.org %.bib
-	$(BATCH_EMACS) $< -f org-latex-export-to-latex
+.PHONY: pdf
+pdf: $(PAPER).pdf
 
-%.pdf : %.tex
-	latex $< 
-	bibtex $(<:%.tex=%)
-	while grep -q "Rerun to get cross" %.log; do \
-		latex --output-format=pdf $<; \
+$(PAPER).pdf: $(PAPER).tex
+# Remove the .aux file because pdflatex wants it different
+	rm -f $(PAPER).aux 
+	if pdflatex $(PAPER).tex </dev/null; then \
+		true; \
+	else \
+		stat=$$?; touch $(PAPER).pdf; exit $$stat; \
+	fi
+	bibtex $(PAPER)
+	while grep "Rerun to get cross" $(PAPER).log; do \
+		if pdflatex $(PAPER).tex </dev/null; then \
+			true; \
+		else \
+			stat=$$?; touch $(PAPER).pdf; exit $$stat; \
+		fi; \
 	done
 
-%.html: %.org %.bib
-	$(BATCH_EMACS) $< -f org-html-export-to-html
 
-all: $(PAPER).pdf $(PAPER).html
-
-push: $(PAPER).html
-	rsync -aruvz ./ moons.cs.unm.edu:public_html/notes/netgear-repair
+$(PAPER).ps: $(PAPER).pdf
+	pdf2ps $(PAPER).pdf
 
 clean:
-	rm -f $(PAPER).{,aux,bbl,blg,log,out,pdf,tex,html} *~
+	rm -f *.aux *.log $(PAPER).ps *.dvi *.blg *.bbl *.toc *~ *.out $(PAPER).pdf 
