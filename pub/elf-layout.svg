@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?> 
+<?xml-stylesheet href="latex-54698oC.css" type="text/css"?> 
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="231.11655pt" height="131.53194pt" viewBox="-115.55827 -72.87915 231.11655 131.53194 "> 
+<g transform="translate(0, 58.65279 ) scale(1,-1) translate(0,72.87915 )"> 
+                                   <g> 
+ <g stroke="rgb(0.0%,0.0%,0.0%)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <g stroke-width="0.4pt"> 
+ <g> 
+ <g> 
+ <path d=" M  -40.00006 -57.50008 h  80.00012 v  115.00015 h  -80.00012 Z  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,0.0,0.0)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(0.0,0)" text-anchor="middle"  font-size="10"> 
+</text> 
+</g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-26.88893,43.47462)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(26.88893,0)" text-anchor="middle"  font-size="10"> 
+ELF Header</text> 
+</g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  -40.20006 39.94165 L  40.20006 39.94165  " style="fill:none"/> 
+ </g> 
+ </g> 
+ <g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-29.58337,24.98053)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(29.58337,0)" text-anchor="middle"  font-size="10"> 
+Section Table</text> 
+</g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-4.16667,6.5854)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(4.16667,0)" text-anchor="middle"  font-size="10"> 
+...</text> 
+</g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-28.26395,-10.52983)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(28.26395,0)" text-anchor="middle"  font-size="10"> 
+Section Data</text> 
+</g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-4.16667,-21.86732)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(4.16667,0)" text-anchor="middle"  font-size="10"> 
+...</text> 
+</g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-32.73618,-45.17911)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(32.73618,0)" text-anchor="middle"  font-size="10"> 
+Program Table</text> 
+</g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g fill="rgb(80.0003%,80.0003%,100.0%)"> 
+ <g> 
+ <g fill="rgb(80.0003%,80.0003%,100.0%)"> 
+ <path d=" M  -55.35818 28.45274 C  -55.35818 45.02151 -68.78946 58.45279 -85.35823 58.45279 C  -101.927 58.45279 -115.35828 45.02151 -115.35828 28.45274 C  -115.35828 11.88397 -101.927 -1.5473 -85.35823 -1.5473 C  -68.78946 -1.5473 -55.35818 11.88397 -55.35818 28.45274 Z M  -85.35823 28.45274  " /> 
+ </g> 
+ </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-99.33047,24.98053)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(13.97224,0)" text-anchor="middle"  font-size="10"> 
+Linker</text> 
+</g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g fill="rgb(100.0%,80.0003%,80.0003%)"> 
+ <g> 
+ <g fill="rgb(100.0%,80.0003%,80.0003%)"> 
+ <path d=" M  115.35828 -42.67911 C  115.35828 -26.11034 101.927 -12.67906 85.35823 -12.67906 C  68.78946 -12.67906 55.35818 -26.11034 55.35818 -42.67911 C  55.35818 -59.24788 68.78946 -72.67915 85.35823 -72.67915 C  101.927 -72.67915 115.35828 -59.24788 115.35828 -42.67911 Z M  85.35823 -42.67911  " /> 
+ </g> 
+ </g> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,67.28874,-45.12355)"> 
+ <g fill="rgb(0.0%,0.0%,0.0%)"> 
+ <text style="stroke:none" transform="scale(1,-1) translate(18.06949,0)" text-anchor="middle"  font-size="10"> 
+Memory</text> 
+</g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  -40.20006 28.45274 L  -54.44818 28.45274  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(-1.0,0.0,0.0,-1.0,-54.44818,28.45274)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g stroke-width="0.8pt"> 
+ <path d=" M  40.20006 -42.67911 L  54.44818 -42.67911  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,54.44818,-42.67911)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g stroke-width="0.8pt"> 
+ <g stroke-dasharray="0.8pt,1.0pt" stroke-dashoffset="0.0pt"> 
+ <path d=" M  40.20006 7.11317 C  48.5218 7.11317 48.5218 28.45274 40.91006 28.45274  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(-1.0,0.0,0.0,-1.0,40.91006,28.45274)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g stroke-width="0.8pt"> 
+ <g stroke-dasharray="0.8pt,1.0pt" stroke-dashoffset="0.0pt"> 
+ <path d=" M  40.20006 -7.11317 C  54.06973 -7.11317 54.06973 28.45274 40.91006 28.45274  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(-1.0,0.0,0.0,-1.0,40.91006,28.45274)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g stroke-width="0.8pt"> 
+ <g stroke-dasharray="0.8pt,1.0pt" stroke-dashoffset="0.0pt"> 
+ <path d=" M  40.20006 -21.33955 C  59.61755 -21.33955 59.61755 28.45274 40.91006 28.45274  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(-1.0,0.0,0.0,-1.0,40.91006,28.45274)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g stroke-width="0.8pt"> 
+ <g stroke-dasharray="0.8pt,1.0pt" stroke-dashoffset="0.0pt"> 
+ <path d=" M  -40.20006 7.11317 C  -59.61755 7.11317 -59.61755 -42.67911 -40.91006 -42.67911  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-40.91006,-42.67911)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g stroke-width="0.8pt"> 
+ <g stroke-dasharray="0.8pt,1.0pt" stroke-dashoffset="0.0pt"> 
+ <path d=" M  -40.20006 -7.11317 C  -54.06973 -7.11317 -54.06973 -42.67911 -40.91006 -42.67911  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-40.91006,-42.67911)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ <g> 
+ <g stroke-width="0.8pt"> 
+ <g stroke-dasharray="0.8pt,1.0pt" stroke-dashoffset="0.0pt"> 
+ <path d=" M  -40.20006 -21.33955 C  -48.5218 -21.33955 -48.5218 -42.67911 -40.91006 -42.67911  " style="fill:none"/> 
+ <g> 
+ <g transform="matrix(1.0,0.0,0.0,1.0,-40.91006,-42.67911)"> 
+ <g> 
+ <g stroke-width="0.64pt"> 
+ <g stroke-dasharray="none" stroke-dashoffset="0.0pt"> 
+ <g stroke-linecap="round"> 
+ <g stroke-linejoin="round"> 
+ <path d=" M  -1.55997 2.07996 C  -1.42996 1.29997 0.0 0.12999 0.38998 0.0 C  0.0 -0.12999 -1.42996 -1.29997 -1.55997 -2.07996  " style="fill:none"/> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ </g> 
+ 
+                                                                     </g> 
+</svg> 
