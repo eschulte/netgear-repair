@@ -24,9 +24,9 @@ the behavior other binary ELF executables, making it possible to fix
 customize and alter binaries executables without any aid from the
 software's developer.
 
-A detailed description of the exploit and the repair technique and the
-repairs found is available at [4] and step by step instructions to
-reproduce this repair are given in INSTRUCTIONS.
+An article describing the exploit, the repair technique, its
+application, and the repairs found is available at [4] and step by
+step instructions to reproduce this repair are given in INSTRUCTIONS.
 
 Thanks to Zachary Cutlip for help reproducing these exploits in a VM.
 
@@ -37,4 +37,4 @@ Footnotes:
 
 [3]  http://cs.unm.edu/~eschulte/data/schulte2013embedded.pdf
 
-[4]  http://eschulte.github.io/netgear-repair
+[4]  http://eschulte.github.io/netgear-repair/pub/netgear-repair.html
