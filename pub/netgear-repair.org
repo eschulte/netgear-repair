@@ -115,26 +115,26 @@ describes the automated program repair technique (Sections [[#elf]] and
 
 We describe two current exploits in version 4 of the NETGEAR WNDR3700
 wireless router. The popularity of this router implies that vulnerable
-systems are currently widespread. For example, the ``shodan'' [fn:2]
+systems are currently widespread. For example, the "shodan" [fn:2]
 device search engine returned hundreds of vulnerable publicly
 accessible WNDR3700 routers at the time of writing.  Both exploits
 exist in the router's internal web server in a binary executable named
-\texttt{net-cgi}, and both are related to how \texttt{net-cgi} handles
+=net-cgi=, and both are related to how =net-cgi= handles
 authentication cite:zcutlip.
 
 The vendor-deployed binary is insecure in at least two ways: 
-- Any URI starting with the string ``{\tt BRS}'' bypasses authentication.
-- Any URI including the substring ``\path{unauth.cgi}'' or
-  ``\path{securityquestions.cgi}'' bypass authentication. This applies
-  even to requests of the form
-  \url{http://router/page.html?foo=unauth.cgi}, meaning that the
-  vulnerability effectively applies to all internal webpages.
+- Any URI starting with the string "BRS" bypasses authentication.
+- Any URI including the substring "=unauth.cgi=" or
+  "=securityquestions.cgi=" bypass authentication. This applies even
+  to requests of the form http://router/page.html?foo=unauth.cgi,
+  meaning that the vulnerability effectively applies to all internal
+  webpages.
 
-Many administrative pages start with the ``{\tt BRS}'' string,
-providing attackers with access to personal information such as users
-passwords, and by accessing the page
-\url{http://router/BRS_02_genieHelp.html} attackers can disable
-authentication completely and permanently across reboots.
+Many administrative pages start with the "=BRS=" string, providing
+attackers with access to personal information such as users passwords,
+and by accessing the page http://router/BRS_02_genieHelp.html
+attackers can disable authentication completely and permanently across
+reboots.
 
 * Automated Repair Method
 Our repair technique for this vulnerability consists of three stages:
@@ -146,11 +146,11 @@ Our repair technique for this vulnerability consists of three stages:
 3. Construct test cases lazily, as needed, to improve the quality of
    unsatisfactory candidate repairs (Section [[#on-demand-regression]]).
 
-The first step in repairing the \texttt{net-cgi} executable is to
+The first step in repairing the =net-cgi= executable is to
 extract it and the router file system from the firmware image
 distributed by NETGEAR.  Using the extracted files ystem and
 executable we construct a test harness that can exercise the exploits
-in \texttt{net-cgi}.  This test harness is used by the repair
+in =net-cgi=.  This test harness is used by the repair
 algorithm to evaluate candidate repairs and to identify when repairs
 to the exploits have been found.
 
@@ -160,11 +160,11 @@ to the exploits have been found.
    :END:
 NETGEAR distributes firmware with a full system image for the WNDR3700
 router, which includes the router file system that has the vulnerable
-\texttt{net-cgi} executable.  The file system was extracted using the
-\texttt{binwalk} [fn:3] firmware extraction tool, which scans the
-binary data in the raw monolothic firmware file, searching for
-signatures identifying embedded data sections, including {\tt
-squashfs} cite:lougher2006squashfs that hold the router's file system.
+=net-cgi= executable.  The file system was extracted using the
+=binwalk= [fn:3] firmware extraction tool, which scans the binary data
+in the raw monolothic firmware file, searching for signatures
+identifying embedded data sections, including =squashfs=
+cite:lougher2006squashfs that hold the router's file system.
 
 The router runs on a big-endian MIPS architecture, requiring emulation
 on most desktop system to safely reproduce the exploit and evaluate
@@ -172,19 +172,18 @@ candidate repairs. We used the QEMU system emulator
 cite:bellard2005qemu to emulate the MIPS architecture in a lightweight
 manner with Debian Linux also run in emulation.  The extracted router
 file system is copied into the emulated MIPS Linux system.  A number
-of special directories (e.g., \path{/proc/}, \path{/dev/} etc.) are
-mounted inside the extracted file system and bound to the
-corresponding directories on the virtual machine.  At this point,
-commands can be executed in an environment that closely approximates
-the execution environment of the NETGEAR router by using the
-\texttt{chroot} command to confine executable access to within the
-extracted NETGEAR file system. Additional minor adjustments are
-described in
-\url{http://eschulte.github.io/netgear-repair/INSTRUCTIONS.html}.
+of special directories (e.g., =/proc/=, =/dev/= etc.) are mounted
+inside the extracted file system and bound to the corresponding
+directories on the virtual machine.  At this point, commands can be
+executed in an environment that closely approximates the execution
+environment of the NETGEAR router by using the =chroot= command to
+confine executable access to within the extracted NETGEAR file
+system. Additional minor adjustments are described in
+http://eschulte.github.io/netgear-repair/INSTRUCTIONS.html.
 
 At this point the NETGEAR router can be run under virtualization.  In
 particular, the router's web interface can be accessed either using an
-external web browser or the \texttt{net-cgi} executable can be called
+external web browser or the =net-cgi= executable can be called
 directly from the command line.
 
 ** Automated Program Repair and ELF Files
@@ -196,11 +195,11 @@ cite:le2012representations cite:legoues2011systematicstudy to search
 for small changes to existing programs that eliminate undesired buggy
 behavior.  This process typically has access to the source code of the
 original program, which is first transformed into an abstract syntax
-tree and then iteratively modified using random \emph{mutations} and
-\emph{crossovers} to generate program variants.  Each variant is
-evaluated in a process called fitness evaluation by running it against
-the program's existing regression test suite and at least one
-additional test that demonstrates the undesired behavior.
+tree and then iteratively modified using random /mutations/ and
+/crossovers/ to generate program variants.  Each variant is evaluated
+in a process called fitness evaluation by running it against the
+program's existing regression test suite and at least one additional
+test that demonstrates the undesired behavior.
 
 The repair algorithm constructs a population of 512 program variants,
 each with one or more random mutations.  This population is evolved
@@ -210,10 +209,10 @@ original program is found that repairs the bug.  'Repair' in this
 context is defined to mean that it avoids the buggy behavior and does
 not break required functionality.  In earlier versions of the
 algorithm, execution traces were collected during program execution
-and used as a form of \emph{fault localization} to bias random
-mutations towards the parts of the program most likely to contain the
-bug.  Our decision not to use fault localization is explained in
-Section [[#no-fault-localization]].
+and used as a form of /fault localization/ to bias random mutations
+towards the parts of the program most likely to contain the bug.  Our
+decision not to use fault localization is explained in Section
+[[#no-fault-localization]].
 
 This basic repair algorithm was modified in several ways to address
 the unique scenario of a user repairing a faulty binary executable
@@ -277,17 +276,16 @@ and similarly, in linkable files the section table is required.
 
 We extend previous work that repaired unstripped Intel and ARM files
 cite:schulte2013embedded.  The ELF file is modfied by the mutation and
-crossover operations, but in this case \texttt{net-cgi} does not
-include key information on which the earlier work relied, namely the
-section table and section name string table.  This information was
-used to locate the \texttt{.text} section of the ELF file where
-program code is normally stored.  The data in the \texttt{.text}
-section were then coerced into a linear array of assembly instructions
-(the \emph{genome}) on which the mutation operations were defined.
-Our extension removes this dependence by concatenating the data of
-every section in the program table that has a ``loadable'' type to
-produce the genome.  These are the sections whose data are loaded into
-memory during program execution.
+crossover operations, but in this case =net-cgi= does not include key
+information on which the earlier work relied, namely the section table
+and section name string table.  This information was used to locate
+the =.text= section of the ELF file where program code is normally
+stored.  The data in the =.text= section were then coerced into a
+linear array of assembly instructions (the /genome/) on which the
+mutation operations were defined.  Our extension removes this
+dependence by concatenating the data of every section in the program
+table that has a "loadable" type to produce the genome.  These are the
+sections whose data are loaded into memory during program execution.
 
 Mutation operations must change program data without corrupting the
 structure of the file or breaking the many addresses hard coded into
@@ -297,7 +295,7 @@ and an address in program data, so the mutation operations are
 designed to preserve operand absolute sizes and offsets within the ELF
 program data.  This requirement is easily met because every argumented
 assembly instruction in the MIPS RISC architecture is one word long
-cite:hennessy1982mips.  ``Single point crossover'' is used to
+cite:hennessy1982mips.  "Single point crossover" is used to
 recombine two ELF files.  An offset in the program data is selected,
 then bytes from one file are taken up to that offset and bytes from
 the other file taken after that offset.  This form of crossover works
@@ -381,7 +379,7 @@ evaluation scheme to distinguish between these cases.
 Instead of relying on a pre-existing regression test suite, we assume
 only that a demonstration of the exploit provides a single available
 test.  By mutating programs without the safety net of a regression
-test suite, the evolved ``repairs'' often introduce significant
+test suite, the evolved "repairs" often introduce significant
 regressions.  However, by applying a strict minimization process after
 the primary repair is identified, these regressions are usually
 removed (Section [[#minimization]]).  The minimization reduces the
@@ -449,9 +447,9 @@ tests.
 \end{algorithmic}
 #+END_LaTeX
 
-The \texttt{evolutionarySubroutine} in Figure [[lazy-algorithm]] is
-organized similarly to previous work cite:genprog-tse-journal, but it
-uses a \emph{steady state} evolutionary computational algorithm
+The =evolutionarySubroutine= in Figure [[lazy-algorithm]] is organized
+similarly to previous work cite:genprog-tse-journal, but it uses a
+/steady state/ evolutionary computational algorithm
 cite:Luke2013Metaheuristics for reduced memory usage and ease of
 parallelization of fitness evaluation.  Figure [[evolutionary-subroutine]]
 gives the high-level pseudocode.
@@ -519,9 +517,9 @@ gives the high-level pseudocode.
 #+END_LaTeX
 
 Note that every time the user rejects the solution returned by
-\texttt{evolutionarySubroutine}, the evolved and minimized solution is
+=evolutionarySubroutine=, the evolved and minimized solution is
 discarded and a new population is generated by recopying the original
-in \texttt{evolutionarySubroutine}.
+in =evolutionarySubroutine=.
 
 * Repairing the NETGEAR Exploits
   :PROPERTIES:
@@ -546,25 +544,24 @@ experiments (Section [[#parameters]]}).
     :CUSTOM_ID: fitness-evaluation
     :END:
 We used 32 QEMU virtual machines, each running Debian Linux with the
-NETGEAR router firmware environment available inside of a
-\texttt{chroot}.  The repair algorithm uses 32 threads for parallel
-fitness evaluation.  Each thread is paired with a single QEMU VM on
-which it tests fitness.
+NETGEAR router firmware environment available inside of a =chroot=.
+The repair algorithm uses 32 threads for parallel fitness evaluation.
+Each thread is paired with a single QEMU VM on which it tests fitness.
 
 The test framework includes both a host and a guest test script.  The
 host script runs on the server performing repair and the guest script
 runs in a MIPS virtual machine.  The host script copies a variant of
-the \texttt{net-cgi} executable to the guest VM where the guest test
-script executes \texttt{net-cgi} the command line and reports a result
-of {\sc Pass}, {\sc Fail}, or {\sc Error} for each test.  These values
-are then used to calculate the variant's scalar fitness.
+the =net-cgi= executable to the guest VM where the guest test script
+executes =net-cgi= the command line and reports a result of =Pass=,
+=Fail=, or =Error= for each test.  These values are then used to
+calculate the variant's scalar fitness.
 
-{\sc Pass} indicates that the program completed successfully and
-produced the correct result, {\sc Fail} indicates that the program
-completed successfully but produced an incorrect result, and {\sc
-Error} indicates that the program execution did not complete
-successfully due to early termination (e.g., because of a segfault) or
-by a non-zero ``errno'' exit value.
+=Pass= indicates that the program completed successfully and produced
+the correct result, =Fail= indicates that the program completed
+successfully but produced an incorrect result, and =Error= indicates
+that the program execution did not complete successfully due to early
+termination (e.g., because of a segfault) or by a non-zero "errno"
+exit value.
 
 *** Repair Parameters
     :PROPERTIES:
@@ -584,8 +581,8 @@ cite:le2012representations).  Specifically, we use larger populations
 (512 instead of 40 individuals), running for many more fitness
 evaluations ($\leq$100,000 instead of $\leq$400).  However, the parameters
 used here are in line with those used in other EC publications given
-the size of the \texttt{net-cgi} binary, and they help compensate for
-the lack of fault localization information.
+the size of the =net-cgi= binary, and they help compensate for the
+lack of fault localization information.
 
 The increased memory required by the larger population size is offset
 by the use of a steady-state cite:Luke2013Metaheuristics EC algorithm,
@@ -694,19 +691,19 @@ unable to repair the NETGEAR bugs.
     :CUSTOM_ID: minimization
     :END:
 
-In some cases the initial suggested repair, known as the
-\emph{primary} repair, was not satisfactory.  For example, suggested
-repairs sometimes worked when \texttt{net-cgi} was called directly on
-the command line but not through the embedded uHTTPd webserver [fn:6],
-or the repaired file failed to serve pages not used in the exploit
-test.  However, Table [[minimized-stats]] shows that in most cases the
-minimized version of the repair was satisfactory, successfully passing
-all hand-written regression tests, even those not used during the
-repair process.
+In some cases the initial suggested repair, known as the /primary/
+repair, was not satisfactory.  For example, suggested repairs
+sometimes worked when =net-cgi= was called directly on the command
+line but not through the embedded uHTTPd webserver [fn:6], or the
+repaired file failed to serve pages not used in the exploit test.
+However, Table [[minimized-stats]] shows that in most cases the minimized
+version of the repair was satisfactory, successfully passing all
+hand-written regression tests, even those not used during the repair
+process.
 
 #+label: minimized-stats
 #+name: minimized-stats
-#+Caption: The evolved repair before and after minimization.  In these columns ``Full'' refers to evolved solutions before minimization and ``Min'' refers to solutions after.  Columns labeled ``Diff'' report the number of unified diff windows against the original program data. The columns labeled ``Fit'' report fitness as measured with a full regression test suite, including the exploit tests.  The maximum possible fitness score is 22, indicating a successful repair.
+#+Caption: The evolved repair before and after minimization.  In these columns "Full" refers to evolved solutions before minimization and "Min" refers to solutions after.  Columns labeled "Diff" report the number of unified diff windows against the original program data. The columns labeled "Fit" report fitness as measured with a full regression test suite, including the exploit tests.  The maximum possible fitness score is 22, indicating a successful repair.
 |  Run | Fit Evals | Full Diff | Min Diff | Full Fit | Min Fit |
 |------+-----------+-----------+----------+----------+---------|
 |    0 |     90405 |       500 |        2 |        8 |      22 |
@@ -738,7 +735,7 @@ eliminates these edits.
     :END:
 The NETGEAR repairs required two distinct modifications, addressing
 two different exploits in a single evolutionary run.  This is an
-instance of ``iterative repair,'' which has not previously been
+instance of "iterative repair," which has not previously been
 demonstrated in real-world software.
 
 * Related Work
@@ -777,8 +774,8 @@ generalize.  However, our results do not appear to be based on any
 property unique to the NETGEAR exploits.  We conjecture that our
 success at finding functional repairs in this setting is due to the
 beneficial impact of minimization and to a property of software known
-as \emph{mutational robustness} cite:schulte2013software.  Across a
-wide variety of software, this work found that the functionality of
+as /mutational robustness/ cite:schulte2013software.  Across a wide
+variety of software, this work found that the functionality of
 software mutants differs by only about 60% between software tested
 with an empty regression test suites and software tested with the best
 obtainable quality regression test suites.  A second caveat arises
@@ -804,7 +801,7 @@ cite:brumley2008automatic.  As shown in Table [[minimized-stats]] our
 technique sometimes generates patches that are not directly relevant
 to the repaired exploit.  It may be possible to avoid this risk by
 generating obfuscated patches in cases where a regression test suite
-\emph{is} available minimization is not performed.
+/is/ available minimization is not performed.
 
 * Conclusion
 The paper described a method that enables end users to repair
@@ -834,11 +831,11 @@ repair algorithm. Partial support of this work provided by NSF
 
 [fn:4] When the fitness of all variants in the population has been
   evaluated, the fitness values are used to select one individual for
-  subsequent modifications in the next generation.  We use
-  \emph{tournament selection} where each tournament chooses a subset
-  of two (the tournament size) randomly from the population and the
-  individual with higher fitness wins the tournament and is copied
-  into the population.
+  subsequent modifications in the next generation.  We use /tournament
+  selection/ where each tournament chooses a subset of two (the
+  tournament size) randomly from the population and the individual
+  with higher fitness wins the tournament and is copied into the
+  population.
 
 [fn:5] https://github.com/eschulte/netgear-repair/blob/master/bin/test-cgi
 
