@@ -521,8 +521,7 @@
  <g> 
  <g transform="matrix(1.0,0.0,0.0,1.0,-102.37213,33.06592)"> 
  <g fill="rgb(0.0%,0.0%,0.0%)"> 
- <text style="stroke:none" transform="scale(1,-1) translate(17.0139,0)" text-anchor="middle"  font-size="10"> 
-Replace</text> 
+ <text style="stroke:none" transform="scale(1,-1) translate(17.0139,0)" text-anchor="middle"  font-size="10">Replace</text> 
 </g> 
  </g> 
  </g> 
@@ -616,8 +615,7 @@ Replace</text>
  <g> 
  <g transform="matrix(1.0,0.0,0.0,1.0,-13.81946,32.0937)"> 
  <g fill="rgb(0.0%,0.0%,0.0%)"> 
- <text style="stroke:none" transform="scale(1,-1) translate(13.81946,0)" text-anchor="middle"  font-size="10"> 
-Delete</text> 
+ <text style="stroke:none" transform="scale(1,-1) translate(13.81946,0)" text-anchor="middle"  font-size="10">Delete</text> 
 </g> 
  </g> 
  </g> 
@@ -660,8 +658,7 @@ Delete</text>
  <g> 
  <g transform="matrix(1.0,0.0,0.0,1.0,73.83043,33.12148)"> 
  <g fill="rgb(0.0%,0.0%,0.0%)"> 
- <text style="stroke:none" transform="scale(1,-1) translate(11.5278,0)" text-anchor="middle"  font-size="10"> 
-Swap</text> 
+ <text style="stroke:none" transform="scale(1,-1) translate(11.5278,0)" text-anchor="middle"  font-size="10">Swap</text> 
 </g> 
  </g> 
  </g> 
@@ -818,8 +815,7 @@ Swap</text>
  <g> 
  <g transform="matrix(1.0,0.0,0.0,1.0,-45.01395,-51.78622)"> 
  <g fill="rgb(0.0%,0.0%,0.0%)"> 
- <text style="stroke:none" transform="scale(1,-1) translate(45.01395,0)" text-anchor="middle"  font-size="10"> 
-One Point Crossover</text> 
+ <text style="stroke:none" transform="scale(1,-1) translate(45.01395,0)" text-anchor="middle"  font-size="10">One Point Crossover</text> 
 </g> 
  </g> 
  </g> 

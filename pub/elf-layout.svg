@@ -22,8 +22,7 @@
  <g> 
  <g transform="matrix(1.0,0.0,0.0,1.0,-26.88893,43.47462)"> 
  <g fill="rgb(0.0%,0.0%,0.0%)"> 
- <text style="stroke:none" transform="scale(1,-1) translate(26.88893,0)" text-anchor="middle"  font-size="10"> 
-ELF Header</text> 
+ <text style="stroke:none" transform="scale(1,-1) translate(26.88893,0)" text-anchor="middle"  font-size="10">ELF Header</text> 
 </g> 
  </g> 
  </g> 
@@ -37,8 +36,7 @@ ELF Header</text>
  <g> 
  <g transform="matrix(1.0,0.0,0.0,1.0,-29.58337,24.98053)"> 
  <g fill="rgb(0.0%,0.0%,0.0%)"> 
- <text style="stroke:none" transform="scale(1,-1) translate(29.58337,0)" text-anchor="middle"  font-size="10"> 
-Section Table</text> 
+ <text style="stroke:none" transform="scale(1,-1) translate(29.58337,0)" text-anchor="middle"  font-size="10">Section Table</text> 
 </g> 
  </g> 
  </g> 
@@ -77,8 +75,7 @@ Section Data</text>
  <g> 
  <g transform="matrix(1.0,0.0,0.0,1.0,-32.73618,-45.17911)"> 
  <g fill="rgb(0.0%,0.0%,0.0%)"> 
- <text style="stroke:none" transform="scale(1,-1) translate(32.73618,0)" text-anchor="middle"  font-size="10"> 
-Program Table</text> 
+ <text style="stroke:none" transform="scale(1,-1) translate(32.73618,0)" text-anchor="middle"  font-size="10">Program Table</text> 
 </g> 
  </g> 
  </g> 
@@ -93,8 +90,7 @@ Program Table</text>
  <g> 
  <g transform="matrix(1.0,0.0,0.0,1.0,-99.33047,24.98053)"> 
  <g fill="rgb(0.0%,0.0%,0.0%)"> 
- <text style="stroke:none" transform="scale(1,-1) translate(13.97224,0)" text-anchor="middle"  font-size="10"> 
-Linker</text> 
+ <text style="stroke:none" transform="scale(1,-1) translate(13.97224,0)" text-anchor="middle"  font-size="10">Linker</text> 
 </g> 
  </g> 
  </g> 
@@ -110,8 +106,7 @@ Linker</text>
  <g> 
  <g transform="matrix(1.0,0.0,0.0,1.0,67.28874,-45.12355)"> 
  <g fill="rgb(0.0%,0.0%,0.0%)"> 
- <text style="stroke:none" transform="scale(1,-1) translate(18.06949,0)" text-anchor="middle"  font-size="10"> 
-Memory</text> 
+ <text style="stroke:none" transform="scale(1,-1) translate(18.06949,0)" text-anchor="middle"  font-size="10">Memory</text> 
 </g> 
  </g> 
  </g> 
