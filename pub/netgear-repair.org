@@ -41,7 +41,7 @@ Security bugs are particularly problematic, especially because major
 software vendors commonly delay releasing patches to security
 exploits.  In a study of high and medium risk vulnerabilities in
 Microsoft and Apple products between 2002 and 2008, for example, about
-10\% of vulnerabilities were found not to be patched within 150 days
+10% of vulnerabilities were found not to be patched within 150 days
 of disclosure, and on any given date about 10 vulnerabilities and over
 20 vulnerabilities were public and un-patched for Microsoft and Apple
 respectively cite:frei20080.
@@ -89,8 +89,7 @@ The main  contributions of this short paper are;
 
 To encourage reproducible research cite:buckheit1995wavelab
 cite:mesirov2010accessible and to allow others to patch future
-exploits, we have published a companion open source
-repository.\footnote{\url{https://github.com/eschulte/netgear-repair}}
+exploits, we have published a companion open source repository [fn:1].
 It contains the instructions, source code, and tooling needed to
 extract, execute and repair the binary NETGEAR router image
 vulnerabilities, as well as the data used to generate the analyses and
@@ -116,8 +115,7 @@ implications and limitations (Section \ref{sec:discussion}).
 
 We describe two current exploits in version 4 of the NETGEAR WNDR3700
 wireless router. The popularity of this router implies that vulnerable
-systems are currently widespread. For example, the
-``shodan''\footnote{\url{http://www.shodanhq.com/search?q=wndr3700v4+http}}
+systems are currently widespread. For example, the ``shodan'' [fn:2]
 device search engine returned hundreds of vulnerable publicly
 accessible WNDR3700 routers at the time of writing.  Both exploits
 exist in the router's internal web server in a binary executable named
@@ -161,11 +159,10 @@ to the exploits have been found.
 NETGEAR distributes firmware with a full system image for the WNDR3700
 router, which includes the router file system that has the vulnerable
 \texttt{net-cgi} executable.  The file system was extracted using the
-\texttt{binwalk}\footnote{\url{http://binwalk.org}} firmware
-extraction tool, which scans the binary data in the raw monolothic
-firmware file, searching for signatures identifying embedded data
-sections, including {\tt squashfs} cite:lougher2006squashfs that hold
-the router's file system.
+\texttt{binwalk} [fn:3] firmware extraction tool, which scans the
+binary data in the raw monolothic firmware file, searching for
+signatures identifying embedded data sections, including {\tt
+squashfs} cite:lougher2006squashfs that hold the router's file system.
 
 The router runs on a big-endian MIPS architecture, requiring emulation
 on most desktop system to safely reproduce the exploit and evaluate
@@ -399,7 +396,7 @@ Debugging.  In a third step, the user evaluates its suitability.  If
 the repair is accepted, the process terminates. Otherwise, the user
 supplies a new regression test that the repair fails (a witness to its
 unsuitability) and the process repeats.  In Section
-\ref{repair-demonstration} we find that 80\% of our attempts to repair
+\ref{repair-demonstration} we find that 80% of our attempts to repair
 the NETGEAR WNDR3700 exploits did not require any user-written
 regression tests.
 
@@ -572,17 +569,11 @@ by a non-zero ``errno'' exit value.
     :CUSTOM_ID: parameters
     :END:
 Repair used the following parameters.  The maximum population size was
-512 individuals, selection is performed using a tournament size of two
-\footnote{When the fitness of all variants in the population has been
-  evaluated, the fitness values are used to select one individual for
-  subsequent modifications in the next generation.  We use
-  \emph{tournament selection} where each tournament chooses a subset
-  of two (the tournament size) randomly from the population and the
-  individual with higher fitness wins the tournament and is copied
-  into the population.}.  When the population overflows the maximum
-population size, an individual is selected for eviction using
-tournament selection in reverse.  Newly generated individuals undergo
-crossover two-thirds of the time.
+512 individuals, selection is performed using a tournament size of
+two [fn:4].  When the population overflows the maximum population
+size, an individual is selected for eviction using tournament
+selection in reverse.  Newly generated individuals undergo crossover
+two-thirds of the time.
 
 These parameters differ significantly from those used in previous
 evolutionary computation (EC) repair algorithms (e.g.,
@@ -669,8 +660,8 @@ repair process (Section \ref{iterative-repair}).
 In 8 of the 10 runs of the algorithm (with random restarts), the three
 exploit tests alone were sufficient to generate a satisfactory repair
 (determined using a withheld regression test suite hand-written by the
-authors\footnote{\url{https://github.com/eschulte/netgear-repair/blob/master/bin/test-cgi}}),
-and the third phase of user-generated tests was not required.
+authors [fn:5]), and the third phase of user-generated tests was not
+required.
 
 In these cases the repair process took an average of ~36,000 total fitness
 evaluations requiring on average 86.6 minutes to find a repair using 32
@@ -700,16 +691,16 @@ unable to repair the NETGEAR bugs.
     :PROPERTIES:
     :CUSTOM_ID: minimization
     :END:
+
 In some cases the initial suggested repair, known as the
 \emph{primary} repair, was not satisfactory.  For example, suggested
 repairs sometimes worked when \texttt{net-cgi} was called directly on
-the command line but not through the embedded $\mu$HTTPd
-webserver,\footnote{\url{http://wiki.openwrt.org/doc/uci/uhttpd}} or
-the repaired file failed to serve pages not used in the exploit test.
-However, Table \ref{minimized-stats} shows that in most cases the
-minimized version of the repair was satisfactory, successfully passing
-all hand-written regression tests, even those not used during the
-repair process.
+the command line but not through the embedded uHTTPd webserver [fn:6],
+or the repaired file failed to serve pages not used in the exploit
+test.  However, Table \ref{minimized-stats} shows that in most cases
+the minimized version of the repair was satisfactory, successfully
+passing all hand-written regression tests, even those not used during
+the repair process.
 
 #+label: minimized-stats
 #+Caption: The evolved repair before and after minimization.  In these columns ``Full'' refers to evolved solutions before minimization and ``Min'' refers to solutions after.  Columns labeled ``Diff'' report the number of unified diff windows against the original program data. The columns labeled ``Fit'' report fitness as measured with a full regression test suite, including the exploit tests.  The maximum possible fitness score is 22, indicating a successful repair.
@@ -785,7 +776,7 @@ success at finding functional repairs in this setting is due to the
 beneficial impact of minimization and to a property of software known
 as \emph{mutational robustness} cite:schulte2013software.  Across a
 wide variety of software, this work found that the functionality of
-software mutants differs by only about 60\% between software tested
+software mutants differs by only about 60% between software tested
 with an empty regression test suites and software tested with the best
 obtainable quality regression test suites.  A second caveat arises
 from the fact that the NETGEAR exploit occured in a web interface
@@ -830,3 +821,23 @@ repair algorithm. Partial support of this work provided by NSF
 (SHF-0905236), DARPA (P-1070-113237), and the Santa Fe Institute.
 
 #+BIBLIOGRAPHY: netgear-repair plain
+* Footnotes
+
+[fn:1] https://github.com/eschulte/netgear-repair
+
+[fn:2] http://www.shodanhq.com/search?q=wndr3700v4+http
+
+[fn:3] http://binwalk.org
+
+[fn:4] When the fitness of all variants in the population has been
+  evaluated, the fitness values are used to select one individual for
+  subsequent modifications in the next generation.  We use
+  \emph{tournament selection} where each tournament chooses a subset
+  of two (the tournament size) randomly from the population and the
+  individual with higher fitness wins the tournament and is copied
+  into the population.
+
+[fn:5] https://github.com/eschulte/netgear-repair/blob/master/bin/test-cgi
+
+[fn:6] http://wiki.openwrt.org/doc/uci/uhttpd
+
