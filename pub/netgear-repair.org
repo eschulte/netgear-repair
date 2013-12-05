@@ -248,8 +248,8 @@ sections from disk into memory for program execution.
   \node[minimum width=8em] (body3) at (0,-0.75) {...};
   \node[minimum width=8em] (pt) at (0,-1.5) {Program Table};
   % External Users
-  \node[draw, ellipse, fill=blue!20, minimum height=3em, minimum width=6em] (linker) at (-3,1) {Linker};
-  \node[draw, ellipse, fill=red!20, minimum height=3em, minimum width=6em]  (memory) at (3,-1.5) {Memory};
+  \node[draw, circle, fill=blue!20, minimum height=3em, minimum width=6em] (linker) at (-3,1) {Linker};
+  \node[draw, circle, fill=red!20, minimum height=3em, minimum width=6em]  (memory) at (3,-1.5) {Memory};
   % Arrows to Users
   \draw[->,thick] (st.west) to (linker.east);
   \draw[->,thick] (pt.east) to (memory.west);
@@ -266,7 +266,7 @@ sections from disk into memory for program execution.
 
 #+label: elf
 #+Caption: Sections and their uses in an Executable and Linking Format (ELF) file.
-#+RESULTS[75b5a02e02c91a44b8d13b3bae26ba9e4b2f86fb]: ELF-layout
+#+RESULTS[33df85c147c38d383099d97afa3de566d50a1fb2]: ELF-layout
 [[file:elf-layout.svg]]
 
 Although the majority of ELF files include all three of the elements
@@ -579,10 +579,10 @@ evolutionary computation (EC) repair algorithms (e.g.,
 cite:forrest2009genetic cite:legoues2011systematicstudy
 cite:le2012representations).  Specifically, we use larger populations
 (512 instead of 40 individuals), running for many more fitness
-evaluations ($\leq$100,000 instead of $\leq$400).  However, the parameters
-used here are in line with those used in other EC publications given
-the size of the =net-cgi= binary, and they help compensate for the
-lack of fault localization information.
+evaluations (\leq100,000 instead of \leq400).  However, the parameters used
+here are in line with those used in other EC publications given the
+size of the =net-cgi= binary, and they help compensate for the lack of
+fault localization information.
 
 The increased memory required by the larger population size is offset
 by the use of a steady-state cite:Luke2013Metaheuristics EC algorithm,
@@ -610,7 +610,7 @@ can be discovered iteratively by the repair process (Section
 
 #+name: edit-locations
 #+header: :file (by-backend (latex "ts-cov-and-runtime-w-min.tex") (t "ts-cov-and-runtime-w-min.svg"))
-#+begin_src gnuplot
+#+begin_src gnuplot :cache yes
   set title "Modified Locations vs. Execution Trace Locations"
   set ylabel "Offset in Process Memory Address Range"
   set xlabel "Execution Runtime (Sec.)"
@@ -653,7 +653,7 @@ can be discovered iteratively by the repair process (Section
 
 #+label: ts-cov-rt-w-min
 #+Caption: Code modifications occur in different locations from execution traces: The location of every edit in a minimized successful repair is plotted as a horizontal line.  Only 2 of the 22 minimized edit locations are within 3 bytes of a sample from any test suite execution.  Each vertical column shows points of execution traces from one test suite.  Test suites shown from left to right are 3 tests (exploit tests only), 4, 7, and 11 tests (all exploit and author-generated regression tests), with 330, 399, 518, and 596 sampled execution locations respectively.Code modifications occur in different locations from execution traces: The location of every edit in a minimized successful repair is plotted as a horizontal line.  Only 2 of the 22 minimized edit locations are within 3 bytes of a sample from any test suite execution.  Each vertical column shows points of execution traces from one test suite.  Test suites shown from left to right are 3 tests (exploit tests only), 4, 7, and 11 tests (all exploit and author-generated regression tests), with 330, 399, 518, and 596 sampled execution locations respectively.
-#+RESULTS: edit-locations
+#+RESULTS[cdc786dc5376b6234e59ac93954837065814cc07]: edit-locations
 [[file:ts-cov-and-runtime-w-min.svg]]
 
 In 8 of the 10 runs of the algorithm (with random restarts), the three
