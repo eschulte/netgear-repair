@@ -1,6 +1,8 @@
+*~
 *.aux
 *.bbl
 *.blg
+*.dvi
 *.log
 *.out
 *.pdf
@@ -8,3 +10,4 @@
 
 *.html
 *.svg
+*.txt

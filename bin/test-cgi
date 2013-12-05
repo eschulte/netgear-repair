@@ -1,8 +1,32 @@
 #!/bin/bash
 #
-# Usage: test
-# run all tests and return the number of tests passed
+# Usage: test [TESTS...]
+# run tests and return the number of tests passed
 #
+# Optional arguments TESTS... should be the names of those tests which
+# should be run.  Default behavior is to run all tests.
+#
+# Tests:
+#  advanced.js
+#  logo.jpg
+#  center_language.html
+#  Add_WPS_Client.htm
+#  base.gif
+#  dtree.css
+#  securityquestions.cgi
+#  unauth.cgi
+#  unauth.cgi-authentication
+#  securityquestions.cgi-authentication
+#  BRS-authentication
+#
+if [ ${#@} -eq 0 ];then
+    declare -a TESTS=(advanced.js logo.jpg center_language.html Add_WPS_Client.htm base.gif dtree.css securityquestions.cgi unauth.cgi unauth.cgi-authentication securityquestions.cgi-authentication BRS-authentication)
+else
+    declare -a TESTS=( "$@" )
+fi
+
+should_run(){
+    echo "${TESTS[@]}"|tr ' ' '\n'|grep "^$1\$" >/dev/null 2>/dev/null; }
 
 ## Ensure everything is setup
 if [ ! -f /root/squashfs-root/proc/mounts ];then
@@ -30,16 +54,35 @@ serve(){
         timeout 10 /root/bin/call-cgi \
         chroot squashfs-root /usr/sbin/net-cgi; }
 
-declare -a PASSED
+declare -a ERRORED
 declare -a FAILED
+declare -a PASSED
 exit_hook(){
-    for failed in ${FAILED[@]};do echo "FAIL $failed"; done >&2
-    for passed in ${PASSED[@]};do echo "PASS $passed"; done;
+    for errored in ${ERRORED[@]};do echo "ERROR $errored"; done
+    for failed  in ${FAILED[@]};do echo "FAIL $failed"; done
+    for passed  in ${PASSED[@]};do echo "PASS $passed"; done
     killall -s 9 -q net-cgi;
     exec 0>&-
     exec 1>&-
     exec 2>&-; }
 trap exit_hook EXIT
+
+check(){
+    local file="$1";
+    local return="$2";
+    local served="$3";
+    local code="$4";
+    local should="$5";
+    if [ $return -eq 0 ];then
+        if $(contains "$served" "$code") && \
+            $(contains "$served" "$should");then
+            PASSED+=($file)
+        else
+            FAILED+=($file)
+        fi
+    else
+        ERRORED+=($file)
+    fi; }
 
 ## Setup
 chroot squashfs-root/ /bin/config set dns_hijack="0"
@@ -55,6 +98,7 @@ chroot squashfs-root/ /bin/config set dns_hijack="0"
 # jpg
 # js
 declare -A FILES
+FILES[unauth.cgi]="Connection: close"
 FILES[securityquestions.cgi]="<TD nowrap align=\"right\">Security Question #2\*:</TD>"
 FILES[dtree.css]="PADDING-RIGHT: 2px; PADDING-LEFT: 2px;"
 FILES[base.gif]="GIF89"
@@ -67,14 +111,9 @@ FILES[advanced.js]="change_menu_height();"
 chroot squashfs-root/ /bin/config set hijack_process="0"
 
 for file in ${!FILES[@]};do
-    served=$(serve "$file")
-    return=$?
-    if [ $return -eq 0 ] && \
-        $(contains "$served" "200 OK") && \
-        $(contains "$served" "$FILES[file]");then
-        PASSED+=($file)
-    else
-        FAILED+=($file)
+    if should_run $file;then
+        served=$(serve "$file")
+        check "$file" $? "$served" "200 OK" "$FILES[file]"
     fi
 done
 
@@ -84,28 +123,18 @@ done
 chroot squashfs-root/ /bin/config set hijack_process="3"
 
 # 1. no authentication for BRS_* files
-
-served=$(serve BRS_01_checkNet.html)
-return=$?
-if [ $return -eq 0 ] && \
-    $(contains "$served" "401 Unauthorized") && \
-    $(contains "$served" "unauth.cgi");then
-    PASSED+=("BRS-authentication")
-else
-    FAILED+=("BRS-authentication")
+if should_run "BRS-authentication";then
+    served=$(serve BRS_01_checkNet.html)
+    check "BRS-authentication" $? "$served" "401 Unauthorized" "unauth.cgi"
 fi
 
 # 2. no authentication if unauth.cgi or securityquestions.cgi are in
 #    the query string, e.g., /protected_page.htm?foo=unauth.cgi
 
 for cheat in unauth.cgi securityquestions.cgi;do
-    served=$(serve "center_language.html" "foo=$cheat")
-    return=$?
-    if [ $return -eq 0 ] && \
-        $(contains "$served" "401 Unauthorized") && \
-        $(contains "$served" "unauth.cgi");then
-        PASSED+=("${cheat}-authentication")
-    else
-        FAILED+=("${cheat}-authentication")
+    name="${cheat}-authentication"
+    if should_run $name;then
+        served=$(serve "center_language.html" "foo=$cheat")
+        check $name $? "$served" "401 Unauthorized" "unauth.cgi"
     fi
 done

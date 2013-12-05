@@ -2,5 +2,6 @@ sh-runner
 debian-qemu
 stuff
 checkpoints
+results
 
 **.fasl

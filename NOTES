@@ -267,7 +267,294 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes
+* Notes [6/8]
+** very similar and timely bug in D-Link routers
+http://www.devttys0.com/2013/10/reverse-engineering-a-d-link-backdoor/
+
+** TODO writing
+** DONE lazy regression testing
+What if we don't write any regression test?
+
+pseudocode
+: # Input: Vulnerable Program, original: ELF
+: # Input: Exploit Test, exploit: ELF -> Fitness
+: # Input: Interactive Check, good-enough: ELF -> [ELF -> Fitness]
+: # Parameters: pop-size, cross-rate, tournament-size
+: # Output: Patched version of Program
+: pop <- pop-size copies of original
+: new <- null
+: fitness <- null
+: target-fitness <- null
+: suite <- [exploit]
+: do
+:   target-fitness <- length(suite)
+:   new <- minimize(genprog_repair(pop, target-fitness))
+:   # User evaluates suitability of candidate repair
+:   new-regression-tests <- good-enough(new)
+:   suite <- suite ++ new-regression-tests
+: until length(new-regression-tests) == 0
+
+When starting the subsequent rounds, should we keep the results from
+the first round?  No, not now.  Future work could incorporate
+information from the first round pick, maybe use it as fault
+localization information.
+
+** TODO evaluate lazy regression testing [4/4]
+*** DONE Diffs and fitnesses
+#+name: full-min-tbl
+#+begin_src lisp :colnames '(id evals full-diff min-diff full-fit min-fit)
+  (mapcar #'list
+          (loop :for i :below 10 :collect i)
+          1-fix-evals
+          1-diff-sizes
+          1-min-dif-sizes
+          1-full-fitnesses
+          1-full-min-fitnesses)
+#+end_src
+
+#+RESULTS: full-min-tbl
+| id | evals | full-diff | min-diff | full-fit | min-fit |
+|----+-------+-----------+----------+----------+---------|
+|  0 | 90405 |       500 |        2 |        8 |      22 |
+|  1 | 17231 |       134 |        3 |       22 |      22 |
+|  2 | 26879 |       205 |        2 |       21 |      22 |
+|  3 | 23764 |       199 |        2 |       19 |      22 |
+|  4 | 47906 |       319 |        2 |        6 |       6 |
+|  5 | 13102 |        95 |        2 |       16 |      22 |
+|  6 | 76960 |       556 |        3 |       17 |      22 |
+|  7 | 11831 |        79 |        3 |       20 |      22 |
+|  8 |  2846 |        10 |        1 |       14 |      14 |
+|  9 | 25600 |       182 |        2 |       21 |      22 |
+
+**** mean executions per success
+#+begin_src sh :var TBL=full-min-tbl
+echo "$TBL"|grep 22|cut -f2|mean|tail -1
+#+end_src
+
+*** DONE Run Times of different Test Sizes
+#+RESULTS: runtime-by-suite-size
+|  3 | 3297.119 |
+|  4 | 3758.629 |
+|  7 | 5766.221 |
+| 11 | 7852.544 |
+
+#+name: runtime-by-suite-size
+#+begin_src lisp
+  (let ((test-suites '(("BRS-authentication"
+                        "securityquestions.cgi-authentication"
+                        "unauth.cgi-authentication")
+                       ("center_language.html"
+                        "BRS-authentication"
+                        "securityquestions.cgi-authentication"
+                        "unauth.cgi-authentication")
+                       ("advanced.js"
+                        "center_language.html"
+                        "base.gif"
+                        "securityquestions.cgi"
+                        "BRS-authentication"
+                        "securityquestions.cgi-authentication"
+                        "unauth.cgi-authentication")
+                       ("advanced.js"
+                        "logo.jpg"
+                        "center_language.html"
+                        "Add_WPS_Client.htm"
+                        "base.gif"
+                        "dtree.css"
+                        "securityquestions.cgi"
+                        "unauth.cgi"
+                        "unauth.cgi-authentication"
+                        "securityquestions.cgi-authentication"
+                        "BRS-authentication"))))
+    ,#+(or )
+    (make-thread (lambda ()
+                   (defvar runtimes
+                     (mapcar
+                      (lambda (my-tests)
+                        (setf tests my-tests)
+                        (let ((start (get-internal-real-time)))
+                          (loop :for i :below 1000 :do
+                             (test (mutate (copy orig))))
+                          (/ (- (get-internal-real-time) start)
+                             internal-time-units-per-second)))
+                      test-suites))
+                   (store (mapcar #'list runtimes) "runtimes.store"))
+                 :name "getter-of-runtimes")
+    
+    (mapcar #'list (mapcar #'length test-suites) (mapcar #'float runtimes)))
+#+end_src
+
+**** taken from actual runs (too noisy)
+file:bin/time-difference
+
+| checkpoints/interactive/1-0/ |  527.582 |
+| checkpoints/interactive/1-1/ |  341.947 |
+| checkpoints/interactive/1-2/ |  362.216 |
+| checkpoints/interactive/1-3/ |  345.636 |
+| checkpoints/interactive/1-4/ |   350.04 |
+| checkpoints/interactive/1-5/ |   361.85 |
+| checkpoints/interactive/1-6/ |  367.388 |
+| checkpoints/interactive/1-7/ |  280.048 |
+| checkpoints/interactive/1-8/ |  243.022 |
+| checkpoints/interactive/1-9/ |   709.74 |
+|------------------------------+----------|
+|                              | 388.9469 |
+#+TBLFM: @11$2=vmean(@1..@-1)
+
+| checkpoints/interactive/2-0/ | 325.979 |
+| checkpoints/interactive/2-1/ | 161.721 |
+| checkpoints/interactive/2-2/ | 165.547 |
+|------------------------------+---------|
+|                              | 217.749 |
+#+TBLFM: @4$2=vmean(@1..@-1)
+
+**** totals from actual runs
+
+#+RESULTS:
+| checkpoints/interactive/1-0/     |    10258 |
+| checkpoints/interactive/1-2/     |     4278 |
+| checkpoints/interactive/1-3/     |     4102 |
+| checkpoints/interactive/1-5/     |     2141 |
+| checkpoints/interactive/1-6/     |    12540 |
+| checkpoints/interactive/1-7/     |     2496 |
+| checkpoints/interactive/1-9/     |     2152 |
+| checkpoints/interactive/1-extra/ |     3616 |
+|----------------------------------+----------|
+|                                  | 86.63125 |
+#+TBLFM: @9$2=vmean(@1..@-1)/60
+*** DONE Coverage and Runtime with Minimized Edits
+- label with size of suite and number of samples
+- horizontal lines for minimized edit locations
+
+#+begin_src gnuplot :file "stuff/ts-cov-and-runtime-w-min.tex"
+  set term tikz
+  set title "Modified Locations vs. Execution Trace Locations"
+  set ylabel "Offset in Process Memory Address Range"
+  set xlabel "Execution Runtime (Sec.)"
+  set yrange [0:441276]
+  set xrange [3:8]
+  set key at 8,400000
+  # label traces
+  # set label "3 tests\n330 samples" at 3.297, 400000
+  # set label "4 tests\n399 samples" at 4.458, 400000
+  # set label "7 tests\n518 samples" at 5.766, 400000
+  # set label "11 tests\n596 samples" at 6.853, 400000
+  # set arrow from 3.297,375000 to 3.297,350000
+  # set arrow from 4.458,375000 to 3.758,350000
+  # set arrow from 5.766,375000 to 5.766,350000
+  # set arrow from 6.853,375000 to 7.853,350000
+  plot "results/suite-coverage/coverage-by-runtime.txt" title "Execution Traces", \
+       325719 lt 2 title "\nMinimized Patch Location", \
+       329309 lt 2 notitle, \
+       33186  lt 2 notitle, \
+       33187  lt 2 notitle, \
+       33188  lt 2 notitle, \
+       33189  lt 2 notitle, \
+       33190  lt 2 notitle, \
+       33191  lt 2 notitle, \
+       332188 lt 2 notitle, \
+       332588 lt 2 notitle, \
+       17274  lt 2 notitle, \
+       329308 lt 2 notitle, \
+       17610  lt 2 notitle, \
+       17608  lt 2 notitle, \
+       426575 lt 2 notitle, \
+       83238  lt 2 notitle, \
+       292601 lt 2 notitle, \
+       32519  lt 2 notitle, \
+       83389  lt 2 notitle, \
+       426593 lt 2 notitle, \
+       30303  lt 2 notitle, \
+       426574 lt 2 notitle
+#+end_src
+
+#+RESULTS:
+[[file:stuff/ts-cov-and-runtime-w-min.tex]]
+
+Print gnuplot code to show locations of minimized edits.
+#+begin_src lisp
+  (format t "~{     ~d lt 2 notitle~^, \\~%~}~%"
+          (remove-duplicates
+           (mapcan [{mapcar #'car} {differences (lines orig)} #'lines]
+                   (mapcar #'car
+                           (remove-if-not [{= 22} #'second]
+                                          (mapcar #'list
+                                                  1-minimized
+                                                  1-full-min-fitnesses))))))
+#+end_src
+
+*** DONE co-location of minimized edits with the fault localization
+#+begin_src lisp
+  (defun expander (n)
+    (list (- n 3) (- n 2) (- n 1) n (+ n 3) (+ n 2) (+ n 1)))
+  
+  (/ (length (set-difference
+              successful-minimized-edit-locations
+              (mapcan #'expander (reduce #'union coverages))))
+     (length successful-minimized-edit-locations))
+  
+#+end_src
+
+#+RESULTS:
+: 10/11
+
+** CANCELED different quality regression test suites
+Quality of tests
+|   0% | no pages, just run w/o error |
+|   x% | original run, very few       |
+|  25% |                              |
+|  50% |                              |
+| 100% |                              |
+
+For a graph/table with
+| X  | size of trace during testing     |
+|    | or percent of total files served |
+| Y1 | percentage of pages preserved    |
+| Y2 | repair run time (wall clock)     |
+** annotations do not overlap the minimized repair
+The repairs are *not* on the positive or negative execution trace.
+#+begin_src lisp :results output
+  (let ((orig (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi"))
+                        (mini (from-file (make-instance 'elf-mips-sw) "stuff/net-cgi.minimized")))
+                    (annotate orig (read-sample-file "stuff/net-cgi.sample"))
+                    (loop
+                     :for a :in (coerce (genome orig) 'list)
+                     :for b :in (coerce (genome mini) 'list)
+                     :as i :from 0 :do
+                     (when (not (equalp (aget :bytes a) (aget :bytes b)))
+                       (format t "at ~d, ~a -> ~a~%" i a b))))
+  ;; => at 292412, ((BYTES . 175)) -> ((BYTES . 143))
+  ;; => at 332588, ((BYTES . 104)) -> ((BYTES . 0))
+#+end_src
+
+Graph union of execution traces, and point out locations of repairs
+#+name: traced-indices
+#+begin_src lisp
+  (defun indexes-if (pred sequence &aux indexes)
+    (loop :for el :in sequence :as i :from 0 :do
+       (when (funcall pred el) (push i indexes)))
+    (nreverse indexes))
+  (mapcar {list _ 1} (indexes-if {aget :trace} (coerce (genome orig) 'list)))
+#+end_src
+
+#+name: mini-indices
+#+begin_src sh
+echo -e "292412 1\n332588 1"
+#+end_src
+
+#+begin_src gnuplot :var trace=traced-indices :var mini=mini-indices :file stuff/traced-vs-minimized.svg
+  set title 'No overlap between traced indices and location of minimized edits'
+  set key above
+  unset ytics
+  set xlabel 'Byte offset in program data'
+  set yrange [0:1]
+  set xrange [0:441276]
+  plot trace w impulses title 'traced locations', \
+       mini  w impulses title 'minimized edit locations' lw 4
+#+end_src
+
+#+RESULTS:
+[[file:stuff/traced-vs-minimized.svg]]
+
 ** differences in the minimized repair
 #+begin_src lisp
   (loop :for a :in (coerce (data (nth 3 (sections (elf original)))) 'list)
