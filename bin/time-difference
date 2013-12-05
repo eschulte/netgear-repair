@@ -1,0 +1,19 @@
+#!/bin/bash
+#
+# Calculate the evals per minute for each given directory
+#
+time_and_evals(){
+    sed 's/^.*adaptive[ \t]*[0-9]* //;s/[ \t]*checkpoints.*\// /;s/-best.*$//';}
+
+AWK_CMD=$(cat <<EOF
+{ data[NR]["time"] = \$1; data[NR]["evals"] = \$2; }
+END { print 60 * ((data[2]["evals"] - data[1]["evals"]) / (data[2]["time"]  - data[1]["time"])) }
+EOF
+)
+
+for i in $@;do
+    echo -e "$i\t$(awk "$AWK_CMD" <(
+        ls -ltr --time=ctime --time-style=+%s $i/*best*|head -1|time_and_evals;
+        ls -ltr --time=ctime --time-style=+%s $i/*best*|tail -1|time_and_evals;
+    ))"
+done
