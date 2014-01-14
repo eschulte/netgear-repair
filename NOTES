@@ -268,6 +268,9 @@ following in the lisp REPL.
 #+end_src
 
 * Notes [6/8]
+** similar problem in a host of other routers
+https://github.com/elvanderb/TCP-32764
+
 ** very similar and timely bug in D-Link routers
 http://www.devttys0.com/2013/10/reverse-engineering-a-d-link-backdoor/
 
