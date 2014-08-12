@@ -267,7 +267,14 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes [6/8]
+* Notes [6/9]
+** TODO add cybersecurity reference to paper
+[[file:~/reading/reading.org::#geer2014cybersecurity][Cybersecurity as Realpolitik]]
+
+cf. "5. Fall backs and resiliency"
+
+see discussion in my reading notes
+
 ** points to the potential seriousness of these sorts of bugs
 http://www.pcworld.com/article/2095860/cybercriminals-compromise-home-routers-to-attack-online-banking-users.html
 
