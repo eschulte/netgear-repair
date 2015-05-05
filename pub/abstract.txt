@@ -1,0 +1,33 @@
+The speed with which newly discovered software vulnerabilities are
+patched is a critical factor in mitigating the harm caused by
+subsequent exploits.  Unfortunately, software vendors are often slow
+or unwilling to patch vulnerabilities, especially in embedded systems
+which frequently have no mechanism for updating factory-installed
+firmware.  The situation is particularly dire for commercial off the
+shelf (COTS) software users, who lack source code and are wholly
+dependent on patches released by the vendor.
+
+We propose a solution in which the vulnerabilities drive an automated
+evolutionary computation repair process capable of directly patching
+embedded systems firmware.  Our approach does not require access to
+source code, regression tests, or any participation from the software
+vendor.  Instead, we present an interactive evolutionary algorithm
+that searches for patches that resolve target vulnerabilities while
+relying heavily on post-evolution difference minimization to remove
+most regressions.  Extensions to prior work in evolutionary program
+repair include: repairing vulnerabilities in COTS router firmware;
+handling stripped MIPS executables; operating without fault
+localization information; operating without a regression test suite;
+and incorporating user interaction into the evolutionary repair
+process.
+
+We demonstrate this method by repairing two well-known vulnerabilities
+in version 4 of NETGEAR's WNDR3700 wireless router before NETGEAR
+released patches publicly for the vulnerabilities.  Without fault
+localization we are able to find repair edits that are not located on
+execution traces.  Without the advantage of regression tests to guide
+the search, we find that 80% of repairs of the example vulnerabilities
+retain program functionality after minimization.  With minimal user
+interaction to demonstrate required functionality, 100% of the
+proposed repairs were able to address the vulnerabilities while
+retaining required functionality.
