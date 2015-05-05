@@ -2,59 +2,6 @@
 #+Options: ^:{}
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="etc/netgear-repair.css" />
 
-* Automated Repair of Exploits in NETGEAR Router Binary
-  :PROPERTIES:
-  :EXPORT_FILE_NAME: index
-  :EXPORT_OPTIONS: num:nil
-  :END:
-** Summary
-Version 4 of NETGEAR's WNDR3700 wireless router contains exploits
-allowing unauthenticated users to change administrative options and
-completely disable authentication across reboots (see [fn:1]).
-
-We fix these exploits using a method of automated program
-repair [fn:2] which operates directly on binary ELF files and requires
-no access to source code.  This fix was found before NETGEAR addressed
-these exploits---to my knowledge NETGEAR has not yet patched these
-exploits in the latest release of the firmware 1.0.1.42 as of
-2013-11-19.
-
-This repository contains the instructions, code, and tooling used to
-develop this repair.  These tools may be used to automatically change
-the behavior other binary ELF executables, making it possible to fix
-customize and alter binaries executables without any aid from the
-software's developer.
-
-A detailed description of the exploit and the repair technique and the
-repairs found is available at [fn:3] and step by step instructions to
-reproduce this repair are given in [[file:INSTRUCTIONS.html][INSTRUCTIONS]].
-
-Thanks to Zachary Cutlip for help reproducing these exploits in a VM.
-
-** TODO Description of Exploits
-** TODO Run Router in a Virtual Machine
-** TODO Evolutionary Repair Technique
-- The repair required working over MIPS RISC assembler allowing for
-  simplified mutation operators.
-
-** TODO Application of Repair Technique
-** TODO Analysis of Evolved Repair
-- The ELF file in question had no section table, so instead of
-  mutating the =.text= section all loadable program sections were
-  mutated
-
-- The repairs required two distinct fixes to two different exploits in a
-  single long evolutionary run (an instance of "iterative repair").
-
-- The initial evolved repair broke untested behavior (e.g., it worked
-  when the cgi file was called directly on the command line but not
-  through the embedded [[http://wiki.openwrt.org/doc/uci/uhttpd][µHTTPd]] webserver).  The minimized version of
-  the repair fixed these issues and works as expected.
-
-- The initial evolved repair differed from the original at 789
-  distinct locations (measured with a unified diff), the minimized
-  differed from the original at 2 such locations.
-
 * Reproduction Instructions
   :PROPERTIES:
   :EXPORT_FILE_NAME: INSTRUCTIONS
@@ -267,8 +214,11 @@ following in the lisp REPL.
   (run)                       ; kick off the repair process
 #+end_src
 
-* Notes [6/9]
-** TODO add cybersecurity reference to paper
+* Notes [9/9]
+** CANCELED add cybersecurity reference to paper
+   CLOSED: [2015-05-05 Tue 16:27]
+   - State "CANCELED"   from "TODO"       [2015-05-05 Tue 16:27] \\
+     submitting to a different venue
 [[file:~/reading/reading.org::#geer2014cybersecurity][Cybersecurity as Realpolitik]]
 
 cf. "5. Fall backs and resiliency"
@@ -284,7 +234,8 @@ https://github.com/elvanderb/TCP-32764
 ** very similar and timely bug in D-Link routers
 http://www.devttys0.com/2013/10/reverse-engineering-a-d-link-backdoor/
 
-** TODO writing
+** DONE writing
+   CLOSED: [2015-05-05 Tue 16:27]
 ** DONE lazy regression testing
 What if we don't write any regression test?
 
@@ -312,7 +263,8 @@ the first round?  No, not now.  Future work could incorporate
 information from the first round pick, maybe use it as fault
 localization information.
 
-** TODO evaluate lazy regression testing [4/4]
+** DONE evaluate lazy regression testing [4/4]
+   CLOSED: [2015-05-05 Tue 16:27]
 *** DONE Diffs and fitnesses
 #+name: full-min-tbl
 #+begin_src lisp :colnames '(id evals full-diff min-diff full-fit min-fit)
@@ -434,6 +386,7 @@ file:bin/time-difference
 |----------------------------------+----------|
 |                                  | 86.63125 |
 #+TBLFM: @9$2=vmean(@1..@-1)/60
+
 *** DONE Coverage and Runtime with Minimized Edits
 - label with size of suite and number of samples
 - horizontal lines for minimized edit locations
