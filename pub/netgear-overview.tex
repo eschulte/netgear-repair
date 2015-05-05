@@ -1,0 +1,62 @@
+\tikzstyle{pop-cloud} = [cloud, draw, cloud puffs=18, cloud puff arc=120, aspect=2, inner ysep=1em, minimum width=28em, minimum height=8em, fill=green!15]
+
+\def\thread(#1,#2){
+\begin{scope}[xshift=#1em,yshift=#2em,rotate=90]
+\draw[x=0.5em,y=1em, ultra thick] 
+        (3,0) sin (4,0.5) cos (5,0) sin (6,-0.5) cos (7,0)
+              sin (8,0.5) cos (9,0) sin (10,-0.5) cos (11,0);
+\end{scope}
+}
+
+\def\qemu(#1,#2){
+\begin{scope}[xshift=#1em,yshift=#2em,scale=0.25]
+\node[draw=black, text=black, minimum width=2em, minimum height=2em, fill=red!20, thick] at (0,0) {\tiny{QEMU}};
+\end{scope}
+}
+
+\begin{tikzpicture}
+  \thread(-6,4);
+  \node at (-3.5,3) {Mutate};
+  \node[draw=black, text=black, minimum width=3em, minimum height=3em, fill=red!20, thick] (q1) at (-2,4.25) {\small{QEMU}};
+
+  \node[pop-cloud] (pop) at (0.5,0) {};
+  \draw[thick, bend left, ->] (pop.165) to node [auto,midway] {Select} (-6.25em,5em);
+  \draw[thick, bend left, ->] (-5.75em,5em) to node [auto,midway] {Insert} (pop.150);
+  \draw[thick, bend left, ->] (-6.5em,10em) to node [auto,midway] {Evaluate} (-6.5em,11em);
+  \draw[thick, bend left, ->] (-5.5em,11em) to node [auto,midway] {} (-5.5em,10em);
+
+  \thread( 7,6);
+  \thread( 9,4.5);
+  \thread(11,3);
+  \thread(13,1.5);
+  \qemu( 7,13);
+  \qemu( 9,11.5);
+  \qemu(11,10);
+  \qemu(13,8.5);
+
+  % labels
+  \node at (1,5) {\large{Virtual Machines}};
+  \node at (0.5,3) {\large{Threads}};
+  \node[] at (0.5,1.85) {\large{(2)}};
+  \node[text=black] at (0.5,0)   {\large{Population}};
+
+  % components
+  \node[] at (-8,5.5) {\large{Inputs}};
+  \node[draw=black, text=black, rectangle, minimum width=7em, minimum height=4em, fill=blue!20] (vulnerab) at (-8,4.5) {Vulnerabilities};
+  \node[draw=black, text=black, rectangle, minimum width=7em, minimum height=4em, fill=blue!20] (firmware) at (-8,2.5) {Firmware};
+  \node[] at (-6,3.125) {\large{(1)}};
+  \node (binwalk) at (-5.5,2.5) {\texttt{binwalk}};
+  \draw[thick, ->] (firmware.east) to (binwalk.west);
+  \draw[thick, bend left, ->] (vulnerab.east) to (q1.157);
+  \draw[thick, bend left, ->] (binwalk.north) to node [auto,midway] {Environment} (q1);
+  \draw[thick, bend right,->] (binwalk.south) to node [auto,midway,left] {Binary} (pop.west);
+  \node[draw=black, text=black, rectangle, minimum width=7em, minimum height=4em, fill=purple!25] (minimize) at (7,0) {Minimize};
+  \draw[thick, ->] (pop.east) to (minimize.west);
+  \node[draw=black, text=black, rectangle, minimum width=7em, minimum height=4em, fill=orange!15] (user) at (7,4.5) {User};
+  \node[] (output) at (10.5,4.5) {\large{Output}};
+  \draw[thick, ->, dashed] (user.east) to node[auto] {accept} (output);
+  \node[] at (5.5,4.5) {\large{(3)}};
+  \draw[thick, ->] (minimize) to (user);
+  \draw[thick, ->, bend right, dashed] (user.north west) to node [auto, above, xshift=1.5em] {additional tests} (q1.north);
+
+\end{tikzpicture}
