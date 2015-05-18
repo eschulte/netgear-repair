@@ -26,7 +26,8 @@ software's developer.
 
 An article describing the exploit, the repair technique, its
 application, and the repairs found is available at [4] and will appear
-in the Genetic Improvement workshop of GECCO 2015 [5].  Step by step
+in the Genetic Improvement workshop of GECCO 2015 [5].  Please cite
+this article using the following bibtex [6].  Step by step
 instructions to reproduce this repair are given in INSTRUCTIONS.
 
 Thanks to Zachary Cutlip for help reproducing these exploits in a VM.
@@ -41,3 +42,12 @@ Footnotes:
 [4]  http://eschulte.github.io/netgear-repair/pub/netgear-repair-preprint.pdf
 
 [5]  http://geneticimprovement2015.com/
+
+[6]  @inproceedings{schulte2015netgear,
+       author = {Eric Schulte and Westley Weimer and Stephanie Forrest},
+       title = {Repairing COTS Router Firmware without Access to Source
+                       Code or Test Suites: A Case Study in Evolutionary
+                       Software Repair},
+       booktitle = {GECCO Workshop on the Genetic Improvement of Software},
+       year = 2015
+     }
