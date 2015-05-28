@@ -43,11 +43,21 @@ Footnotes:
 
 [5]  http://geneticimprovement2015.com/
 
-[6]  @inproceedings{schulte2015netgear,
-       author = {Eric Schulte and Westley Weimer and Stephanie Forrest},
-       title = {Repairing COTS Router Firmware without Access to Source
-                       Code or Test Suites: A Case Study in Evolutionary
-                       Software Repair},
-       booktitle = {GECCO Workshop on the Genetic Improvement of Software},
-       year = 2015
+[6]  @InProceedings{schulte2015netgear,
+       author       = {Eric Schulte and Westley Weimer and Stephanie Forrest},
+       title        = {Repairing COTS Router Firmware without Access to Source
+                       Code or Test Suites: A Case Study in Evolutionary Software
+                       Repair},
+       booktitle    = {GECCO'15: 2015 Genetic and Evolutionary Computation
+                       Conference Companion Proceedings},
+       year         = 2015,
+       editor       = {William B. Langdon and Justyna Petke and David R. White},
+       address      = {Madrid},
+       publisher_address = {New York, NY, USA},
+       month        = {11-15 July},
+       organization = {SIGEvo},
+       publisher    = {ACM},
+       keywords     = {genetic algorithms, genetic programming, Genetic
+                       Improvement},
+       notes        = {gismo http://geneticimprovement2015.com/}
      }
